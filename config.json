@@ -1,0 +1,48 @@
+{
+    "EXPERIMENTS":
+    {
+        "PROJECT_NAME": "face_attribute"
+    },
+
+    "DATA":
+    {
+        "PROJECT_NAME": "face_attribute",
+        "INPUT_SHAPE": [224, 224, 3],
+        "TRAIN_SIZE": 0.8,
+        "BATCH_SIZE": 64,
+        "NUM_WORKERS": 1
+    },
+
+    "EPOCH":
+    {
+        "START": 1,
+        "TRAINING": 2
+    },
+
+    "CHECKPOINT":
+    {
+        "SAVE":  false,
+        "LOAD": false,
+        "PROJECT_NAME": "face_attribute",
+        "RESUME_NAME": "epoch_1.pt"
+    },
+
+    "LOG":
+    {
+        "PROJECT_NAME": "face_attribute"
+    },
+
+    "NN":
+    {
+        "DROPOUT": 0.3
+    },
+
+    "OPTIMIZER":
+    {
+      "LR": 0.05
+    },
+
+    "MISC": {
+        "SEED": 12345
+    }
+}
