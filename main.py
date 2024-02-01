@@ -7,8 +7,9 @@ from src.utils.utils import json_decoder, get_dataset
 
 
 def main() -> None:
-    options = Box(next(iter(json_decoder(open(os.path.join(os.getcwd(), "config.json")).read()))))
-    train_set, validation_set, test_set = get_dataset(root=options.DATA.NAME,
+    options = Box(next(iter(json_decoder(open("config.json").read()))))
+
+    train_set, validation_set, test_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.PROJECT_NAME),
                                                       img_size=options.DATA.INPUT_SHAPE[0],
                                                       train_size=options.DATA.TRAIN_SIZE,
                                                       batch_size=options.DATA.BATCH_SIZE,
@@ -16,14 +17,13 @@ def main() -> None:
                                                       num_workers=options.DATA.NUM_WORKERS
                                                       )
 
-    trainer = Trainer(options=options, train_set=train_set, validation_set=validation_set)
-    trainer.train()
-    # trainer.train(train_set=train_set, test_set=test_set)
+    trainer = Trainer(options=options)
+    trainer.train(train_set, validation_set)
     """
     Task lists:
         + Logging with json format (Infinitt & NaN can not read when decoding in KNIME)
         + Add tensor board while training
-        + Revise computation of training metrics
+        + Require computation of training metrics
         + Take latest model when load_checkpoint == True
         + Save 4 best + 1 latest model
     """

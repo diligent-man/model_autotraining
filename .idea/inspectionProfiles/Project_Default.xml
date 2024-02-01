@@ -1,0 +1,87 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="DuplicatedCode" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <Languages>
+        <language minSize="542" name="Python" />
+      </Languages>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E722" />
+          <option value="E303" />
+          <option value="E301" />
+          <option value="E501" />
+          <option value="E402" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N803" />
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="semester_4.DAP391m.Final_project.data_crawling.options" />
+          <option value="str.*" />
+          <option value="semester_4.DAP391m.Final_project.data_crawling.year" />
+          <option value="semester_4.DAP391m.Final_project.data_crawling.self" />
+          <option value="dict.start_year" />
+          <option value="dict.end_year" />
+          <option value="dict.num_of_processes" />
+          <option value="dict.data_path" />
+          <option value="dict.metadata_url" />
+          <option value="dict.metadata_file_name" />
+          <option value="dict.headers" />
+          <option value="dict.lang" />
+          <option value="dict.process_counter" />
+          <option value="dict.movie_detail_url" />
+          <option value="dict.movie_detail_file_name" />
+          <option value="dict.file_extension" />
+          <option value="dict.file_name" />
+          <option value="semester_6.Modelling.CustomDataSet.v2" />
+          <option value="dict.annotation_path" />
+          <option value="dict.dataset_save_path" />
+          <option value="dict.male_counter" />
+          <option value="dict.female_counter" />
+          <option value="dict.log_path" />
+          <option value="dict.batch_size" />
+          <option value="dict.epochs" />
+          <option value="dict.cuda" />
+          <option value="dict.cuda_device" />
+          <option value="dict.device" />
+          <option value="dict.checkpoint" />
+          <option value="dict.model_path" />
+          <option value="datetime.now" />
+          <option value="dict.dropout" />
+          <option value="time.time.sleep" />
+          <option value="dict.dataset_path" />
+          <option value="dict.save_checkpoint" />
+          <option value="dict.load_weights" />
+          <option value="dict.checkpoint_path" />
+          <option value="dict.load_checkpoint" />
+          <option value="float.compute" />
+          <option value="bool.sum" />
+          <option value="dict.start_epoch" />
+          <option value="semester_6.Trainer.VGG" />
+          <option value="semester_6.Modelling.train.options" />
+          <option value="dict.img_size" />
+          <option value="semester_6.Modelling.CustomDataSet.__target_transform" />
+          <option value="semester_6.Modelling.CustomDataSet.__transform" />
+          <option value="dict.detach" />
+          <option value="semester_6.NLP_coursera.NLP_with_classification_vector_space.utils.process_tweet" />
+          <option value="dict.SEED" />
+          <option value="dict.MAX_TOKENS" />
+          <option value="dict.DSIZE" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

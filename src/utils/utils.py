@@ -64,7 +64,7 @@ def get_dataset(root: str, img_size: int,
     train_set, vaidation_set = random_split(dataset=train_set,
                                             generator=torch.Generator().manual_seed(seed),
                                             lengths=[round(len(train_set) * train_size),
-                                                     len(train_set) - round(len(train) * train_size)
+                                                     len(train_set) - round(len(train_set) * train_size)
                                                      ]
                                             )
 
