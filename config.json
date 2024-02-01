@@ -16,7 +16,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 3
+        "EPOCHS": 30
     },
 
     "CHECKPOINT":

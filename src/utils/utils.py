@@ -1,15 +1,16 @@
 import os
 import re
-import torch
 
 from typing import Tuple
 from json import JSONDecoder, JSONDecodeError
 
+import torch
+
+from torchsummary import summary
 from torchvision.transforms import v2
 from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader, random_split
 from torchvision.transforms import InterpolationMode
-
+from torch.utils.data import DataLoader, random_split
 
 NOT_WHITESPACE = re.compile(r'\S')
 
@@ -100,28 +101,5 @@ def get_dataset(root: str, img_size: int,
     return train_set, validation_set, test_set
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def get_model_summary(model: torch.nn.Module, input_size: Tuple):
+    return summary(model, input_size)

@@ -28,31 +28,31 @@ cfg = {
 
 
 class VGG(nn.Module):
-    def __init__(self, features, dropout, num_classes=1000, init_weights=True):
+    def __init__(self, features, DROPOUT=.5, NUM_CLASSES=1000, init_weights=True):
         super(VGG, self).__init__()
         self.features = features
         self.classifier = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),
             nn.ReLU(True),
-            nn.Dropout(dropout),
+            nn.Dropout(DROPOUT),
 
             nn.Linear(4096, 4096),
             nn.ReLU(True),
-            nn.Dropout(dropout),
+            nn.Dropout(DROPOUT),
 
             nn.Linear(4096, 2048),
             nn.ReLU(True),
-            nn.Dropout(dropout),
+            nn.Dropout(DROPOUT),
 
             nn.Linear(2048, 1024),
             nn.ReLU(True),
-            nn.Dropout(dropout),
+            nn.Dropout(DROPOUT),
 
             nn.Linear(1024, 512),
             nn.ReLU(True),
-            nn.Dropout(dropout),
+            nn.Dropout(DROPOUT),
 
-            nn.Linear(512, num_classes),
+            nn.Linear(512, NUM_CLASSES),
             nn.Softmax(dim=1)
         )
         if init_weights:
@@ -209,8 +209,8 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_model(dropout: float, num_classes: int, model_state_dict: dict = None):
-    model = vgg16(pretrained=False, **{"dropout": dropout, "num_classes": num_classes})
+def get_model(model_state_dict=None, **kwargs):
+    model = vgg16(pretrained=False, **kwargs)
 
     if model_state_dict:
         print("Loading pretrained model...")

@@ -1,9 +1,9 @@
 import os
 
 from box import Box
-from pprint import pprint as pp
 from src.tools.train import Trainer
 from src.utils.utils import json_decoder, get_dataset
+from src.tools.eval import Evaluator
 
 
 def main() -> None:
@@ -16,8 +16,11 @@ def main() -> None:
                                                       seed=options.MISC.SEED,
                                                       num_workers=options.DATA.NUM_WORKERS
                                                       )
-    trainer = Trainer(options=options)
-    trainer.train(train_set, validation_set)
+    # trainer = Trainer(options=options)
+    # trainer.train(train_set, validation_set)
+
+    evaluator = Evaluator(options)
+    evaluator.eval(test_set, "best_checkpoint.pt")
     return None
 
 

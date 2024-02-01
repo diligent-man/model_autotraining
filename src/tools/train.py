@@ -6,7 +6,7 @@ import torchsummary
 from box import Box
 from time import time
 from tqdm import tqdm
-from typing import Tuple
+from typing import Tuple, List
 from src.utils.logger import Logger
 from src.modelling.vgg import get_model
 from src.utils.early_stopping import EarlyStopper
@@ -27,29 +27,29 @@ class Trainer:
         self.__options: Box = options
         self.__log_path: str = log_path
         self.__checkpoint_path: str = checkpoint_path
+
+        self.__metrics: List = self.__init_metrics()
+        self.__early_stopper = EarlyStopper(**self.__options.EARLY_STOPPING)
         self.__best_acc: float = self.__get_best_acc()
-        self.__checkpoint = None
+        self.__train_loss: torch.nn = torch.nn.CrossEntropyLoss()
 
         if self.__options.CHECKPOINT.LOAD:
             map_location = "cuda" if torch.cuda.is_available() else "cpu"
-            self.__checkpoint = torch.load(
-                f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME),
-                map_location=map_location)
+            self.__checkpoint = torch.load(f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME), map_location=map_location)
 
-        self.__model: torch.nn.Module = self.__init_model()
-        self.__optimizer: torch.optim = self.__init_optimizer()
-        self.__train_loss: torch.nn = torch.nn.CrossEntropyLoss()
+            self.__model: torch.nn.Module = get_model(self.__checkpoint["model_state_dict"], **self.__options.NN)
 
-        self.__acc: torchmetrics.Metric = self.__init_acc()
-        self.__f1: torchmetrics.Metric = self.__init_f1_score()
+            self.__optimizer: torch.optim = torch.optim.Adam(params=self.__model.parameters(), **self.__options.OPTIMIZER)
+            self.__optimizer.load_state_dict(self.__checkpoint["optimizer_state_dict"])
+        else:
+            self.__model: torch.nn.Module = get_model(**self.__options.NN)
 
-        self.__early_stopper = EarlyStopper(self.__options.EARLY_STOPPING)
+            self.__optimizer: torch.optim = torch.optim.Adam(self.__model.parameters(), **self.__options.OPTIMIZER)
 
 
     # Public methods
     def train(self, train_set: DataLoader, validation_set: DataLoader, train_loss=None) -> None:
         print("Start training model ...")
-
         self.__model.train()
 
         logger = Logger(log_path=self.__log_path)
@@ -80,11 +80,11 @@ class Trainer:
                 self.__optimizer.step()
 
                 # update metrics
-                self.__acc.update(predictions, ground_truths)
-                self.__f1.update(predictions, ground_truths)
+                for metric in self.__metrics:
+                    metric.update(predictions, ground_truths)
 
             # Training metrics
-            train_acc, train_f1 = self.__acc.compute().item(), self.__f1.compute().item()
+            train_acc, train_f1 = [metric.compute().item() for metric in self.__metrics]
 
             # Validate model
             val_loss, val_acc, val_f1 = self.__validate(validation_set)
@@ -124,55 +124,25 @@ class Trainer:
                                f=os.path.join(self.__checkpoint_path, f"best_checkpoint.pt")
                                )
             # Reset metrics
-            self.__acc.reset()
-            self.__f1.reset()
+            for metric in self.__metrics:
+                metric.reset()
         return None
 
-    def get_model_summary(self) -> torchsummary.summary:
-        input_size = (
-            self.__options.DATA.INPUT_SHAPE[2],
-            self.__options.DATA.INPUT_SHAPE[0],
-            self.__options.DATA.INPUT_SHAPE[1]
-        )
-        return summary(self.__model, input_size=input_size)
-
-
     # Private methods
-    def __init_model(self) -> torch.nn.Module:
-        if self.__checkpoint is not None:
-            model = get_model(dropout=self.__options.NN.DROPOUT,
-                              num_classes=self.__options.NN.NUM_CLASSES,
-                              model_state_dict=self.__checkpoint["model_state_dict"]
-                              )
-        else:
-            model = get_model(dropout=self.__options.NN.DROPOUT, num_classes=self.__options.NN.NUM_CLASSES)
-        return model
-
-    def __init_optimizer(self) -> torch.optim:
-        optimizer = Adam(params=self.__model.parameters(), **self.__options.OPTIMIZER)
-
-        if self.__checkpoint is not None:
-            optimizer.load_state_dict(self.__checkpoint["optimizer_state_dict"])
-        return optimizer
-
-    def __init_acc(self) -> torchmetrics.Metric:
-        acc = MulticlassAccuracy(num_classes=self.__options.NN.NUM_CLASSES)
+    def __init_metrics(self) -> List:
+        metrics = [
+            MulticlassAccuracy(num_classes=self.__options.NN.NUM_CLASSES),
+            MulticlassF1Score(num_classes=self.__options.NN.NUM_CLASSES)
+        ]
 
         if torch.cuda.is_available():
-            acc.to("cuda")
-        return acc
+            metrics = [metric.to("cuda") for metric in metrics]
+        return metrics
 
-    def __init_f1_score(self) -> torchmetrics.Metric:
-        f1_score = MulticlassF1Score(num_classes=self.__options.NN.NUM_CLASSES)
 
-        if torch.cuda.is_available():
-            f1_score.to("cuda")
-        return f1_score
-
-    def __validate(self, validation_set: DataLoader) -> Tuple:
+    def __validate(self, validation_set: DataLoader) -> List:
         self.__model.eval()
-        val_f1 = self.__init_f1_score()
-        val_acc = self.__init_acc()
+        val_metrics = self.__init_metrics()
         val_loss = total_samples = 0
 
         with torch.no_grad():
@@ -189,10 +159,11 @@ class Trainer:
                 total_samples += imgs.size(0)
 
                 # update metrics
-                val_acc.update(predictions, ground_truths)
-                val_f1.update(predictions, ground_truths)
+                for metric in val_metrics:
+                    metric.update(predictions, ground_truths)
+
         val_loss /= total_samples
-        return val_loss.item(), val_acc.compute().item(), val_f1.compute().item()
+        return[val_loss.item()] + [metric.compute().item() for metric in val_metrics]
 
     def __get_best_acc(self) -> float:
         if "best_checkpoint.pt" in self.__checkpoint_path:
