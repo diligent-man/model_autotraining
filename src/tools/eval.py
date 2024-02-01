@@ -4,7 +4,6 @@ import torcheval
 from torcheval.metrics import MulticlassPrecision, MulticlassRecall
 
 
-
 class Evaluator:
     __precision: torcheval.metrics.Metric
     __recall: torcheval.metrics.Metric

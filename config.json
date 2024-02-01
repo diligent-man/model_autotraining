@@ -16,14 +16,14 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 2
+        "EPOCHS": 3
     },
 
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": true,
-        "RESUME_NAME": "best_checkpoint.pt"
+        "LOAD": false,
+        "RESUME_NAME": "epoch_1.pt"
     },
 
     "NN":
@@ -36,6 +36,12 @@
     {
         "lr": 1e-4,
         "amsgrad": true
+    },
+
+    "EARLY_STOPPING":
+    {
+        "PATIENCE": 5,
+        "MIN_DELTA": 0
     },
 
     "MISC": {
