@@ -91,10 +91,37 @@ def get_dataset(root: str, img_size: int,
                                v2.ToDtype(torch.float32, scale=True)
                            ]))
 
-    test = DataLoader(dataset=test_set,
-                      batch_size=batch_size,
-                      shuffle=True,
-                      num_workers=num_workers,
-                      pin_memory=pin_memory
-                      )
-    return train_set, train_set, test_set
+    test_set = DataLoader(dataset=test_set,
+                          batch_size=batch_size,
+                          shuffle=True,
+                          num_workers=num_workers,
+                          pin_memory=pin_memory
+                          )
+    return train_set, validation_set, test_set
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

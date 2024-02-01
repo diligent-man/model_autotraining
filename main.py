@@ -16,17 +16,8 @@ def main() -> None:
                                                       seed=options.MISC.SEED,
                                                       num_workers=options.DATA.NUM_WORKERS
                                                       )
-
     trainer = Trainer(options=options)
     trainer.train(train_set, validation_set)
-    """
-    Task lists:
-        + Logging with json format (Infinitt & NaN can not read when decoding in KNIME)
-        + Add tensor board while training
-        + Require computation of training metrics
-        + Take latest model when load_checkpoint == True
-        + Save 4 best + 1 latest model
-    """
     return None
 
 

@@ -1,13 +1,12 @@
 import os
 
-
+import torchmetrics
 from box import Box
 from time import time
 from tqdm import tqdm
 from typing import Tuple
-from src.modelling.vgg import get_model
 from src.utils.logger import Logger
-from src.tools.eval import Evaluator
+from src.modelling.vgg import get_model
 
 import torch
 
@@ -18,35 +17,41 @@ from torchmetrics.classification import MulticlassF1Score, MulticlassAccuracy
 
 
 class Trainer:
-    __options: Box
-
-    def __init__(self, options):
-        self.__options = options
+    def __init__(self, options,
+                 log_path=os.path.join(os.getcwd(), "logs", "training_log.json"),
+                 checkpoint_path=os.path.join(os.getcwd(), "checkpoints")
+                 ):
+        self.__options: Box = options
+        self.__log_path: str = log_path
+        self.__checkpoint_path: str = checkpoint_path
+        self.__best_acc: float = self.__get_best_acc()
         self.__checkpoint = None
 
         if self.__options.CHECKPOINT.LOAD:
             map_location = "cuda" if torch.cuda.is_available() else "cpu"
-            self.__checkpoint = torch.load(f=os.path.join(os.getcwd(), "checkpoints", self.__options.CHECKPOINT.RESUME_NAME), map_location=map_location)
+            self.__checkpoint = torch.load(
+                f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME),
+                map_location=map_location)
 
-        self.__model = self.__init_model()
-        self.__optimizer = self.__init_optimizer()
-        self.__loss = torch.nn.CrossEntropyLoss()
+        self.__model: torch.nn.Module = self.__init_model()
+        self.__optimizer: torch.optim = self.__init_optimizer()
+        self.__loss: torch.nn = torch.nn.CrossEntropyLoss()
 
-        self.__acc = self.__init_acc()
-        self.__f1 = self.__init_f1_score()
+        self.__acc: torchmetrics.Metric = self.__init_acc()
+        self.__f1: torchmetrics.Metric = self.__init_f1_score()
 
     # Public methods
-    def train(self, train_set: DataLoader, validation_set: DataLoader,
-              loss=None,
-              log_path=os.path.join(os.getcwd(), "logs", "training_log.json")) -> None:
+    def train(self, train_set: DataLoader, validation_set: DataLoader, loss=None) -> None:
         print("Start training model ...")
+
         self.__model.train()
 
-        logger = Logger(log_path=log_path)
+        logger = Logger(log_path=self.__log_path)
 
         # Start training
-        epoch = self.__checkpoint["epoch"] + 1 if self.__options.CHECKPOINT.LOAD else self.__options.EPOCH.START
-        for epoch in range(epoch, epoch + self.__options.EPOCH.EPOCHS):
+        start_epoch = self.__checkpoint["epoch"] + 1 if self.__options.CHECKPOINT.LOAD else self.__options.EPOCH.START
+        for epoch in range(start_epoch, start_epoch + self.__options.EPOCH.EPOCHS):
+            print("Epoch:", epoch)
             start_time = time()
 
             for index, batch in tqdm(enumerate(train_set), total=len(train_set), colour="cyan", desc="Training"):
@@ -80,25 +85,38 @@ class Trainer:
 
             # Logging
             logger.write(**{"epoch": epoch,
-                                    "time per epoch": time() - start_time,
-                                    "loss": loss.item(),
+                            "time per epoch": time() - start_time,
+                            "loss": loss.item(),
+                            "train_acc": train_acc,
+                            "train_f1": train_f1,
+                            "val_acc": val_acc,
+                            "val_f1": val_f1
+                            }
+                         )
 
-                                    "train_acc": train_acc,
-                                    "train_f1": train_f1,
-
-                                    "val_acc": val_acc,
-                                    "val_f1": val_f1
-                                    }
-                                 )
-
-            # Save model after each epoch
+            # Save checkpoint
             if self.__options.CHECKPOINT.SAVE:
+                # Save model after each epoch
                 torch.save(obj={"epoch": epoch,
+                                "train_acc": train_acc,
                                 "model_state_dict": self.__model.state_dict(),
-                                "adam_state_dict": self.__optimizer.state_dict()
+                                "optimizer_state_dict": self.__optimizer.state_dict()
                                 },
-                           f=os.path.join(os.getcwd(), "checkpoints", f"epoch_{epoch}.pt")
+                           f=os.path.join(self.__checkpoint_path, f"epoch_{epoch}.pt")
                            )
+                # remove checkpoint of previous epoch
+                if epoch - 1 > 0:
+                    os.remove(os.path.join(self.__checkpoint_path, f"epoch_{epoch - 1}.pt"))
+
+                # Save best checkpoint
+                if train_acc > self.__best_acc:
+                    torch.save(obj={"epoch": epoch,
+                                    "train_acc": train_acc,
+                                    "model_state_dict": self.__model.state_dict(),
+                                    "optimizer_state_dict": self.__optimizer.state_dict()
+                                    },
+                               f=os.path.join(self.__checkpoint_path, f"best_checkpoint.pt")
+                               )
 
             # Reset metrics
             self.__acc.reset()
@@ -107,10 +125,10 @@ class Trainer:
 
     def get_model_summary(self):
         input_size = (
-                      self.__options.DATA.INPUT_SHAPE[2],
-                      self.__options.DATA.INPUT_SHAPE[0],
-                      self.__options.DATA.INPUT_SHAPE[1]
-                    )
+            self.__options.DATA.INPUT_SHAPE[2],
+            self.__options.DATA.INPUT_SHAPE[0],
+            self.__options.DATA.INPUT_SHAPE[1]
+        )
         return summary(self.__model, input_size=input_size)
 
     # Private methods
@@ -128,7 +146,7 @@ class Trainer:
         optimizer = Adam(params=self.__model.parameters(), **self.__options.OPTIMIZER)
 
         if self.__checkpoint is not None:
-            optimizer.load_state_dict(self.__checkpoint["adam_state_dict"])
+            optimizer.load_state_dict(self.__checkpoint["optimizer_state_dict"])
         return optimizer
 
     @staticmethod
@@ -153,7 +171,7 @@ class Trainer:
         val_acc = self.__init_acc()
 
         with torch.no_grad():
-            for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Evaluating"):
+            for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Validating"):
                 imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
 
                 if torch.cuda.is_available():
@@ -167,3 +185,9 @@ class Trainer:
                 val_acc.update(predictions, ground_truths)
                 val_f1.update(predictions, ground_truths)
         return val_acc.compute().item(), val_f1.compute().item()
+
+    def __get_best_acc(self) -> float:
+        if "best_checkpoint.pt" in self.__checkpoint_path:
+            return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["train_acc"]
+        else:
+            return 0.

@@ -21,9 +21,9 @@
 
     "CHECKPOINT":
     {
-        "SAVE":  true,
+        "SAVE": true,
         "LOAD": true,
-        "RESUME_NAME": "epoch_1.pt"
+        "RESUME_NAME": "best_checkpoint.pt"
     },
 
     "NN":
