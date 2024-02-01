@@ -33,20 +33,16 @@ class Trainer:
         self.__loss = torch.nn.CrossEntropyLoss()
 
         self.__acc = self.__init_acc()
-        self.__f1_score = self.__init_f1_score()
+        self.__f1 = self.__init_f1_score()
 
     # Public methods
-    def train(self, train_set: DataLoader, validation_set: DataLoader) -> None:
-        """
-        Model loss = sum(mini_batch_loss) / len_of_dataset
-        """
+    def train(self, train_set: DataLoader, validation_set: DataLoader,
+              loss=None,
+              log_path=os.path.join(os.getcwd(), "logs", "training_log.json")) -> None:
         print("Start training model ...")
-
-        # set model to train mode
         self.__model.train()
 
-        # Preliminary init
-        logger = Logger(log_path=os.path.join(os.getcwd()))
+        logger = Logger(log_path=log_path)
 
         # Start training
         epoch = self.__checkpoint["epoch"] + 1 if self.__options.CHECKPOINT.LOAD else self.__options.EPOCH.START
@@ -72,45 +68,41 @@ class Trainer:
                 # updating weights
                 self.__optimizer.step()
 
-                # compute metrics
-                acc, f1_score = self.__compute_metrics(predictions=predictions,
-                                                       ground_truths=ground_truths,
-                                                       metrics=(self.__acc, self.__f1_score)
-                                                       )
+                # update metrics
+                self.__acc.update(predictions, ground_truths)
+                self.__f1.update(predictions, ground_truths)
 
+            # Training metrics
+            train_acc, train_f1 = self.__acc.compute().item(), self.__f1.compute().item()
 
             # Validate model
-            # self.__validate(validation_set)
-            #
-            # # Logging
-            # logger.write_to_file(**{"epoch": epoch,
-            #                         "time per epoch": time() - start_time,
-            #                         "loss": loss.item(),
-            #
-            #                         "train_accuracy": self.__metric_options["train_metrics"]["accuracy"],
-            #                         "train_recall": self.__metric_options["train_metrics"]["recall"],
-            #                         "train_precision": self.__metric_options["train_metrics"]["precision"],
-            #
-            #                         "eval_accuracy": self.__metric_options["eval_metrics"]["accuracy"],
-            #                         "eval_recall": self.__metric_options["eval_metrics"]["recall"],
-            #                         "eval_precision": self.__metric_options["eval_metrics"]["precision"]
-            #                         }
-            #                      )
-            # # Reset metrics
-            # for key1 in ("train", "eval"):
-            #     for key2 in self.__metric_options[f"{key1}_metrics"].keys():
-            #         self.__metric_options[f"{key1}_metrics"][key2] = .0
-            #
-            # # Save model
-            # if self.__checkpoint_options["save_checkpoint"]:
-            #     torch.save(obj={"epoch": epoch,
-            #                     "model_state_dict": self.__model.state_dict(),
-            #                     "adam_state_dict": self.__optimizer.state_dict()
-            #                     }, f=os.path.join(self.__path_options["model_path"], f"epoch_{epoch}.pt")
-            #                )
+            val_acc, val_f1 = self.__validate(validation_set)
 
-            # for key in self.__metric_options["metrics"]:
-            #     print(key, self.__metric_options["train_metrics"][key])
+            # Logging
+            logger.write(**{"epoch": epoch,
+                                    "time per epoch": time() - start_time,
+                                    "loss": loss.item(),
+
+                                    "train_acc": train_acc,
+                                    "train_f1": train_f1,
+
+                                    "val_acc": val_acc,
+                                    "val_f1": val_f1
+                                    }
+                                 )
+
+            # Save model after each epoch
+            if self.__options.CHECKPOINT.SAVE:
+                torch.save(obj={"epoch": epoch,
+                                "model_state_dict": self.__model.state_dict(),
+                                "adam_state_dict": self.__optimizer.state_dict()
+                                },
+                           f=os.path.join(os.getcwd(), "checkpoints", f"epoch_{epoch}.pt")
+                           )
+
+            # Reset metrics
+            self.__acc.reset()
+            self.__f1.reset()
         return None
 
     def get_model_summary(self):
@@ -155,33 +147,23 @@ class Trainer:
             f1_score.to("cuda")
         return f1_score
 
-    @staticmethod
-    def __compute_metrics(metrics: Tuple, predictions: torch.Tensor, ground_truths: torch.Tensor):
-        """
-        Update & compute metrics for current batch
-        """
-        for metric in metrics:
-            metric.update(predictions, ground_truths)
-
-        tmp = [metric.compute() for metric in metrics]
-        print(tmp)
-        return 1, 2
-
-    def __validate(self, validation_set: torch.Tensor):
+    def __validate(self, validation_set: DataLoader):
         self.__model.eval()
-        f1_score = self.__init_f1_score()
-        acc = self.__init_acc()
+        val_f1 = self.__init_f1_score()
+        val_acc = self.__init_acc()
 
         with torch.no_grad():
-            for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Evaluating model ..."):
-                imgs, ground_truths = batch[0].type(torch.FloatTensor) / 255, batch[1]
+            for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Evaluating"):
+                imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
 
                 if torch.cuda.is_available():
                     imgs = imgs.to("cuda")
-                    ground_truths = labels.to("cuda")
+                    ground_truths = ground_truths.to("cuda")
 
                 # run the model on the test set to predict labels
                 predictions = self.__model(imgs)
 
-                val_f1_score = None
-                val_acc = None
+                # update metrics
+                val_acc.update(predictions, ground_truths)
+                val_f1.update(predictions, ground_truths)
+        return val_acc.compute().item(), val_f1.compute().item()

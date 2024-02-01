@@ -21,9 +21,9 @@
 
     "CHECKPOINT":
     {
-        "SAVE":  false,
-        "LOAD": false,
-        "RESUME_NAME": "epoch_3.pt"
+        "SAVE":  true,
+        "LOAD": true,
+        "RESUME_NAME": "epoch_1.pt"
     },
 
     "NN":
@@ -34,7 +34,7 @@
 
     "OPTIMIZER":
     {
-        "lr": 0.001,
+        "lr": 1e-4,
         "amsgrad": true
     },
 
