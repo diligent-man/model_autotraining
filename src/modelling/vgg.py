@@ -209,7 +209,7 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_model(model_state_dict=None, **kwargs):
+def get_model(cuda: bool, model_state_dict=None, **kwargs):
     model = vgg16(pretrained=False, **kwargs)
 
     if model_state_dict:
@@ -223,6 +223,6 @@ def get_model(model_state_dict=None, **kwargs):
                 nn.init.xavier_uniform_(para)
         print("Finished.")
 
-    if torch.cuda.is_available():
+    if cuda:
         model = model.to("cuda")
     return model

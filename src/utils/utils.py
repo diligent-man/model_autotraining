@@ -49,9 +49,9 @@ def json_decoder(document: str, pos=0, decoder=JSONDecoder()):
 
 def get_dataset(root: str, img_size: int,
                 train_size: float, batch_size: int,
-                seed: int, num_workers=1) -> Tuple[DataLoader, DataLoader, DataLoader]:
+                seed: int, cuda: bool, num_workers=1) -> Tuple[DataLoader, DataLoader, DataLoader]:
     # Use page-locked or not
-    pin_memory = True if torch.cuda.is_available() is True else False
+    pin_memory = True if cuda is True else False
 
     # Train & Validation
     train_set = ImageFolder(root=os.path.join(root, "train"),
@@ -62,7 +62,7 @@ def get_dataset(root: str, img_size: int,
                                 v2.ToDtype(torch.float32, scale=True)
                             ]))
 
-    train_set, vaidation_set = random_split(dataset=train_set,
+    train_set, validation_set = random_split(dataset=train_set,
                                             generator=torch.Generator().manual_seed(seed),
                                             lengths=[round(len(train_set) * train_size),
                                                      len(train_set) - round(len(train_set) * train_size)
@@ -76,7 +76,7 @@ def get_dataset(root: str, img_size: int,
                            pin_memory=pin_memory
                            )
 
-    validation_set = DataLoader(dataset=vaidation_set,
+    validation_set = DataLoader(dataset=validation_set,
                                 batch_size=batch_size,
                                 shuffle=True,
                                 num_workers=num_workers,

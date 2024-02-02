@@ -6,17 +6,22 @@
 
     "DATA":
     {
-        "PROJECT_NAME": "face_attribute",
+        "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
-        "TRAIN_SIZE": 0.8,
+        "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 128,
-        "NUM_WORKERS": 1
+        "NUM_WORKERS": 2
+    },
+
+    "DEVICE":
+    {
+        "CUDA": true
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 30
+        "EPOCHS": 5
     },
 
     "CHECKPOINT":
@@ -24,18 +29,18 @@
         "SAVE": true,
         "LOAD": false,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_5.pt"
+        "RESUME_NAME": "epoch_1.pt"
     },
 
     "NN":
     {
-        "DROPOUT": 0.3,
+        "DROPOUT": 0.5,
         "NUM_CLASSES": 2
     },
 
     "OPTIMIZER":
     {
-        "lr": 1e-4,
+        "lr": 1e-5,
         "amsgrad": true
     },
 

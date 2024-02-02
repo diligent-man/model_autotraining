@@ -1,20 +1,15 @@
 import os
 
-
-import torchmetrics
-import torchsummary
 from box import Box
 from time import time
 from tqdm import tqdm
-from typing import Tuple, List
+from typing import List
 from src.utils.logger import Logger
 from src.modelling.vgg import get_model
 from src.utils.early_stopping import EarlyStopper
 
 import torch
 
-from torch.optim import Adam
-from torchsummary import summary
 from torch.utils.data import DataLoader
 from torchmetrics.classification import MulticlassF1Score, MulticlassAccuracy
 
@@ -33,21 +28,22 @@ class Trainer:
         self.__train_loss: torch.nn = torch.nn.CrossEntropyLoss()
 
         if self.__options.CHECKPOINT.LOAD:
-            map_location = "cuda" if torch.cuda.is_available() else "cpu"
+            map_location = "cuda" if self.__options.DEVICE.CUDA else "cpu"
             self.__checkpoint = torch.load(f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME), map_location=map_location)
 
-            self.__model: torch.nn.Module = get_model(self.__checkpoint["model_state_dict"], **self.__options.NN)
+            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, model_state_dict=self.__checkpoint["model_state_dict"], **self.__options.NN)
 
             self.__optimizer: torch.optim = torch.optim.Adam(params=self.__model.parameters(), **self.__options.OPTIMIZER)
             self.__optimizer.load_state_dict(self.__checkpoint["optimizer_state_dict"])
         else:
-            self.__model: torch.nn.Module = get_model(**self.__options.NN)
+            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, **self.__options.NN)
 
             self.__optimizer: torch.optim = torch.optim.Adam(self.__model.parameters(), **self.__options.OPTIMIZER)
 
         if not self.__options.CHECKPOINT.SAVE_ALL:
             self.__best_acc: float = self.__get_best_acc()
-        print(self.__best_acc)
+
+
     # Public methods
     def train(self, train_set: DataLoader, validation_set: DataLoader, train_loss=None) -> None:
         print("Start training model ...")
@@ -65,7 +61,7 @@ class Trainer:
                 imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
 
                 # Pass to predefined device
-                if torch.cuda.is_available():
+                if self.__options.DEVICE.CUDA:
                     imgs = imgs.to("cuda")
                     ground_truths = ground_truths.to("cuda")
 
@@ -123,7 +119,7 @@ class Trainer:
             MulticlassF1Score(num_classes=self.__options.NN.NUM_CLASSES)
         ]
 
-        if torch.cuda.is_available():
+        if self.__options.DEVICE.CUDA:
             metrics = [metric.to("cuda") for metric in metrics]
         return metrics
 
@@ -137,7 +133,7 @@ class Trainer:
             for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Validating"):
                 imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
 
-                if torch.cuda.is_available():
+                if self.__options.DEVICE.CUDA:
                     imgs = imgs.to("cuda")
                     ground_truths = ground_truths.to("cuda")
 

@@ -9,13 +9,14 @@ from src.tools.eval import Evaluator
 def main() -> None:
     options = Box(next(iter(json_decoder(open("config.json").read()))))
 
-    train_set, validation_set, test_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.PROJECT_NAME),
+    train_set, validation_set, test_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
                                                       img_size=options.DATA.INPUT_SHAPE[0],
                                                       train_size=options.DATA.TRAIN_SIZE,
                                                       batch_size=options.DATA.BATCH_SIZE,
-                                                      seed=options.MISC.SEED,
+                                                      seed=options.MISC.SEED, cuda=options.DEVICE.CUDA,
                                                       num_workers=options.DATA.NUM_WORKERS
                                                       )
+    print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}, Test batch: {len(test_set)}""")
     trainer = Trainer(options=options)
     trainer.train(train_set, validation_set)
 
