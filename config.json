@@ -23,7 +23,8 @@
     {
         "SAVE": true,
         "LOAD": false,
-        "RESUME_NAME": "epoch_1.pt"
+        "SAVE_ALL": false,
+        "RESUME_NAME": "epoch_5.pt"
     },
 
     "NN":
@@ -45,6 +46,7 @@
     },
 
     "MISC": {
-        "SEED": 12345
+        "SEED": 12345,
+         "APPLY_EARLY_STOPPING": true
     }
 }

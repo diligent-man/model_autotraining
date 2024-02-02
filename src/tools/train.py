@@ -30,7 +30,6 @@ class Trainer:
 
         self.__metrics: List = self.__init_metrics()
         self.__early_stopper = EarlyStopper(**self.__options.EARLY_STOPPING)
-        self.__best_acc: float = self.__get_best_acc()
         self.__train_loss: torch.nn = torch.nn.CrossEntropyLoss()
 
         if self.__options.CHECKPOINT.LOAD:
@@ -46,7 +45,9 @@ class Trainer:
 
             self.__optimizer: torch.optim = torch.optim.Adam(self.__model.parameters(), **self.__options.OPTIMIZER)
 
-
+        if not self.__options.CHECKPOINT.SAVE_ALL:
+            self.__best_acc: float = self.__get_best_acc()
+        print(self.__best_acc)
     # Public methods
     def train(self, train_set: DataLoader, validation_set: DataLoader, train_loss=None) -> None:
         print("Start training model ...")
@@ -90,8 +91,9 @@ class Trainer:
             val_loss, val_acc, val_f1 = self.__validate(validation_set)
 
             # Check early stopping cond
-            if self.__early_stopper.early_stop(val_loss):
-                break
+            if self.__options.MISC.APPLY_EARLY_STOPPING:
+                if self.__early_stopper.early_stop(val_loss):
+                    break
 
             # Logging
             logger.write(**{"epoch": epoch, "time per epoch": time() - start_time,
@@ -99,34 +101,20 @@ class Trainer:
                             "val_loss": val_loss, "val_acc": val_acc, "val_f1": val_f1
                             }
                          )
-
             # Save checkpoint
             if self.__options.CHECKPOINT.SAVE:
-                # Save model after each epoch
-                torch.save(obj={"epoch": epoch,
-                                "train_acc": train_acc,
-                                "model_state_dict": self.__model.state_dict(),
-                                "optimizer_state_dict": self.__optimizer.state_dict()
-                                },
-                           f=os.path.join(self.__checkpoint_path, f"epoch_{epoch}.pt")
-                           )
-                # remove checkpoint of previous epoch
-                if epoch - 1 > 0:
-                    os.remove(os.path.join(self.__checkpoint_path, f"epoch_{epoch - 1}.pt"))
-
-                # Save best checkpoint
-                if train_acc > self.__best_acc:
-                    torch.save(obj={"epoch": epoch,
-                                    "train_acc": train_acc,
-                                    "model_state_dict": self.__model.state_dict(),
-                                    "optimizer_state_dict": self.__optimizer.state_dict()
-                                    },
-                               f=os.path.join(self.__checkpoint_path, f"best_checkpoint.pt")
-                               )
+                self.__save_checkpoint(epoch=epoch, train_acc=train_acc,
+                                       save_all=self.__options.CHECKPOINT.SAVE_ALL,
+                                       obj={"epoch": epoch, "train_acc": train_acc,
+                                            "model_state_dict": self.__model.state_dict(),
+                                            "optimizer_state_dict": self.__optimizer.state_dict()
+                                            }
+                                       )
             # Reset metrics
             for metric in self.__metrics:
                 metric.reset()
         return None
+
 
     # Private methods
     def __init_metrics(self) -> List:
@@ -170,3 +158,25 @@ class Trainer:
             return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["train_acc"]
         else:
             return 0.
+
+    def __save_checkpoint(self, epoch: int, train_acc: float, obj: dict, save_all: bool = False,) -> None:
+        """
+        save_all:
+            True: save all trained epoch
+            False: save only last and the best trained epoch
+        """
+        save_name = os.path.join(self.__checkpoint_path, f"epoch_{epoch}.pt")
+        torch.save(obj=obj, f=save_name)
+
+        if not save_all and epoch - 1 > 0:
+            # Remove previous epoch
+            os.remove(os.path.join(self.__checkpoint_path, f"epoch_{epoch - 1}.pt"))
+
+            # Save best checkpoint
+            if train_acc > self.__best_acc:
+                save_name = os.path.join(self.__checkpoint_path, f"best_checkpoint.pt")
+                torch.save(obj=obj, f=save_name)
+
+                # Update best accuracy
+                self.__best_acc = train_acc
+        return None

@@ -16,11 +16,11 @@ def main() -> None:
                                                       seed=options.MISC.SEED,
                                                       num_workers=options.DATA.NUM_WORKERS
                                                       )
-    # trainer = Trainer(options=options)
-    # trainer.train(train_set, validation_set)
+    trainer = Trainer(options=options)
+    trainer.train(train_set, validation_set)
 
-    evaluator = Evaluator(options)
-    evaluator.eval(test_set, "best_checkpoint.pt")
+    # evaluator = Evaluator(options)
+    # evaluator.eval(test_set, "best_checkpoint.pt")
     return None
 
 
