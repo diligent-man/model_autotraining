@@ -13,23 +13,18 @@
         "NUM_WORKERS": 2
     },
 
-    "DEVICE":
-    {
-        "CUDA": true
-    },
-
-    "EPOCH":
-    {
-        "START": 1,
-        "EPOCHS": 5
-    },
-
     "CHECKPOINT":
     {
         "SAVE": true,
         "LOAD": false,
         "SAVE_ALL": false,
         "RESUME_NAME": "epoch_1.pt"
+    },
+
+    "EPOCH":
+    {
+        "START": 1,
+        "EPOCHS": 20
     },
 
     "NN":
@@ -40,7 +35,7 @@
 
     "OPTIMIZER":
     {
-        "lr": 1e-5,
+        "lr": 1e-6,
         "amsgrad": true
     },
 
@@ -50,7 +45,13 @@
         "MIN_DELTA": 0
     },
 
-    "MISC": {
+    "DEVICE":
+    {
+        "CUDA": true
+    },
+
+    "MISC":
+    {
         "SEED": 12345,
          "APPLY_EARLY_STOPPING": true
     }

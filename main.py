@@ -2,8 +2,9 @@ import os
 
 from box import Box
 from src.tools.train import Trainer
-from src.utils.utils import json_decoder, get_dataset
 from src.tools.eval import Evaluator
+from src.tools.visualization import training_visualization
+from src.utils.utils import json_decoder, get_dataset
 
 
 def main() -> None:
@@ -17,11 +18,14 @@ def main() -> None:
                                                       num_workers=options.DATA.NUM_WORKERS
                                                       )
     print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}, Test batch: {len(test_set)}""")
-    trainer = Trainer(options=options)
-    trainer.train(train_set, validation_set)
+    # trainer = Trainer(options=options)
+    # trainer.train(train_set, validation_set)
 
     # evaluator = Evaluator(options)
     # evaluator.eval(test_set, "best_checkpoint.pt")
+
+
+    training_visualization(file_name="training_log.json", metrics_lst   =["loss", "acc", "f1"])
     return None
 
 

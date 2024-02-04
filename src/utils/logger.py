@@ -20,11 +20,4 @@ class Logger:
             #         kwargs[k] = float(kwargs[k])
 
             f.write(json.dumps(dict(self.__train_at, **kwargs), indent=4))
-            f.write(",\n")
-
-
-
-
-
-
-
+            f.write("\n")
