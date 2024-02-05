@@ -10,21 +10,21 @@
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 128,
-        "NUM_WORKERS": 2
+        "NUM_WORKERS": 4
     },
 
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": false,
-        "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_1.pt"
+        "LOAD": true,
+        "SAVE_ALL": true,
+        "RESUME_NAME": "epoch_30.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 20
+        "EPOCHS": 10
     },
 
     "NN":
@@ -35,7 +35,7 @@
 
     "OPTIMIZER":
     {
-        "lr": 1e-6,
+        "lr": 1e-7,
         "amsgrad": true
     },
 

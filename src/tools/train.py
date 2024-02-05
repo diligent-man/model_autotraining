@@ -1,7 +1,7 @@
 import os
 
 from box import Box
-from time import time
+from time import time, sleep
 from tqdm import tqdm
 from typing import List
 from src.utils.logger import Logger
@@ -45,7 +45,7 @@ class Trainer:
 
 
     # Public methods
-    def train(self, train_set: DataLoader, validation_set: DataLoader, train_loss=None) -> None:
+    def train(self, train_set: DataLoader, validation_set: DataLoader, sleep_time: int, train_loss=None) -> None:
         print("Start training model ...")
         self.__model.train()
 
@@ -109,6 +109,9 @@ class Trainer:
             # Reset metrics
             for metric in self.__metrics:
                 metric.reset()
+
+            # Stop in short time
+            sleep(sleep_time)
         return None
 
 

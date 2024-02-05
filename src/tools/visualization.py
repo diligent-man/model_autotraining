@@ -10,7 +10,7 @@ matplotlib.use('TkAgg')
 # print(matplotlib.get_backend())
 
 
-def training_visualization(file_name: str, metrics_lst: List[str]):
+def training_visualization(file_name: str, metrics_lst: List[str], x_interval=2):
     # remove existing dir
     if os.path.exists(os.path.join(os.getcwd(), "report")):
         shutil.rmtree(os.path.join(os.getcwd(), "report"))
@@ -44,7 +44,7 @@ def training_visualization(file_name: str, metrics_lst: List[str]):
         ax.set_xlabel("Epoch")
         ax.set_ylabel(metrics_lst[i].title())
 
-        ax.set_xticks(range(min(metrics_dict["epoch"]), max(metrics_dict["epoch"])+1, 1))
+        ax.set_xticks(range(min(metrics_dict["epoch"]), max(metrics_dict["epoch"])+2, x_interval))
 
         ax.legend(["Train", "Validation"])
         fig.savefig(os.path.join(os.getcwd(), "report", f"{metrics_lst[i].title()}.jpg"))

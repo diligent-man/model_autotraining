@@ -19,13 +19,13 @@ def main() -> None:
                                                       )
     print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}, Test batch: {len(test_set)}""")
     # trainer = Trainer(options=options)
-    # trainer.train(train_set, validation_set)
+    # trainer.train(train_set, validation_set, 180)
 
     # evaluator = Evaluator(options)
     # evaluator.eval(test_set, "best_checkpoint.pt")
 
 
-    training_visualization(file_name="training_log.json", metrics_lst   =["loss", "acc", "f1"])
+    training_visualization(file_name="training_log.json", metrics_lst=["loss", "acc", "f1"], x_interval=2)
     return None
 
 
