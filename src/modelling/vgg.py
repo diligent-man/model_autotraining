@@ -4,7 +4,7 @@ import torch.utils.model_zoo as model_zoo
 
 __all__ = [
     'VGG', 'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
-    'vgg19_bn', 'vgg19', "get_model"
+    'vgg19_bn', 'vgg19', "get_vgg_model"
 ]
 
 
@@ -209,7 +209,7 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_vgg_model(cuda: bool, model_derivative: str, model_state_dict=None, **kwargs):
+def get_vgg_model(cuda: bool, pretrained: bool, name: str, model_state_dict=None, **kwargs):
     models = {
         "vgg13": vgg13,
         "vgg16": vgg16,
@@ -218,7 +218,9 @@ def get_vgg_model(cuda: bool, model_derivative: str, model_state_dict=None, **kw
         "vgg16_bn": vgg16_bn,
         "vgg19_bn": vgg19_bn,
     }
-    model = models[model_derivative](pretrained=False, **kwargs)
+    assert name in models.keys(), "Your selected vgg model derivative is unavailable"
+
+    model = models[name](pretrained=pretrained, **kwargs)
 
     if model_state_dict:
         print("Loading pretrained model...")

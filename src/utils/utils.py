@@ -47,7 +47,7 @@ def json_decoder(document: str, pos=0, decoder=JSONDecoder()):
         yield obj
 
 
-def get_dataset(root: str, img_size: int,
+def get_dataset(root: str, input_size: int,
                 train_size: float, batch_size: int,
                 seed: int, cuda: bool, num_workers=1) -> Tuple[DataLoader, DataLoader, DataLoader]:
     # img -- reduce to 20% --> upsample to 224x224 -> Blur with ksize (10, 10)
@@ -61,7 +61,7 @@ def get_dataset(root: str, img_size: int,
                             transform=v2.Compose([
                                 # img from celeb A: 178 x 218 x 3
                                 v2.Resize(size=(int(178 * .2), int(218 * .2)), interpolation=InterpolationMode.NEAREST),
-                                v2.Resize(size=(img_size, img_size), interpolation=InterpolationMode.BICUBIC),
+                                v2.Resize(size=(input_size, input_size), interpolation=InterpolationMode.BICUBIC),
                                 v2.GaussianBlur(kernel_size=5),
                                 v2.PILToTensor(),
                                 v2.ToDtype(torch.float32, scale=True),
@@ -93,7 +93,7 @@ def get_dataset(root: str, img_size: int,
     test_set = ImageFolder(root=os.path.join(root, "test"),
                            transform=v2.Compose([
                                v2.Resize(size=(int(178 * .2), int(218 * .2)), interpolation=InterpolationMode.NEAREST),
-                               v2.Resize(size=(img_size, img_size), interpolation=InterpolationMode.BICUBIC),
+                               v2.Resize(size=(input_size, input_size), interpolation=InterpolationMode.BICUBIC),
                                v2.GaussianBlur(kernel_size=5),
                                v2.PILToTensor(),
                                v2.ToDtype(torch.float32, scale=True),

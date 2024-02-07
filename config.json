@@ -6,7 +6,7 @@
 
     "DATA":
     {
-        "DATASET_NAME": "celeb_A",
+        "DATASET_NAME": "small_celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 96,
@@ -16,20 +16,21 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": false,
-        "SAVE_ALL": false,
-        "RESUME_NAME": "vgg16/epoch_40.pt"
+        "LOAD": true,
+        "SAVE_ALL": true,
+        "RESUME_NAME": "epoch_40.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 10
+        "EPOCHS": 1
     },
 
     "MODEL":
     {
-        "NAME": "vgg16"
+        "NAME": "vgg16_bn",
+        "PRETRAINED": false
     },
 
     "NN":
