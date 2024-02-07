@@ -31,18 +31,26 @@ class Trainer:
             map_location = "cuda" if self.__options.DEVICE.CUDA else "cpu"
             self.__checkpoint = torch.load(f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME), map_location=map_location)
 
-            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, model_state_dict=self.__checkpoint["model_state_dict"], **self.__options.NN)
+            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, model_derivative=self.__options.MODEL.NAME, model_state_dict=self.__checkpoint["model_state_dict"], **self.__options.NN)
 
             self.__optimizer: torch.optim = torch.optim.Adam(params=self.__model.parameters(), **self.__options.OPTIMIZER)
             self.__optimizer.load_state_dict(self.__checkpoint["optimizer_state_dict"])
         else:
-            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, **self.__options.NN)
+            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, model_derivative=self.__options.MODEL.NAME, **self.__options.NN)
 
             self.__optimizer: torch.optim = torch.optim.Adam(self.__model.parameters(), **self.__options.OPTIMIZER)
 
         if not self.__options.CHECKPOINT.SAVE_ALL:
             self.__best_acc: float = self.__get_best_acc()
 
+    # Setter & Getter
+    @property
+    def model(self):
+        return self.__model
+
+    @model.setter
+    def model(self, value):
+        self.__model = value
 
     # Public methods
     def train(self, train_set: DataLoader, validation_set: DataLoader, sleep_time: int, train_loss=None) -> None:

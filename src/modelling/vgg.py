@@ -209,8 +209,16 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_model(cuda: bool, model_state_dict=None, **kwargs):
-    model = vgg16(pretrained=False, **kwargs)
+def get_model(cuda: bool, model_derivative: str, model_state_dict=None, **kwargs):
+    models = {
+        "vgg13": vgg13,
+        "vgg16": vgg16,
+        "vgg19": vgg19,
+        "vgg13_bn": vgg13_bn,
+        "vgg16_bn": vgg16_bn,
+        "vgg19_bn": vgg19_bn,
+    }
+    model = models[model_derivative](pretrained=False, **kwargs)
 
     if model_state_dict:
         print("Loading pretrained model...")

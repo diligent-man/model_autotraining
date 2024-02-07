@@ -1,0 +1,64 @@
+Vgg13
+Total params: 139,965,506
+Trainable params: 139,965,506
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 198.76
+Params size (MB): 533.93
+Estimated Total Size (MB): 733.26
+
+
+Vgg13_bn
+Total params: 139,971,394
+Trainable params: 139,971,394
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 292.16
+Params size (MB): 533.95
+Estimated Total Size (MB): 826.69
+
+
+Vgg16
+Total params: 145,275,202
+Trainable params: 145,275,202
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 218.66
+Params size (MB): 554.18
+Estimated Total Size (MB): 773.42
+
+
+Vgg16_bn
+Total params: 145,283,650
+Trainable params: 145,283,650
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 322.02
+Params size (MB): 554.21
+Estimated Total Size (MB): 876.81
+
+
+Vgg19
+Total params: 150,584,898
+Trainable params: 150,584,898
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 238.57
+Params size (MB): 574.44
+Estimated Total Size (MB): 813.58
+
+
+Vgg19_bn
+Total params: 150,595,906
+Trainable params: 150,595,906
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 351.88
+Params size (MB): 574.48
+Estimated Total Size (MB): 926.93
