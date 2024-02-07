@@ -19,7 +19,7 @@ def main() -> None:
                                                       )
     print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}, Test batch: {len(test_set)}""")
     trainer = Trainer(options=options)
-    trainer.train(train_set, validation_set, sleep_time=60)
+    # trainer.train(train_set, validation_set, sleep_time=60)
 
     # evaluator = Evaluator(options)
     # evaluator.eval(test_set, "best_checkpoint.pt")

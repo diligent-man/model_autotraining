@@ -16,9 +16,9 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": true,
+        "LOAD": false,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_30.pt"
+        "RESUME_NAME": "vgg16/epoch_40.pt"
     },
 
     "EPOCH":
@@ -29,7 +29,7 @@
 
     "MODEL":
     {
-        "NAME": "vgg16_bn"
+        "NAME": "vgg16"
     },
 
     "NN":
@@ -40,8 +40,12 @@
 
     "OPTIMIZER":
     {
-        "lr": 1e-7,
-        "amsgrad": true
+        "NAME":  "Adam",
+        "ARGS":
+        {
+            "lr": 1e-7,
+            "amsgrad": true
+        }
     },
 
     "EARLY_STOPPING":

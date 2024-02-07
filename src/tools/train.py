@@ -5,13 +5,15 @@ from time import time, sleep
 from tqdm import tqdm
 from typing import List
 from src.utils.logger import Logger
-from src.modelling.vgg import get_model
+from src.modelling.vgg import get_vgg_model
 from src.utils.early_stopping import EarlyStopper
 
 import torch
 
 from torch.utils.data import DataLoader
 from torchmetrics.classification import MulticlassF1Score, MulticlassAccuracy
+from torch.optim import Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, \
+    SGD
 
 
 class Trainer:
@@ -29,19 +31,30 @@ class Trainer:
 
         if self.__options.CHECKPOINT.LOAD:
             map_location = "cuda" if self.__options.DEVICE.CUDA else "cpu"
-            self.__checkpoint = torch.load(f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME), map_location=map_location)
+            self.__checkpoint = torch.load(
+                f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME),
+                map_location=map_location)
 
-            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, model_derivative=self.__options.MODEL.NAME, model_state_dict=self.__checkpoint["model_state_dict"], **self.__options.NN)
-
-            self.__optimizer: torch.optim = torch.optim.Adam(params=self.__model.parameters(), **self.__options.OPTIMIZER)
-            self.__optimizer.load_state_dict(self.__checkpoint["optimizer_state_dict"])
+            self.__model: torch.nn.Module = get_vgg_model(cuda=self.__options.DEVICE.CUDA,
+                                                          model_derivative=self.__options.MODEL.NAME,
+                                                          model_state_dict=self.__checkpoint["model_state_dict"],
+                                                          **self.__options.NN)
+            self.__optimizer: torch.optim = self.__init_optimizer(name=self.__options.OPTIMIZER.NAME,
+                                                                  model_paras=self.__model.parameters(),
+                                                                  state_dict=self.__checkpoint["optimizer_state_dict"],
+                                                                  **self.__options.OPTIMIZER.ARGS)
         else:
-            self.__model: torch.nn.Module = get_model(cuda=self.__options.DEVICE.CUDA, model_derivative=self.__options.MODEL.NAME, **self.__options.NN)
-
-            self.__optimizer: torch.optim = torch.optim.Adam(self.__model.parameters(), **self.__options.OPTIMIZER)
+            self.__model: torch.nn.Module = get_vgg_model(cuda=self.__options.DEVICE.CUDA,
+                                                          model_derivative=self.__options.MODEL.NAME,
+                                                          **self.__options.NN)
+            self.__optimizer: torch.optim = self.__init_optimizer(name=self.__options.OPTIMIZER.NAME,
+                                                                  model_paras=self.__model.parameters(),
+                                                                  **self.__options.OPTIMIZER.ARGS)
 
         if not self.__options.CHECKPOINT.SAVE_ALL:
             self.__best_acc: float = self.__get_best_acc()
+
+        print(self.__optimizer)
 
     # Setter & Getter
     @property
@@ -122,7 +135,6 @@ class Trainer:
             sleep(sleep_time)
         return None
 
-
     # Private methods
     def __init_metrics(self) -> List:
         metrics = [
@@ -133,7 +145,6 @@ class Trainer:
         if self.__options.DEVICE.CUDA:
             metrics = [metric.to("cuda") for metric in metrics]
         return metrics
-
 
     def __validate(self, validation_set: DataLoader) -> List:
         self.__model.eval()
@@ -158,7 +169,7 @@ class Trainer:
                     metric.update(predictions, ground_truths)
 
         val_loss /= total_samples
-        return[val_loss.item()] + [metric.compute().item() for metric in val_metrics]
+        return [val_loss.item()] + [metric.compute().item() for metric in val_metrics]
 
     def __get_best_acc(self) -> float:
         if "best_checkpoint.pt" in self.__checkpoint_path:
@@ -166,7 +177,7 @@ class Trainer:
         else:
             return 0.
 
-    def __save_checkpoint(self, epoch: int, train_acc: float, obj: dict, save_all: bool = False,) -> None:
+    def __save_checkpoint(self, epoch: int, train_acc: float, obj: dict, save_all: bool = False, ) -> None:
         """
         save_all:
             True: save all trained epoch
@@ -187,3 +198,29 @@ class Trainer:
                 # Update best accuracy
                 self.__best_acc = train_acc
         return None
+
+    @staticmethod
+    def __init_optimizer(name: str, model_paras, state_dict=None, **kwargs) -> torch.optim:
+        available_optimizers = {
+            "Adam": Adam,
+            "AdamW": AdamW,
+            "NAdam": NAdam,
+            "Adadelta": Adadelta,
+            "Adagrad": Adagrad,
+            "Adamax": Adamax,
+            "RAdam": RAdam,
+            "SparseAdam": SparseAdam,
+            "RMSprop": RMSprop,
+            "Rprop": Rprop,
+            "ASGD": ASGD,
+            "LBFGS": LBFGS,
+            "SGD": SGD
+        }
+        assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
+
+        # init optimizer
+        optimizer = available_optimizers[name](model_paras, **kwargs)
+
+        if state_dict is not None:
+            optimizer = optimizer.load_state_dict(state_dict)
+        return optimizer

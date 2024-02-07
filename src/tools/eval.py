@@ -3,7 +3,7 @@ import os
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
-from src.modelling.vgg import get_model
+from src.modelling.vgg import get_vgg_model
 from sklearn.metrics import precision_recall_curve
 
 import torch

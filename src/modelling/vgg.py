@@ -209,7 +209,7 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_model(cuda: bool, model_derivative: str, model_state_dict=None, **kwargs):
+def get_vgg_model(cuda: bool, model_derivative: str, model_state_dict=None, **kwargs):
     models = {
         "vgg13": vgg13,
         "vgg16": vgg16,
