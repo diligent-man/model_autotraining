@@ -1,0 +1,43 @@
+{
+    "EXPERIMENTS":
+    {
+        "PROJECT_NAME": "face_attribute"
+    },
+
+    "DATA":
+    {
+        "DATASET_NAME": "celeb_A",
+        "INPUT_SHAPE": [224, 224, 3],
+        "BATCH_SIZE": 96,
+        "NUM_WORKERS": 1
+    },
+
+    "METRICS":
+    {
+        "NAME_LIST": ["MulticlassConfusionMatrix"],
+        "ARGS":
+        {
+        }
+    },
+
+    "CHECKPOINT":
+    {
+        "NAME": "best_checkpoint.pt"
+    },
+
+    "MODEL": {
+        "BASE": "vgg",
+        "NAME": "vgg19",
+        "PRETRAINED": false,
+        "ARGS": {
+            "DROPOUT": 0.5,
+            "NUM_CLASSES": 2
+        }
+    },
+
+    "MISC":
+    {
+        "SEED": 12345,
+        "CUDA": true
+    }
+}

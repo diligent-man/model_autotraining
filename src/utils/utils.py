@@ -47,16 +47,16 @@ def json_decoder(document: str, pos=0, decoder=JSONDecoder()):
         yield obj
 
 
-def get_dataset(root: str, input_size: int,
-                train_size: float, batch_size: int,
-                seed: int, cuda: bool, num_workers=1) -> Tuple[DataLoader, DataLoader, DataLoader]:
+def get_train_set(root: str, input_size: int,
+                  train_size: float, batch_size: int,
+                  seed: int, cuda: bool, num_workers=1
+                  ) -> Tuple[DataLoader, DataLoader]:
     # img -- reduce to 20% --> upsample to 224x224 -> Blur with ksize (10, 10)
     # Make female samples equal male
 
     # Use page-locked or not
     pin_memory = True if cuda is True else False
 
-    # Train & Validation
     train_set = ImageFolder(root=os.path.join(root, "train"),
                             transform=v2.Compose([
                                 # img from celeb A: 178 x 218 x 3
@@ -88,13 +88,19 @@ def get_dataset(root: str, input_size: int,
                                 num_workers=num_workers,
                                 pin_memory=pin_memory
                                 )
+    return train_set, validation_set
 
-    # Test
+
+def get_test_set(root: str, input_size: int, batch_size: int, seed: int, cuda: bool, num_workers=1) -> DataLoader:
+    # img -- reduce to 20% --> upsample to 224x224 -> Blur with ksize (10, 10)
+    # Make female samples equal male
+
+    # Use page-locked or not
+    pin_memory = True if cuda is True else False
+
     test_set = ImageFolder(root=os.path.join(root, "test"),
                            transform=v2.Compose([
-                               v2.Resize(size=(int(178 * .2), int(218 * .2)), interpolation=InterpolationMode.NEAREST),
                                v2.Resize(size=(input_size, input_size), interpolation=InterpolationMode.BICUBIC),
-                               v2.GaussianBlur(kernel_size=5),
                                v2.PILToTensor(),
                                v2.ToDtype(torch.float32, scale=True),
                                v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -106,7 +112,7 @@ def get_dataset(root: str, input_size: int,
                           num_workers=num_workers,
                           pin_memory=pin_memory
                           )
-    return train_set, validation_set, test_set
+    return test_set
 
 
 def get_model_summary(model: torch.nn.Module, input_size: Tuple):

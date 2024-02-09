@@ -1,9 +1,9 @@
 import os
 
 from box import Box
-from time import time, sleep
 from tqdm import tqdm
-from typing import List
+from time import time, sleep
+from typing import List, Tuple
 from src.utils.logger import Logger
 from src.modelling.vgg import get_vgg_model
 from src.modelling.resnet import get_resnet_model
@@ -12,57 +12,40 @@ from src.utils.early_stopping import EarlyStopper
 import torch
 
 from torch.utils.data import DataLoader
-from torchmetrics.classification import MulticlassF1Score, MulticlassAccuracy
-from torch.optim import Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, SGD
+from torcheval.metrics import MulticlassF1Score, MulticlassAccuracy
+from torch.optim import (Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, SGD)
+from torch.nn.modules import (NLLLoss, NLLLoss2d, CTCLoss, KLDivLoss, GaussianNLLLoss, PoissonNLLLoss, L1Loss, MSELoss, HuberLoss, SmoothL1Loss, CrossEntropyLoss, BCELoss, BCEWithLogitsLoss)
 
 
 class Trainer:
+    __options: Box
+    __log_path: str
+    __checkpoint_path: str
+    __early_stopper: EarlyStopper
+    __train_loss: torch.nn.Module
+    __metrics: List
+    __start_epoch: int
+    __model: torch.nn.Module
+    __optimizer: torch.optim.Optimizer
+    __best_acc: float
+
     def __init__(self, options: Box, log_path: str, checkpoint_path: str):
-        self.__options: Box = options
-        self.__log_path: str = log_path
-        self.__checkpoint_path: str = checkpoint_path
+        self.__options = options
+        self.__log_path = log_path
+        self.__checkpoint_path = checkpoint_path
 
-        self.__metrics: List = self.__init_metrics()
-        self.__early_stopper = EarlyStopper(**self.__options.EARLY_STOPPING)
-        self.__train_loss: torch.nn = torch.nn.CrossEntropyLoss()
-
-        if self.__options.CHECKPOINT.LOAD:
-            map_location = "cuda" if self.__options.DEVICE.CUDA else "cpu"
-            self.__checkpoint = torch.load(
-                f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME),
-                map_location=map_location)
-
-            self.__model: torch.nn.Module = self.__init_model(cuda=self.__options.DEVICE.CUDA,
-                                                              pretrained=self.__options.MODEL.PRETRAINED,
-                                                              name=self.__options.MODEL.NAME,
-                                                              state_dict=self.__checkpoint["model_state_dict"],
-                                                              **self.__options.NN)
-
-            self.__optimizer: torch.optim = self.__init_optimizer(name=self.__options.OPTIMIZER.NAME,
-                                                                  model_paras=self.__model.parameters(),
-                                                                  state_dict=self.__checkpoint["optimizer_state_dict"],
-                                                                  **self.__options.OPTIMIZER.ARGS)
-        else:
-            self.__model: torch.nn.Module = self.__init_model(cuda=self.__options.DEVICE.CUDA,
-                                                              pretrained=self.__options.MODEL.PRETRAINED,
-                                                              name=self.__options.MODEL.NAME,
-                                                              **self.__options.NN)
-            self.__optimizer: torch.optim = self.__init_optimizer(name=self.__options.OPTIMIZER.NAME,
-                                                                  model_paras=self.__model.parameters(),
-                                                                  **self.__options.OPTIMIZER.ARGS)
+        self.__early_stopper = EarlyStopper(**self.__options.SOLVER.EARLY_STOPPING)
+        self.__train_loss = self.__init_loss()
+        self.__metrics = self.__init_metrics()
+        self.__start_epoch, self.__model, self.__optimizer = self.__init_model_optimizer_epoch()
 
         if not self.__options.CHECKPOINT.SAVE_ALL:
             self.__best_acc: float = self.__get_best_acc()
-
 
     # Setter & Getter
     @property
     def model(self):
         return self.__model
-
-    @model.setter
-    def model(self, value):
-        self.__model = value
 
     # Public methods
     def train(self, train_set: DataLoader, validation_set: DataLoader, sleep_time: int = None) -> None:
@@ -73,8 +56,7 @@ class Trainer:
         logger = Logger(log_path=self.__log_path)
 
         # Start training
-        start_epoch = self.__checkpoint["epoch"] + 1 if self.__options.CHECKPOINT.LOAD else self.__options.EPOCH.START
-        for epoch in range(start_epoch, start_epoch + self.__options.EPOCH.EPOCHS):
+        for epoch in range(self.__start_epoch, self.__start_epoch + self.__options.EPOCH.EPOCHS):
             print("Epoch:", epoch)
             start_time = time()
 
@@ -82,7 +64,7 @@ class Trainer:
                 imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
 
                 # Pass to predefined device
-                if self.__options.DEVICE.CUDA:
+                if self.__options.MISC.CUDA:
                     imgs = imgs.to("cuda")
                     ground_truths = ground_truths.to("cuda")
 
@@ -138,26 +120,16 @@ class Trainer:
         return None
 
     # Private methods
-    def __init_metrics(self) -> List:
-        metrics = [
-            MulticlassAccuracy(num_classes=self.__options.NN.NUM_CLASSES),
-            MulticlassF1Score(num_classes=self.__options.NN.NUM_CLASSES)
-        ]
-
-        if self.__options.DEVICE.CUDA:
-            metrics = [metric.to("cuda") for metric in metrics]
-        return metrics
-
     def __validate(self, validation_set: DataLoader) -> List:
         self.__model.eval()
-        val_metrics = self.__init_metrics()
         val_loss = total_samples = 0
+        val_metrics = self.__init_metrics()
 
         with torch.no_grad():
             for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Validating"):
                 imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
 
-                if self.__options.DEVICE.CUDA:
+                if self.__options.MISC.CUDA:
                     imgs = imgs.to("cuda")
                     ground_truths = ground_truths.to("cuda")
 
@@ -173,13 +145,7 @@ class Trainer:
         val_loss /= total_samples
         return [val_loss.item()] + [metric.compute().item() for metric in val_metrics]
 
-    def __get_best_acc(self) -> float:
-        if "best_checkpoint.pt" in self.__checkpoint_path:
-            return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["train_acc"]
-        else:
-            return 0.
-
-    def __save_checkpoint(self, epoch: int, train_acc: float, obj: dict, save_all: bool = False, ) -> None:
+    def __save_checkpoint(self, epoch: int, train_acc: float, obj: dict, save_all: bool = False) -> None:
         """
         save_all:
             True: save all trained epoch
@@ -201,43 +167,100 @@ class Trainer:
                 self.__best_acc = train_acc
         return None
 
-    @staticmethod
-    def __init_model(cuda: bool, pretrained: bool, name: str, state_dict: dict, **kwargs) -> torch.nn.Module:
-        available_models = {
-            "vgg": get_vgg_model,
-            "resnet": get_resnet_model
+    def __get_best_acc(self) -> float:
+        if "best_checkpoint.pt" in self.__checkpoint_path:
+            return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["train_acc"]
+        else:
+            return 0.
+
+    def __init_model_optimizer_epoch(self) -> Tuple[int, torch.nn.Module, torch.optim.Optimizer]:
+        def init_optimizer(name: str, model_paras, state_dict=None, **kwargs) -> torch.optim.Optimizer:
+            available_optimizers = {
+                "Adam": Adam,
+                "AdamW": AdamW,
+                "NAdam": NAdam,
+                "Adadelta": Adadelta,
+                "Adagrad": Adagrad,
+                "Adamax": Adamax,
+                "RAdam": RAdam,
+                "SparseAdam": SparseAdam,
+                "RMSprop": RMSprop,
+                "Rprop": Rprop,
+                "ASGD": ASGD,
+                "LBFGS": LBFGS,
+                "SGD": SGD
+            }
+            assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
+
+            # init optimizer
+            optimizer = available_optimizers[name](model_paras, **kwargs)
+
+            if state_dict is not None:
+                optimizer.load_state_dict(state_dict)
+            return optimizer
+
+        def init_model(cuda: bool, pretrained: bool, base: str, name: str, state_dict: dict, **kwargs) -> torch.nn.Module:
+            available_bases = {
+                "vgg": get_vgg_model,
+                "resnet": get_resnet_model
+            }
+            assert base in available_bases.keys(), "Your selected base is unavailable"
+            return available_bases[base](cuda, pretrained, name, state_dict, **kwargs)
+
+
+        model_state_dict = None
+        optimizer_state_dict = None
+        start_epoch = self.__options.EPOCH.START
+
+
+        if self.__options.CHECKPOINT.LOAD:
+            map_location = "cuda" if self.__options.MISC.CUDA else "cpu"
+            checkpoint = torch.load(f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME),
+                                    map_location=map_location)
+            start_epoch = checkpoint["epoch"] + 1
+            model_state_dict = checkpoint["model_state_dict"]
+            optimizer_state_dict = checkpoint["optimizer_state_dict"]
+
+
+        model: torch.nn.Module = init_model(cuda=self.__options.MISC.CUDA,
+                                            pretrained=self.__options.SOLVER.MODEL.PRETRAINED,
+                                            base=self.__options.SOLVER.MODEL.BASE,
+                                            name=self.__options.SOLVER.MODEL.NAME,
+                                            state_dict=model_state_dict,
+                                            **self.__options.SOLVER.MODEL.ARGS)
+
+        optimizer: torch.optim.Optimizer = init_optimizer(name=self.__options.SOLVER.OPTIMIZER.NAME,
+                                                          model_paras=model.parameters(),
+                                                          state_dict=optimizer_state_dict,
+                                                          **self.__options.SOLVER.OPTIMIZER.ARGS)
+        return start_epoch, model, optimizer
+
+    def __init_metrics(self) -> List:
+        available_metrics = {
+            "MulticlassAccuracy": MulticlassAccuracy,
+            "MulticlassF1Score": MulticlassF1Score
         }
-        selected_model = None
 
-        for model in available_models.keys():
-            if model in name:
-                selected_model = available_models[model](cuda, pretrained, name, state_dict, **kwargs)
+        # check whether metrics available or not
+        for metric in self.__options.METRICS.NAME_LIST:
+            assert metric in available_metrics.keys(), "Your selected metric is unavailable"
 
-        assert selected_model is not None, "Your selected model is unavailable"
-        return selected_model
+        metrics = []
+        for i in range(len(self.__options.METRICS.NAME_LIST)):
+            metrics.append(available_metrics[self.__options.METRICS.NAME_LIST[i]](**self.__options.METRICS.ARGS[str(i)]))
 
-    @staticmethod
-    def __init_optimizer(name: str, model_paras, state_dict=None, **kwargs) -> torch.optim:
-        available_optimizers = {
-            "Adam": Adam,
-            "AdamW": AdamW,
-            "NAdam": NAdam,
-            "Adadelta": Adadelta,
-            "Adagrad": Adagrad,
-            "Adamax": Adamax,
-            "RAdam": RAdam,
-            "SparseAdam": SparseAdam,
-            "RMSprop": RMSprop,
-            "Rprop": Rprop,
-            "ASGD": ASGD,
-            "LBFGS": LBFGS,
-            "SGD": SGD
+        if self.__options.MISC.CUDA:
+            metrics = [metric.to("cuda") for metric in metrics]
+        return metrics
+
+
+    def __init_loss(self):
+        available_loss = {
+            "NLLLoss": NLLLoss, "NLLLoss2d": NLLLoss2d,
+            "CTCLoss": CTCLoss, "KLDivLoss": KLDivLoss,
+            "GaussianNLLLoss": GaussianNLLLoss, "PoissonNLLLoss": PoissonNLLLoss,
+            "CrossEntropyLoss": CrossEntropyLoss, "BCELoss": BCELoss, "BCEWithLogitsLoss": BCEWithLogitsLoss,
+            "L1Loss": L1Loss, "MSELoss": MSELoss, "HuberLoss": HuberLoss, "SmoothL1Loss": SmoothL1Loss,
         }
-        assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
-
-        # init optimizer
-        optimizer = available_optimizers[name](model_paras, **kwargs)
-
-        if state_dict is not None:
-            optimizer.load_state_dict(state_dict)
-        return optimizer
+        assert self.__options.SOLVER.LOSS.NAME in available_loss.keys(), "Your selected loss function is unavailable"
+        return available_loss[self.__options.SOLVER.LOSS.NAME](** self.__options.SOLVER.LOSS.ARGS)
