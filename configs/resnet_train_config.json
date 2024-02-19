@@ -9,12 +9,8 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        // Gpu with 16Gb RAM
-        // 560: Resnet18
-        // 320: Resnet34
-        // 164: Resnet50
-        "BATCH_SIZE": 560,
-        "NUM_WORKERS": 4
+        "BATCH_SIZE": 96,
+        "NUM_WORKERS": 8
     },
 
     "CHECKPOINT":
@@ -28,7 +24,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 5
+        "EPOCHS": 40
     },
 
     "METRICS":
@@ -57,7 +53,7 @@
         "MODEL":
         {
             "BASE": "resnet",
-            "NAME": "resnet18",
+            "NAME": "resnet34",
             "PRETRAINED": false,
             "ARGS":
             {
