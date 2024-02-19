@@ -1,19 +1,22 @@
 import os
+import commentjson
 
 from box import Box
-from torch.utils.data import DataLoader
-
 from src.tools.train import Trainer
 from src.tools.eval import Evaluator
 from src.tools.visualization import training_visualization
-from src.utils.utils import json_decoder, get_train_set, get_test_set, get_model_summary
+from src.utils.utils import get_train_set, get_test_set, get_model_summary
 
 
 def train(option_path: str) -> None:
     # Load dataset
-    options = Box(next(iter(json_decoder(open(option_path).read()))))
+    options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
     log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_training_log.json")
     checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)
+
+    if not os.path.isdir(checkpoint_path):
+        os.mkdir(path=checkpoint_path, mode=0x777)
+        print(f"directory checkpoint for {options.SOLVER.MODEL.NAME} is created.")
 
     train_set, validation_set = get_train_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
                                               input_size=options.DATA.INPUT_SHAPE[0],
@@ -29,9 +32,9 @@ def train(option_path: str) -> None:
 
 
 def evaluate(option_path: str) -> None:
-    options = Box(next(iter(json_decoder(open(option_path).read()))))
-    log_path = os.path.join(os.getcwd(), "logs", f"{options.MODEL.NAME}_eval_log.json")
-    checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.MODEL.NAME)
+    options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
+    log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_eval_log.json")
+    checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)
 
     test_set = get_test_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
                             input_size=options.DATA.INPUT_SHAPE[0],
@@ -46,12 +49,14 @@ def evaluate(option_path: str) -> None:
 
 
 def main() -> None:
-    train(option_path=os.path.join(os.getcwd(), "configs", "train_config.json"))
+    train(option_path=os.path.join(os.getcwd(), "configs", "resnet_train_config.json"))
     # evaluate(option_path=os.path.join(os.getcwd(), "configs", "eval_config.json"))
-
-
-
+    
     # training_visualization(file_name="training_log.json", metrics_lst=["loss", "acc", "f1"], x_interval=2)
+
+    # To-do list
+    # Model evaluator
+    # Visualization
     return None
 
 

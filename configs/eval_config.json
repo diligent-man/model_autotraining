@@ -6,7 +6,7 @@
 
     "DATA":
     {
-        "DATASET_NAME": "celeb_A",
+        "DATASET_NAME": "small_celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "BATCH_SIZE": 96,
         "NUM_WORKERS": 1
@@ -14,10 +14,10 @@
 
     "METRICS":
     {
-        "NAME_LIST": ["MulticlassConfusionMatrix"],
-        "ARGS":
-        {
-        }
+        "task":"multiclass",
+        "num_classes": 2,
+        "thresholds": 10,
+        "average": "macro"
     },
 
     "CHECKPOINT":
@@ -25,11 +25,13 @@
         "NAME": "best_checkpoint.pt"
     },
 
-    "MODEL": {
+    "MODEL":
+    {
         "BASE": "vgg",
         "NAME": "vgg19",
         "PRETRAINED": false,
-        "ARGS": {
+        "ARGS":
+        {
             "DROPOUT": 0.5,
             "NUM_CLASSES": 2
         }

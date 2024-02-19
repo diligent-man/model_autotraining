@@ -1,10 +1,11 @@
 import os
+import json
 import shutil
 import matplotlib
 
 from typing import List
 from matplotlib import pyplot as plt
-from src.utils.utils import json_decoder
+
 
 matplotlib.use('TkAgg')
 # print(matplotlib.get_backend())
@@ -19,7 +20,7 @@ def training_visualization(file_name: str, metrics_lst: List[str], x_interval=2)
         os.mkdir(os.path.join(os.getcwd(), "report"), mode=0x777)
 
     # Retrieve metrics from training log
-    f = json_decoder(open(os.path.join(os.getcwd(), "logs", file_name)).read())
+    f = json.loads(open(os.path.join(os.getcwd(), "logs", file_name)).read())
     metrics_dict = {}
 
     for json_obj in f:

@@ -1,8 +1,6 @@
 import os
-import re
 
 from typing import Tuple
-from json import JSONDecoder, JSONDecodeError
 
 import torch
 
@@ -11,40 +9,6 @@ from torchvision.transforms import v2
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import InterpolationMode
 from torch.utils.data import DataLoader, random_split
-
-NOT_WHITESPACE = re.compile(r'\S')
-
-
-def json_decoder(document: str, pos=0, decoder=JSONDecoder()):
-    """
-    Acceptable format for document:
-        a/ Format 1: Single json obj
-            '''{obj}'''
-        b/ Format 2: Multiple json objs
-            '''{obj_1},
-               {obj_2},
-               {obj_3}
-            '''
-        c/ Format 2: List of Single or Multiple json objs
-            '''
-            [{obj_1},
-               {obj_2},
-               {obj_3}]
-            '''
-    """
-    while True:
-        match = NOT_WHITESPACE.search(document, pos)
-        if not match:
-            return
-        pos = match.start()
-
-        try:
-            obj, pos = decoder.raw_decode(document, pos)
-        except JSONDecodeError as e:
-            print(e)
-            # do something sensible if there's some error
-            raise
-        yield obj
 
 
 def get_train_set(root: str, input_size: int,

@@ -28,31 +28,31 @@ cfg = {
 
 
 class VGG(nn.Module):
-    def __init__(self, features, DROPOUT=.5, NUM_CLASSES=1000, init_weights=True):
+    def __init__(self, features, dropout=.5, num_classes=1000, init_weights=True):
         super(VGG, self).__init__()
         self.features = features
         self.classifier = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),
             nn.ReLU(True),
-            nn.Dropout(DROPOUT),
+            nn.Dropout(dropout),
 
             nn.Linear(4096, 4096),
             nn.ReLU(True),
-            nn.Dropout(DROPOUT),
+            nn.Dropout(dropout),
 
             nn.Linear(4096, 2048),
             nn.ReLU(True),
-            nn.Dropout(DROPOUT),
+            nn.Dropout(dropout),
 
             nn.Linear(2048, 1024),
             nn.ReLU(True),
-            nn.Dropout(DROPOUT),
+            nn.Dropout(dropout),
 
             nn.Linear(1024, 512),
             nn.ReLU(True),
-            nn.Dropout(DROPOUT),
+            nn.Dropout(dropout),
 
-            nn.Linear(512, NUM_CLASSES),
+            nn.Linear(512, num_classes),
             nn.Softmax(dim=1)
         )
         if init_weights:
@@ -209,7 +209,7 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_vgg_model(cuda: bool, pretrained: bool, name: str, model_state_dict=None, **kwargs):
+def get_vgg_model(cuda: bool, name: str, pretrained: bool = True, model_state_dict: dict = None, **kwargs):
     models = {
         "vgg13": vgg13,
         "vgg16": vgg16,

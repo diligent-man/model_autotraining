@@ -53,7 +53,7 @@ class Trainer:
         self.__model.train()
 
         train_loss = None
-        logger = Logger(log_path=self.__log_path)
+        logger = Logger(log_path=self.__log_path, )
 
         # Start training
         for epoch in range(self.__start_epoch, self.__start_epoch + self.__options.EPOCH.EPOCHS):
@@ -95,7 +95,8 @@ class Trainer:
                     break
 
             # Logging
-            logger.write(**{"epoch": epoch, "time per epoch": time() - start_time,
+            logger.write(writing_mode="a",
+                         **{"epoch": epoch, "time per epoch": time() - start_time,
                             "train_loss": train_loss.item(), "train_acc": train_acc, "train_f1": train_f1,
                             "val_loss": val_loss, "val_acc": val_acc, "val_f1": val_f1
                             }
@@ -205,13 +206,12 @@ class Trainer:
                 "resnet": get_resnet_model
             }
             assert base in available_bases.keys(), "Your selected base is unavailable"
-            return available_bases[base](cuda, pretrained, name, state_dict, **kwargs)
+            return available_bases[base](cuda, name, pretrained, state_dict, **kwargs)
 
 
         model_state_dict = None
         optimizer_state_dict = None
         start_epoch = self.__options.EPOCH.START
-
 
         if self.__options.CHECKPOINT.LOAD:
             map_location = "cuda" if self.__options.MISC.CUDA else "cpu"

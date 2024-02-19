@@ -176,6 +176,7 @@ class ResNet(nn.Module):
         replace_stride_with_dilation: Optional[List[bool]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
     ) -> None:
+
         super().__init__()
         _log_api_usage_once(self)
         if norm_layer is None:
@@ -279,7 +280,6 @@ class ResNet(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
-
         return x
 
     def forward(self, x: Tensor) -> Tensor:
@@ -987,7 +987,7 @@ def wide_resnet101_2(
 
 
 
-def get_resnet_model(cuda: bool, pretrained: bool, model_derivative: str, model_state_dict=None, **kwargs):
+def get_resnet_model(cuda: bool, model_derivative: str, pretrained: bool = True, model_state_dict: dict = None, **kwargs):
     models = {
         "resnet18": resnet18,
         "resnet34": resnet34,
@@ -995,9 +995,9 @@ def get_resnet_model(cuda: bool, pretrained: bool, model_derivative: str, model_
         "resnet101": resnet101,
         "resnet152": resnet152
     }
-    assert model_derivative in models.keys(), "Your selected vgg model derivative is unavailable"
+    assert model_derivative in models.keys(), "Your selected resnet model derivative is unavailable"
 
-    model = models[model_derivative](pretrained=pretrained, **kwargs)
+    model = models[model_derivative](weights='ResNet50_Weights.DEFAULT', **kwargs) if pretrained else models[model_derivative](**kwargs)
 
     if model_state_dict:
         print("Loading pretrained model...")
