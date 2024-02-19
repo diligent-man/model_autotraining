@@ -24,7 +24,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 40
+        "EPOCHS": 10
     },
 
     "METRICS":
@@ -53,7 +53,7 @@
         "MODEL":
         {
             "BASE": "resnet",
-            "NAME": "resnet34",
+            "NAME": "resnet18",
             "PRETRAINED": false,
             "ARGS":
             {
@@ -66,10 +66,10 @@
             "NAME": "SGD",
             "ARGS":
             {
-                "lr": 1e-3,
+                "lr": 1e-4,
                 "momentum": 0.875,
                 "weight_decay": 3.0517578125e-05, // 1/32768
-                "nesterov": false
+                "nesterov": true
             }
         },
 

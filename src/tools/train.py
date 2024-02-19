@@ -69,17 +69,19 @@ class Trainer:
                     ground_truths = ground_truths.to("cuda")
 
                 # forward pass
-                predictions = self.__model(imgs)
+                predictions = torch.nn.functional.sigmoid(self.__model(imgs))
+
+                # Update loss
                 train_loss = self.__train_loss(predictions, ground_truths)
 
-                # backprop
+                # Backprop
                 self.__optimizer.zero_grad()
                 train_loss.backward()
 
-                # updating weights
+                # Update weights
                 self.__optimizer.step()
 
-                # update metrics
+                # Update metrics
                 for metric in self.__metrics:
                     metric.update(predictions, ground_truths)
 
@@ -135,7 +137,7 @@ class Trainer:
                     ground_truths = ground_truths.to("cuda")
 
                 # forward pass
-                predictions = self.__model(imgs)
+                predictions = torch.nn.functional.sigmoid(self.__model(imgs))
                 val_loss += torch.nn.CrossEntropyLoss()(predictions, ground_truths) * imgs.size(0)
                 total_samples += imgs.size(0)
 

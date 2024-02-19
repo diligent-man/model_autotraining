@@ -52,8 +52,7 @@ class VGG(nn.Module):
             nn.ReLU(True),
             nn.Dropout(dropout),
 
-            nn.Linear(512, num_classes),
-            nn.Softmax(dim=1)
+            nn.Linear(512, num_classes)
         )
         if init_weights:
             self._initialize_weights()
