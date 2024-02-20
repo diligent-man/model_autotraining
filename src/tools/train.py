@@ -54,7 +54,7 @@ class Trainer:
         self.__model.train()
 
         train_loss = None
-        logger = Logger(log_path=self.__log_path, )
+        logger = Logger(log_path=self.__log_path)
 
         # Start training
         for epoch in range(self.__start_epoch, self.__start_epoch + self.__options.EPOCH.EPOCHS):

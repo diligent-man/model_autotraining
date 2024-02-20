@@ -49,7 +49,7 @@ def evaluate(option_path: str) -> None:
 
 
 def main() -> None:
-    train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
+    train(option_path=os.path.join(os.getcwd(), "configs", "resnet_train_config.json"))
     # evaluate(option_path=os.path.join(os.getcwd(), "configs", "eval_config.json"))
     
     # training_visualization(file_name="training_log.json", metrics_lst=["loss", "acc", "f1"], x_interval=2)
