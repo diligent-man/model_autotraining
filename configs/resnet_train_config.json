@@ -9,7 +9,7 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 96,
+        "BATCH_SIZE": 344,
         "NUM_WORKERS": 8
     },
 
@@ -24,7 +24,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 10
+        "EPOCHS": 5
     },
 
     "METRICS":
@@ -42,7 +42,7 @@
             "1":
             {
                 "average": "micro",
-                "num_classes": 2
+                "num_classes": 1
             }
         }
     },
@@ -57,19 +57,18 @@
             "PRETRAINED": false,
             "ARGS":
             {
-                "num_classes": 2
+                "num_classes": 1
             }
         },
 
         "OPTIMIZER":
         {
-            "NAME": "SGD",
+            "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-4,
-                "momentum": 0.875,
+                "lr": 1e-2,
                 "weight_decay": 3.0517578125e-05, // 1/32768
-                "nesterov": true
+                "amsgrad": true
             }
         },
 

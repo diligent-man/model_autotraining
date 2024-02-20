@@ -1,5 +1,6 @@
 import os
 
+import torchvision.utils
 from box import Box
 from tqdm import tqdm
 from time import time, sleep
@@ -12,7 +13,7 @@ from src.utils.early_stopping import EarlyStopper
 import torch
 
 from torch.utils.data import DataLoader
-from torcheval.metrics import MulticlassF1Score, MulticlassAccuracy
+from torcheval.metrics import MulticlassF1Score, BinaryF1Score, MulticlassAccuracy, BinaryAccuracy
 from torch.optim import (Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, SGD)
 from torch.nn.modules import (NLLLoss, NLLLoss2d, CTCLoss, KLDivLoss, GaussianNLLLoss, PoissonNLLLoss, L1Loss, MSELoss, HuberLoss, SmoothL1Loss, CrossEntropyLoss, BCELoss, BCEWithLogitsLoss)
 
@@ -61,7 +62,7 @@ class Trainer:
             start_time = time()
 
             for index, batch in tqdm(enumerate(train_set), total=len(train_set), colour="cyan", desc="Training"):
-                imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
+                imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1].type(torch.FloatTensor)
 
                 # Pass to predefined device
                 if self.__options.MISC.CUDA:
@@ -69,7 +70,13 @@ class Trainer:
                     ground_truths = ground_truths.to("cuda")
 
                 # forward pass
-                predictions = torch.nn.functional.sigmoid(self.__model(imgs))
+                if self.__options.SOLVER.MODEL.ARGS.num_classes == 1:
+                    predictions = torch.nn.functional.sigmoid(self.__model(imgs))
+                elif self.__options.SOLVER.MODEL.ARGS.num_classes > 1:
+                    predictions = torch.nn.functional.softmax(self.__model(imgs))
+
+                if predictions.shape[1] == 1:
+                    predictions = predictions.squeeze(1)
 
                 # Update loss
                 train_loss = self.__train_loss(predictions, ground_truths)
@@ -84,6 +91,7 @@ class Trainer:
                 # Update metrics
                 for metric in self.__metrics:
                     metric.update(predictions, ground_truths)
+
 
             # Training metrics
             train_acc, train_f1 = [metric.compute().item() for metric in self.__metrics]
@@ -130,15 +138,22 @@ class Trainer:
 
         with torch.no_grad():
             for index, batch in tqdm(enumerate(validation_set), total=len(validation_set), desc="Validating"):
-                imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1]
+                imgs, ground_truths = batch[0].type(torch.FloatTensor), batch[1].type(torch.FloatTensor)
 
                 if self.__options.MISC.CUDA:
                     imgs = imgs.to("cuda")
                     ground_truths = ground_truths.to("cuda")
 
                 # forward pass
-                predictions = torch.nn.functional.sigmoid(self.__model(imgs))
-                val_loss += torch.nn.CrossEntropyLoss()(predictions, ground_truths) * imgs.size(0)
+                if self.__options.SOLVER.MODEL.ARGS.num_classes == 1:
+                    predictions = torch.nn.functional.sigmoid(self.__model(imgs))
+                elif self.__options.SOLVER.MODEL.ARGS.num_classes > 1:
+                    predictions = torch.nn.functional.softmax(self.__model(imgs))
+
+                if predictions.shape[1] == 1:
+                    predictions = predictions.squeeze(1)
+
+                val_loss += self.__init_loss()(predictions, ground_truths) * imgs.size(0)
                 total_samples += imgs.size(0)
 
                 # update metrics
@@ -223,7 +238,6 @@ class Trainer:
             model_state_dict = checkpoint["model_state_dict"]
             optimizer_state_dict = checkpoint["optimizer_state_dict"]
 
-
         model: torch.nn.Module = init_model(cuda=self.__options.MISC.CUDA,
                                             pretrained=self.__options.SOLVER.MODEL.PRETRAINED,
                                             base=self.__options.SOLVER.MODEL.BASE,
@@ -239,6 +253,9 @@ class Trainer:
 
     def __init_metrics(self) -> List:
         available_metrics = {
+            "BinaryAccuracy": BinaryAccuracy,
+            "BinaryF1Score": BinaryF1Score,
+
             "MulticlassAccuracy": MulticlassAccuracy,
             "MulticlassF1Score": MulticlassF1Score
         }

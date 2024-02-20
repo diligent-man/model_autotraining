@@ -7,16 +7,16 @@
 
     "DATA":
     {
-        "DATASET_NAME": "small_celeb_A",
+        "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 96,
+        "BATCH_SIZE": 80,
         "NUM_WORKERS": 4
     },
 
     "CHECKPOINT":
     {
-        "SAVE": false,
+        "SAVE": true,
         "LOAD": false,
         "SAVE_ALL": false,
         "RESUME_NAME": "epoch_1.pt"
@@ -25,25 +25,22 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 1
+        "EPOCHS": 50
     },
 
     "METRICS":
     {
-        "NAME_LIST": ["MulticlassAccuracy", "MulticlassF1Score"],
+        "NAME_LIST": ["BinaryAccuracy", "BinaryF1Score"],
         "ARGS":
         {
             "0":
             {
-                "average": "micro",
-                "num_classes": null,
-                "k": 1
+               "threshold": 0.5
             },
 
             "1":
             {
-                "average": "micro",
-                "num_classes": 2
+               "threshold": 0.5
             }
         }
     },
@@ -53,12 +50,12 @@
         "MODEL":
         {
             "BASE": "vgg",
-            "NAME": "vgg19",
+            "NAME": "vgg16",
             "PRETRAINED": false,
             "ARGS":
             {
                 "dropout": 0.5,
-                "num_classes": 2
+                "num_classes": 1
             }
         },
 
@@ -74,11 +71,10 @@
 
         "LOSS":
         {
-            "NAME": "CrossEntropyLoss",
+            "NAME": "BCELoss",
             "ARGS":
             {
-                "reduction": "mean",
-                "label_smoothing": 0.0
+                "reduction": "mean"
             }
         },
 
