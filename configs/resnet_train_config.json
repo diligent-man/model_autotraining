@@ -9,8 +9,8 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 32,
-        "NUM_WORKERS": 1
+        "BATCH_SIZE": 64,
+        "NUM_WORKERS": 4
     },
 
     "CHECKPOINT":
@@ -24,7 +24,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 5
+        "EPOCHS": 30
     },
 
     "METRICS":
@@ -50,7 +50,7 @@
         "MODEL":
         {
             "BASE": "resnet",
-            "NAME": "resnet18",
+            "NAME": "resnet34",
             "PRETRAINED": false,
             "ARGS":
             {

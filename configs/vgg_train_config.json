@@ -21,13 +21,13 @@
         "SAVE": true,
         "LOAD": true,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_41.pt"
+        "RESUME_NAME": "epoch_26.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 9
+        "EPOCHS": 24
     },
 
     "METRICS":
@@ -52,7 +52,7 @@
         "MODEL":
         {
             "BASE": "vgg",
-            "NAME": "vgg16",
+            "NAME": "vgg19",
             "PRETRAINED": false,
             "ARGS":
             {

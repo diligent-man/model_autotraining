@@ -1,6 +1,5 @@
 import os
 import json
-import shutil
 import matplotlib
 
 from typing import List
@@ -13,14 +12,15 @@ matplotlib.use('TkAgg')
 # print(matplotlib.get_backend())
 
 
-def training_visualization(file_name: str, base_name: str, metrics_lst: List[str], x_interval=2, y_interval=0.1):
+def training_log_visualization(file_name: str, base_name: str, metrics_lst: List[str], x_interval=2, y_interval=0.1):
     report_path = os.path.join(os.getcwd(), "report", base_name)
     log_path = os.path.join(os.getcwd(), "logs", file_name)
 
     os.makedirs(report_path, mode=0x777, exist_ok=True)
 
-    # Retrieve metrics from training log
-    f = json.loads(open(log_path).read())
+    # Retrieve metrics from training log (ignore last line and last comma)
+    f = json.loads("[" + open(log_path).read()[:-2] + "]")
+
     metrics_dict = {}
 
     for json_obj in f:
