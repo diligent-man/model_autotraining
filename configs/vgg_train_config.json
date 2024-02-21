@@ -10,22 +10,24 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 80,
+        "BATCH_SIZE": 16,
+        // 80 - 13p29
+        // 16 - 40p
         "NUM_WORKERS": 4
     },
 
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": false,
+        "LOAD": true,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_1.pt"
+        "RESUME_NAME": "epoch_41.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 50
+        "EPOCHS": 9
     },
 
     "METRICS":

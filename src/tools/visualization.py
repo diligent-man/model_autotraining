@@ -4,6 +4,8 @@ import shutil
 import matplotlib
 
 from typing import List
+
+import numpy as np
 from matplotlib import pyplot as plt
 
 
@@ -11,16 +13,14 @@ matplotlib.use('TkAgg')
 # print(matplotlib.get_backend())
 
 
-def training_visualization(file_name: str, metrics_lst: List[str], x_interval=2):
-    # remove existing dir
-    if os.path.exists(os.path.join(os.getcwd(), "report")):
-        shutil.rmtree(os.path.join(os.getcwd(), "report"))
-        os.mkdir(os.path.join(os.getcwd(), "report"), mode=0x777)
-    else:
-        os.mkdir(os.path.join(os.getcwd(), "report"), mode=0x777)
+def training_visualization(file_name: str, base_name: str, metrics_lst: List[str], x_interval=2, y_interval=0.1):
+    report_path = os.path.join(os.getcwd(), "report", base_name)
+    log_path = os.path.join(os.getcwd(), "logs", file_name)
+
+    os.makedirs(report_path, mode=0x777, exist_ok=True)
 
     # Retrieve metrics from training log
-    f = json.loads(open(os.path.join(os.getcwd(), "logs", file_name)).read())
+    f = json.loads(open(log_path).read())
     metrics_dict = {}
 
     for json_obj in f:
@@ -45,7 +45,7 @@ def training_visualization(file_name: str, metrics_lst: List[str], x_interval=2)
         ax.set_xlabel("Epoch")
         ax.set_ylabel(metrics_lst[i].title())
 
-        ax.set_xticks(range(min(metrics_dict["epoch"]), max(metrics_dict["epoch"])+2, x_interval))
-
+        ax.set_xticks(range(0, max(metrics_dict["epoch"])+2, x_interval))
+        ax.set_yticks([round(num, 1) for num in np.linspace(start=0, stop=1, num=10)])
         ax.legend(["Train", "Validation"])
-        fig.savefig(os.path.join(os.getcwd(), "report", f"{metrics_lst[i].title()}.jpg"))
+        fig.savefig(os.path.join(report_path, f"{metrics_lst[i].title()}.jpg"))

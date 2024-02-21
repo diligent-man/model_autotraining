@@ -24,7 +24,9 @@ def train(option_path: str) -> None:
                                               batch_size=options.DATA.BATCH_SIZE,
                                               seed=options.MISC.SEED, cuda=options.MISC.CUDA,
                                               num_workers=options.DATA.NUM_WORKERS)
-    print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}""")
+    print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}
+Training model {options.SOLVER.MODEL.NAME}
+""")
 
     trainer = Trainer(options=options, log_path=log_path, checkpoint_path=checkpoint_path)
     trainer.train(train_set, validation_set)
@@ -49,10 +51,13 @@ def evaluate(option_path: str) -> None:
 
 
 def main() -> None:
-    train(option_path=os.path.join(os.getcwd(), "configs", "resnet_train_config.json"))
+    train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
     # evaluate(option_path=os.path.join(os.getcwd(), "configs", "eval_config.json"))
     
-    # training_visualization(file_name="training_log.json", metrics_lst=["loss", "acc", "f1"], x_interval=2)
+    # training_visualization(file_name="vgg19_training_log.json",
+    #                        metrics_lst=["loss", "acc", "f1"],
+    #                        base_name="vgg19"
+    #                        )
 
     # To-do list
     # Model evaluator

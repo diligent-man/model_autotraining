@@ -9,7 +9,7 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 24,
+        "BATCH_SIZE": 32,
         "NUM_WORKERS": 1
     },
 
@@ -63,7 +63,7 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-2,
+                "lr": 1e-7,
                 "weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
             }
