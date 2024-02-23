@@ -4,32 +4,40 @@ import commentjson
 from box import Box
 from src.tools.train import Trainer
 from src.tools.eval import Evaluator
-from src.tools.visualization import training_visualization
+from src.tools.visualization import training_log_visualization
 from src.utils.utils import get_train_set, get_test_set, get_model_summary
 
 
 def train(option_path: str) -> None:
     # Load dataset
     options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
-    log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_training_log.json")
+    train_log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_training_log.json")
+    eval_log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_eval_log.json")
     checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)
 
     if not os.path.isdir(checkpoint_path):
-        os.mkdir(path=checkpoint_path, mode=0x777)
+        os.makedirs(checkpoint_path, 0x777, True)
         print(f"directory checkpoint for {options.SOLVER.MODEL.NAME} is created.")
 
-    train_set, validation_set = get_train_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
-                                              input_size=options.DATA.INPUT_SHAPE[0],
-                                              train_size=options.DATA.TRAIN_SIZE,
-                                              batch_size=options.DATA.BATCH_SIZE,
-                                              seed=options.MISC.SEED, cuda=options.MISC.CUDA,
-                                              num_workers=options.DATA.NUM_WORKERS)
-    print(f"""Train batch: {len(train_set)}, Validation batch: {len(validation_set)}
+    train_loader, validation_loader = get_train_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
+                                                    input_size=options.DATA.INPUT_SHAPE[0],
+                                                    train_size=options.DATA.TRAIN_SIZE,
+                                                    batch_size=options.DATA.BATCH_SIZE,
+                                                    seed=options.MISC.SEED, cuda=options.MISC.CUDA,
+                                                    num_workers=options.DATA.NUM_WORKERS)
+
+    print(f"""Train batch: {len(train_loader)}, Validation batch: {len(validation_loader)}
 Training model {options.SOLVER.MODEL.NAME}
 """)
 
-    trainer = Trainer(options=options, log_path=log_path, checkpoint_path=checkpoint_path)
-    trainer.train(train_set, validation_set)
+    trainer = Trainer(options=options,
+                      train_log_path=train_log_path,
+                      eval_log_path=eval_log_path,
+                      checkpoint_path=checkpoint_path,
+                      train_loader=train_loader,
+                      validation_loader=validation_loader
+                      )
+    trainer.train()
     return None
 
 
@@ -41,7 +49,7 @@ def evaluate(option_path: str) -> None:
     test_set = get_test_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
                             input_size=options.DATA.INPUT_SHAPE[0],
                             batch_size=options.DATA.BATCH_SIZE,
-                            seed=options.MISC.SEED, cuda=options.MISC.CUDA,
+                            cuda=options.MISC.CUDA,
                             num_workers=options.DATA.NUM_WORKERS)
     print(f"""Test batch: {len(test_set)}""")
 
@@ -51,13 +59,13 @@ def evaluate(option_path: str) -> None:
 
 
 def main() -> None:
-    # train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
+    train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
     # evaluate(option_path=os.path.join(os.getcwd(), "configs", "eval_config.json"))
-    
-    training_visualization(file_name="vgg19_training_log.json",
-                           metrics_lst=["loss", "acc", "f1"],
-                           base_name="vgg19"
-                           )
+
+    # training_log_visualization(file_name="vgg13_training_log.json",
+    #                        metrics_lst=["loss", "acc", "f1"],
+    #                        base_name="vgg13"
+    #                        )
     #
     # To-do list
     # Model evaluator

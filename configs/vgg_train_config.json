@@ -7,10 +7,10 @@
 
     "DATA":
     {
-        "DATASET_NAME": "celeb_A",
+        "DATASET_NAME": "small_celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 16,
+        "BATCH_SIZE": 120,
         // 80 - 13p29
         // 16 - 40p
         "NUM_WORKERS": 4
@@ -19,15 +19,15 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": true,
+        "LOAD": false,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_26.pt"
+        "RESUME_NAME": "epoch_1.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 24
+        "EPOCHS": 3
     },
 
     "METRICS":
@@ -52,7 +52,7 @@
         "MODEL":
         {
             "BASE": "vgg",
-            "NAME": "vgg19",
+            "NAME": "vgg13",
             "PRETRAINED": false,
             "ARGS":
             {
@@ -70,6 +70,16 @@
                 "amsgrad": true
             }
         },
+
+        "LR_SCHEDULER":
+        {
+            "NAME": "StepLR",
+            "ARGS":
+            {
+                "step_size": 30
+            }
+        },
+
 
         "LOSS":
         {
