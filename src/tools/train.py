@@ -37,7 +37,6 @@ class Trainer:
 
     __best_val_loss: float
 
-
     def __init__(self, options: Box,
                  train_log_path: str, eval_log_path: str, checkpoint_path: str,
                  train_loader: DataLoader, validation_loader: DataLoader
@@ -64,23 +63,23 @@ class Trainer:
                                                                                               model_base=self.__options.SOLVER.MODEL.BASE,
                                                                                               model_name=self.__options.SOLVER.MODEL.NAME,
                                                                                               model_args=self.__options.SOLVER.MODEL.ARGS
-                                                                                             )
-        self.__lr_schedulers: torch.optim.lr_scheduler.LRScheduler = init_lr_scheduler(name=self.__options.SOLVER.LR_SCHEDULER.NAME, args=self.__options.SOLVER.LR_SCHEDULER.ARGS, optimizer=self.__optimizer)
+                                                                                              )
+        self.__lr_schedulers: torch.optim.lr_scheduler.LRScheduler = init_lr_scheduler(
+            name=self.__options.SOLVER.LR_SCHEDULER.NAME, args=self.__options.SOLVER.LR_SCHEDULER.ARGS,
+            optimizer=self.__optimizer)
         self.__best_val_loss: float = self.__get_best_val_loss()
-
 
     @classmethod
     def __init_subclass__(cls):
         """Check indispensable paras when instantiate Trainer"""
         required_class_variables = [
-            "__options", "__train_log_path", "__eval_log_path",  "__checkpoint_path", "__train_loader", "__val_loader"
+            "__options", "__train_log_path", "__eval_log_path", "__checkpoint_path", "__train_loader", "__val_loader"
         ]
         for var in required_class_variables:
             if not hasattr(cls, var):
                 raise NotImplementedError(
                     f'Class {cls} lacks required `{var}` class attribute'
                 )
-
 
     # Setter & Getter
     @property
@@ -98,13 +97,18 @@ class Trainer:
         for epoch in range(self.__start_epoch, self.__start_epoch + self.__options.EPOCH.EPOCHS):
             print("Epoch:", epoch)
 
-            for phase, dataset_loader, log_path in zip(("train", "eval"), (self.__train_loader, self.__validation_loader), (self.__train_log_path, self.__eval_log_path)):
+            for phase, dataset_loader, log_path in zip(("train", "eval"),
+                                                       (self.__train_loader, self.__validation_loader),
+                                                       (self.__train_log_path, self.__eval_log_path)):
                 # Preliminary setups
                 self.__model.train() if phase == "train" else self.__model.eval()
-                metrics: List[torcheval.metrics.Metric] = init_metrics(name_lst=self.__options.METRICS.NAME_LIST, args=self.__options.METRICS.ARGS, device=self.__device) if metric_in_train else None
+                metrics: List[torcheval.metrics.Metric] = init_metrics(name_lst=self.__options.METRICS.NAME_LIST,
+                                                                       args=self.__options.METRICS.ARGS,
+                                                                       device=self.__device) if metric_in_train else None
 
                 # Epoch running
-                run_epoch_result: Dict = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader, metrics=metrics)
+                run_epoch_result: Dict = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader,
+                                                          metrics=metrics)
 
                 # Logging
                 self.__logger.write(file=log_path, log_info={**{"epoch": epoch}, **run_epoch_result})
@@ -130,9 +134,9 @@ class Trainer:
                     sleep(sleep_time)
         return None
 
-
     # Private methods
-    def __run_epoch(self, phase: str, epoch: int, dataset_loader: DataLoader, metrics: List[torcheval.metrics.Metric] = None) -> Dict:
+    def __run_epoch(self, phase: str, epoch: int, dataset_loader: DataLoader,
+                    metrics: List[torcheval.metrics.Metric] = None) -> Dict:
         """
         phase: "train" || "eval"
         dataset_loader: train_loader || val_loader
@@ -144,7 +148,8 @@ class Trainer:
         total_loss = 0
 
         # Epoch training
-        for index, batch in tqdm(enumerate(dataset_loader), total=len(dataset_loader), colour="cyan", desc=phase.capitalize()):
+        for index, batch in tqdm(enumerate(dataset_loader), total=len(dataset_loader), colour="cyan",
+                                 desc=phase.capitalize()):
             imgs, labels = batch[0].type(torch.FloatTensor).to(self.__device), batch[1]
 
             # reset gradients prior to forward pass
@@ -186,7 +191,6 @@ class Trainer:
             training_result = {"loss": total_loss / len(dataset_loader)}
         return training_result
 
-
     def __save_checkpoint(self, epoch: int, val_loss: float, obj: dict, save_all: bool = False) -> None:
         """
         save_all:
@@ -210,7 +214,6 @@ class Trainer:
             # Remove previous epoch
             os.remove(os.path.join(self.__checkpoint_path, f"epoch_{epoch - 1}.pt"))
         return None
-
 
     def __get_best_val_loss(self) -> float:
         if "best_checkpoint.pt" in self.__checkpoint_path:

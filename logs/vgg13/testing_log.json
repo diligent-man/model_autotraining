@@ -1,0 +1,221 @@
+{
+    "Test at": "24/02/2024 19:31:44",
+    "Dataset": "small_celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9696969985961914,
+    "BinaryRecall": 0.9599999785423279,
+    "BinaryConfusionMatrix": [
+        [
+            97.0,
+            3.0
+        ],
+        [
+            4.0,
+            96.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:31:44",
+    "Dataset": "small_celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.969072163105011,
+    "BinaryRecall": 0.9399999976158142,
+    "BinaryConfusionMatrix": [
+        [
+            97.0,
+            3.0
+        ],
+        [
+            6.0,
+            94.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:31:44",
+    "Dataset": "small_celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9784946441650391,
+    "BinaryRecall": 0.9100000262260437,
+    "BinaryConfusionMatrix": [
+        [
+            98.0,
+            2.0
+        ],
+        [
+            9.0,
+            91.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:31:44",
+    "Dataset": "small_celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9890109896659851,
+    "BinaryRecall": 0.8999999761581421,
+    "BinaryConfusionMatrix": [
+        [
+            99.0,
+            1.0
+        ],
+        [
+            10.0,
+            90.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.8748419880867004,
+    "BinaryRecall": 0.983420193195343,
+    "BinaryConfusionMatrix": [
+        [
+            5315.0,
+            594.0
+        ],
+        [
+            70.0,
+            4152.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9128501415252686,
+    "BinaryRecall": 0.972524881362915,
+    "BinaryConfusionMatrix": [
+        [
+            5517.0,
+            392.0
+        ],
+        [
+            116.0,
+            4106.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9334408044815063,
+    "BinaryRecall": 0.9599716067314148,
+    "BinaryConfusionMatrix": [
+        [
+            5620.0,
+            289.0
+        ],
+        [
+            169.0,
+            4053.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9423393607139587,
+    "BinaryRecall": 0.9483656883239746,
+    "BinaryConfusionMatrix": [
+        [
+            5664.0,
+            245.0
+        ],
+        [
+            218.0,
+            4004.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9528530240058899,
+    "BinaryRecall": 0.9334438443183899,
+    "BinaryConfusionMatrix": [
+        [
+            5714.0,
+            195.0
+        ],
+        [
+            281.0,
+            3941.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9615098237991333,
+    "BinaryRecall": 0.9171009063720703,
+    "BinaryConfusionMatrix": [
+        [
+            5754.0,
+            155.0
+        ],
+        [
+            350.0,
+            3872.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9704217910766602,
+    "BinaryRecall": 0.8936523199081421,
+    "BinaryConfusionMatrix": [
+        [
+            5794.0,
+            115.0
+        ],
+        [
+            449.0,
+            3773.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9747312068939209,
+    "BinaryRecall": 0.8588346838951111,
+    "BinaryConfusionMatrix": [
+        [
+            5815.0,
+            94.0
+        ],
+        [
+            596.0,
+            3626.0
+        ]
+    ]
+},
+{
+    "Test at": "24/02/2024 19:42:52",
+    "Dataset": "celeb_A",
+    "Checkpoint name": "epoch_25.pt",
+    "BinaryPrecision": 0.9878157377243042,
+    "BinaryRecall": 0.7873045802116394,
+    "BinaryConfusionMatrix": [
+        [
+            5868.0,
+            41.0
+        ],
+        [
+            898.0,
+            3324.0
+        ]
+    ]
+},

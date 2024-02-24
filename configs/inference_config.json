@@ -1,0 +1,59 @@
+{
+    "EXPERIMENTS":
+    {
+        "PROJECT_NAME": "face_attribute"
+    },
+
+    "DATA":
+    {
+        "DATASET_NAME": "celeb_A",
+        "INPUT_SHAPE": [224, 224, 3],
+        "BATCH_SIZE": 240,
+        "NUM_WORKERS": 1
+    },
+
+     "METRICS":
+     {
+         "NAME_LIST": ["BinaryPrecision", "BinaryRecall", "BinaryConfusionMatrix"],
+         "ARGS":
+         {
+             "0":
+             {
+                 "threshold": 0.5
+             },
+
+             "1":
+             {
+                 "threshold": 0.5
+             },
+
+             "2":
+             {
+                 "threshold": 0.5
+             }
+         }
+     },
+
+    "CHECKPOINT":
+    {
+        "NAME": "epoch_25.pt"
+    },
+
+    "MODEL":
+    {
+        "BASE": "vgg",
+        "NAME": "vgg13",
+        "PRETRAINED": false,
+        "ARGS":
+        {
+            "dropout": 0.5,
+            "num_classes": 1
+        }
+    },
+
+    "MISC":
+    {
+        "SEED": 12345,
+        "CUDA": true
+    }
+}

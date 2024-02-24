@@ -2,10 +2,11 @@ import os
 import commentjson
 
 from box import Box
+from torch.utils.data import DataLoader
+
 from src.tools.train import Trainer
-from src.tools.eval import Evaluator
-from src.tools.visualization import training_log_visualization
-from src.utils.utils import get_train_set, get_test_set, get_model_summary
+from src.utils.utils import get_train_set, get_test_set
+from src.tools.inference import inference
 
 
 def train(option_path: str) -> None:
@@ -48,26 +49,28 @@ Training model {options.SOLVER.MODEL.NAME}
     return None
 
 
-def infer(option_path: str) -> None:
+def test(option_path: str) -> None:
     options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
-    log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_eval_log.json")
-    checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)
+    checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.MODEL.NAME, options.CHECKPOINT.NAME)
+    log_path = os.path.join(os.getcwd(), "logs", options.MODEL.NAME, "testing_log.json")
 
-    test_set = get_test_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
-                            input_size=options.DATA.INPUT_SHAPE[0],
-                            batch_size=options.DATA.BATCH_SIZE,
-                            cuda=options.MISC.CUDA,
-                            num_workers=options.DATA.NUM_WORKERS)
-    print(f"""Test batch: {len(test_set)}""")
+    test_loader: DataLoader = get_test_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
+                                           input_size=options.DATA.INPUT_SHAPE[0],
+                                           batch_size=options.DATA.BATCH_SIZE,
+                                           cuda=options.MISC.CUDA,
+                                           num_workers=options.DATA.NUM_WORKERS
+                                           )
+    print(f"""Test batch: {len(test_loader)}""")
 
-    evaluator = Evaluator(options=options, log_path=log_path, checkpoint_path=checkpoint_path)
-    evaluator.eval(test_set)
+    options: Box = Box(commentjson.loads(open(file=option_path, mode="r").read()))
+    inference(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader)
     return None
 
 
 def main() -> None:
-    train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
-    # evaluate(option_path=os.path.join(os.getcwd(), "configs", "eval_config.json"))
+    # train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
+    test(option_path=os.path.join(os.getcwd(), "configs", "inference_config.json"))
+
 
     # training_log_visualization(file_name="vgg13_training_log.json",
     #                        metrics_lst=["loss", "acc", "f1"],

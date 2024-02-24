@@ -12,13 +12,14 @@ from torchsummary import summary
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import v2, InterpolationMode
 from torch.utils.data import DataLoader, random_split, Dataset
-from torcheval.metrics import MulticlassF1Score, BinaryF1Score, MulticlassAccuracy, BinaryAccuracy
+
 from torch.optim import Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, SGD
 from torch.nn.modules import NLLLoss, NLLLoss2d, CTCLoss, KLDivLoss, GaussianNLLLoss, PoissonNLLLoss, L1Loss, MSELoss, HuberLoss, SmoothL1Loss, CrossEntropyLoss, BCELoss, BCEWithLogitsLoss
+from torcheval.metrics import BinaryAccuracy, BinaryF1Score, BinaryPrecision, BinaryRecall, BinaryConfusionMatrix, MulticlassAccuracy, MulticlassF1Score, MulticlassPrecision, MulticlassRecall, MulticlassConfusionMatrix
 from torch.optim.lr_scheduler import LambdaLR, MultiplicativeLR, StepLR, MultiStepLR, ConstantLR, LinearLR, ExponentialLR, PolynomialLR, CosineAnnealingLR, CosineAnnealingWarmRestarts, ChainedScheduler, SequentialLR, ReduceLROnPlateau, OneCycleLR
 
 
-__all__ = ["init_loss", "init_lr_scheduler", "init_metrics", "init_model_optimizer_start_epoch", "get_train_set", "get_test_set", "get_model_summary"]
+__all__ = ["init_loss", "init_lr_scheduler", "init_metrics", "init_model", "init_model_optimizer_start_epoch", "get_train_set", "get_test_set", "get_model_summary"]
 
 
 def init_model(device: str, pretrained: bool, base: str,
@@ -92,9 +93,15 @@ def init_metrics(name_lst: List[str], args: Dict, device: str) -> List[torcheval
     available_metrics = {
         "BinaryAccuracy": BinaryAccuracy,
         "BinaryF1Score": BinaryF1Score,
+        "BinaryPrecision": BinaryPrecision,
+        "BinaryRecall": BinaryRecall,
+        "BinaryConfusionMatrix": BinaryConfusionMatrix,
 
         "MulticlassAccuracy": MulticlassAccuracy,
-        "MulticlassF1Score": MulticlassF1Score
+        "MulticlassF1Score": MulticlassF1Score,
+        "MulticlassPrecision": MulticlassPrecision,
+        "MulticlassRecall": MulticlassRecall,
+        "MulticlassConfusionMatrix": MulticlassConfusionMatrix,
     }
 
     # check whether metrics available or not
@@ -184,5 +191,5 @@ def get_test_set(root: str, input_size: int, batch_size: int, cuda: bool, num_wo
     return test_set
 
 
-def get_model_summary(model: torch.nn.Module, input_size: Tuple):
-    return summary(model, input_size)
+def get_model_summary(model: torch.nn.Module, input_size: Tuple, device: str):
+    return summary(model=model, input_size=input_size, device=device)
