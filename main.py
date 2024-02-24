@@ -11,13 +11,20 @@ from src.utils.utils import get_train_set, get_test_set, get_model_summary
 def train(option_path: str) -> None:
     # Load dataset
     options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
-    train_log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_training_log.json")
-    eval_log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_eval_log.json")
+
     checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)
+    log_path = os.path.join(os.getcwd(), "logs", options.SOLVER.MODEL.NAME)
 
     if not os.path.isdir(checkpoint_path):
         os.makedirs(checkpoint_path, 0x777, True)
-        print(f"directory checkpoint for {options.SOLVER.MODEL.NAME} is created.")
+        print(f"Checkpoint dir for {options.SOLVER.MODEL.NAME} was created.")
+
+    if not os.path.isdir(log_path):
+        os.makedirs(log_path, 0x777, True)
+        print(f"Log dir checkpoint for {options.SOLVER.MODEL.NAME} was created.")
+
+    train_log_path = os.path.join(log_path, f"training_log.json")
+    eval_log_path = os.path.join(log_path, f"eval_log.json")
 
     train_loader, validation_loader = get_train_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
                                                     input_size=options.DATA.INPUT_SHAPE[0],
@@ -37,11 +44,11 @@ Training model {options.SOLVER.MODEL.NAME}
                       train_loader=train_loader,
                       validation_loader=validation_loader
                       )
-    trainer.train()
+    trainer.train(metric_in_train=True)
     return None
 
 
-def evaluate(option_path: str) -> None:
+def infer(option_path: str) -> None:
     options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
     log_path = os.path.join(os.getcwd(), "logs", f"{options.SOLVER.MODEL.NAME}_eval_log.json")
     checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)

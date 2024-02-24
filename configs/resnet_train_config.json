@@ -9,7 +9,7 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 64,
+        "BATCH_SIZE": 120,
         "NUM_WORKERS": 4
     },
 
@@ -24,7 +24,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 30
+        "EPOCHS": 20
     },
 
     "METRICS":
@@ -50,7 +50,7 @@
         "MODEL":
         {
             "BASE": "resnet",
-            "NAME": "resnet34",
+            "NAME": "resnet18",
             "PRETRAINED": false,
             "ARGS":
             {
@@ -63,9 +63,22 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-7,
-                "weight_decay": 3.0517578125e-05, // 1/32768
+                "lr": 1e-4,
+                 "weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
+            }
+        },
+
+
+        "LR_SCHEDULER":
+        {
+            "NAME": "CosineAnnealingWarmRestarts",
+            "ARGS":
+            {
+                "T_0": 100,
+                "T_mult": 3,
+                "eta_min": 1e-8
+                // "eta_min": 0
             }
         },
 

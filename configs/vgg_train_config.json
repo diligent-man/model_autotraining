@@ -11,23 +11,21 @@
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 120,
-        // 80 - 13p29
-        // 16 - 40p
         "NUM_WORKERS": 4
     },
 
     "CHECKPOINT":
     {
-        "SAVE": true,
+        "SAVE": false,
         "LOAD": false,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_1.pt"
+        "RESUME_NAME": "epoch_5.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 3
+        "EPOCHS": 2
     },
 
     "METRICS":
@@ -66,20 +64,21 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-7,
+                "lr": 1e-6,
+                //"weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
             }
         },
 
         "LR_SCHEDULER":
         {
-            "NAME": "StepLR",
+            "NAME": "CosineAnnealingWarmRestarts",
             "ARGS":
             {
-                "step_size": 30
+                "T_0": 100,
+                "T_mult": 3,
             }
         },
-
 
         "LOSS":
         {

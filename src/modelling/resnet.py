@@ -987,7 +987,7 @@ def wide_resnet101_2(
 
 
 
-def get_resnet_model(cuda: bool, model_derivative: str, pretrained: bool = True, model_state_dict: dict = None, **kwargs):
+def get_resnet_model(device: str, model_derivative: str, pretrained: bool = True, model_state_dict: dict = None, **kwargs) -> torch.nn.Module:
     models = {
         "resnet18": resnet18,
         "resnet34": resnet34,
@@ -1010,6 +1010,5 @@ def get_resnet_model(cuda: bool, model_derivative: str, pretrained: bool = True,
                 nn.init.xavier_uniform_(para)
         print("Finished.")
 
-    if cuda:
-        model = model.to("cuda")
+    model = model.to(device)
     return model

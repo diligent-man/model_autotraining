@@ -1,30 +1,22 @@
 import os
 
+import torcheval.metrics
 from box import Box
 from tqdm import tqdm
 from time import time, sleep
 from typing import List, Tuple, Dict
 from src.utils.logger import Logger
-from src.modelling.vgg import get_vgg_model
-from src.modelling.resnet import get_resnet_model
 from src.utils.early_stopping import EarlyStopper
+from src.utils.utils import init_loss, init_metrics, init_lr_scheduler, init_model_optimizer_start_epoch
 
 import torch
-import torcheval
+from torcheval.metrics import Metric
 
 from torch.nn.functional import sigmoid, softmax
 from torch.utils.data import DataLoader
-from torcheval.metrics import MulticlassF1Score, BinaryF1Score, MulticlassAccuracy, BinaryAccuracy
-from torch.optim import Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, SGD
-from torch.nn.modules import NLLLoss, NLLLoss2d, CTCLoss, KLDivLoss, GaussianNLLLoss, PoissonNLLLoss, L1Loss, MSELoss, HuberLoss, SmoothL1Loss, CrossEntropyLoss, BCELoss, BCEWithLogitsLoss
-from torch.optim.lr_scheduler import LambdaLR, MultiplicativeLR, StepLR, MultiStepLR, ConstantLR, LinearLR, ExponentialLR, PolynomialLR, CosineAnnealingLR, CosineAnnealingWarmRestarts, ChainedScheduler, SequentialLR, ReduceLROnPlateau, OneCycleLR
 
 
 class Trainer:
-    """
-    options: user-defined configs for entire training process
-    best_acc:
-    """
     __options: Box
     __train_log_path: str
     __eval_log_path: str
@@ -62,15 +54,24 @@ class Trainer:
         self.__early_stopper: EarlyStopper = EarlyStopper(**self.__options.SOLVER.EARLY_STOPPING)
         self.__logger: Logger = Logger()
 
-        self.__loss = self.__init_loss()
-        self.__start_epoch, self.__model, self.__optimizer = self.__init_model_optimizer_epoch()
-        self.__lr_schedulers: torch.optim.lr_scheduler.LRScheduler = self.__init_lr_scheduler()
-
+        self.__loss = init_loss(name=self.__options.SOLVER.LOSS.NAME, args=self.__options.SOLVER.LOSS.ARGS)
+        self.__start_epoch, self.__model, self.__optimizer = init_model_optimizer_start_epoch(device=self.__device,
+                                                                                              checkpoint_load=self.__options.CHECKPOINT.LOAD,
+                                                                                              checkpoint_path=checkpoint_path,
+                                                                                              resume_name=self.__options.CHECKPOINT.RESUME_NAME,
+                                                                                              optimizer_name=self.__options.SOLVER.OPTIMIZER.NAME,
+                                                                                              optimizer_args=self.__options.SOLVER.OPTIMIZER.ARGS,
+                                                                                              model_base=self.__options.SOLVER.MODEL.BASE,
+                                                                                              model_name=self.__options.SOLVER.MODEL.NAME,
+                                                                                              model_args=self.__options.SOLVER.MODEL.ARGS
+                                                                                             )
+        self.__lr_schedulers: torch.optim.lr_scheduler.LRScheduler = init_lr_scheduler(name=self.__options.SOLVER.LR_SCHEDULER.NAME, args=self.__options.SOLVER.LR_SCHEDULER.ARGS, optimizer=self.__optimizer)
         self.__best_val_loss: float = self.__get_best_val_loss()
 
 
     @classmethod
     def __init_subclass__(cls):
+        """Check indispensable paras when instantiate Trainer"""
         required_class_variables = [
             "__options", "__train_log_path", "__eval_log_path",  "__checkpoint_path", "__train_loader", "__val_loader"
         ]
@@ -87,7 +88,11 @@ class Trainer:
         return self.__model
 
     # Public methods
-    def train(self, sleep_time: int = None) -> None:
+    def train(self, sleep_time: int = None, metric_in_train: bool = False) -> None:
+        """
+        sleep_time: temporarily cease the training process
+        metric_in_train: compute metrics during training phase or not
+        """
         print("Start training model ...")
 
         for epoch in range(self.__start_epoch, self.__start_epoch + self.__options.EPOCH.EPOCHS):
@@ -96,10 +101,10 @@ class Trainer:
             for phase, dataset_loader, log_path in zip(("train", "eval"), (self.__train_loader, self.__validation_loader), (self.__train_log_path, self.__eval_log_path)):
                 # Preliminary setups
                 self.__model.train() if phase == "train" else self.__model.eval()
-                metrics = self.__init_metrics() if phase == "eval" else None
+                metrics: List[torcheval.metrics.Metric] = init_metrics(name_lst=self.__options.METRICS.NAME_LIST, args=self.__options.METRICS.ARGS, device=self.__device) if metric_in_train else None
 
                 # Epoch running
-                run_epoch_result: Dict = self.__run_epoch(phase=phase, dataset_loader=dataset_loader, metrics=metrics)
+                run_epoch_result: Dict = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader, metrics=metrics)
 
                 # Logging
                 self.__logger.write(file=log_path, log_info={**{"epoch": epoch}, **run_epoch_result})
@@ -127,7 +132,7 @@ class Trainer:
 
 
     # Private methods
-    def __run_epoch(self, phase: str, dataset_loader: DataLoader, metrics: List[torcheval.metrics.Metric] = None) -> Dict:
+    def __run_epoch(self, phase: str, epoch: int, dataset_loader: DataLoader, metrics: List[torcheval.metrics.Metric] = None) -> Dict:
         """
         phase: "train" || "eval"
         dataset_loader: train_loader || val_loader
@@ -136,10 +141,11 @@ class Trainer:
         Notes: loss of last iter is taken as loss of that epoch
         """
         num_class = self.__options.SOLVER.MODEL.ARGS.num_classes
+        total_loss = 0
 
         # Epoch training
         for index, batch in tqdm(enumerate(dataset_loader), total=len(dataset_loader), colour="cyan", desc=phase.capitalize()):
-            imgs, labels = batch[0].type(torch.FloatTensor).to(self.__device), batch[1].type(torch.FloatTensor).to(self.__device)
+            imgs, labels = batch[0].type(torch.FloatTensor).to(self.__device), batch[1]
 
             # reset gradients prior to forward pass
             self.__optimizer.zero_grad()
@@ -147,31 +153,37 @@ class Trainer:
             with torch.set_grad_enabled(phase == "train"):
                 # forward pass
                 pred_labels = self.__model(imgs)
-                pred_labels = sigmoid(pred_labels) if num_class == 1 else softmax(pred_labels)
-
-                # NCHW shaoe
-                if pred_labels.shape[1] == 1:
-                    pred_labels = pred_labels.squeeze(1)
+                if num_class == 1:
+                    # Shape: N1 -> N
+                    pred_labels = sigmoid(pred_labels).squeeze(dim=1)
+                    labels = labels.type(torch.FloatTensor).to(self.__device)
+                else:
+                    # Shape: NC -> N
+                    pred_labels = softmax(pred_labels, dim=1)
 
                 # Update loss
-                loss = self.__loss(pred_labels, labels)
+                mini_batch_loss = self.__loss(pred_labels, labels)
 
                 # backprop + optimize only if in training phase
                 if phase == 'train':
-                    loss.backward()
+                    mini_batch_loss.backward()
                     self.__optimizer.step()
+                    self.__lr_schedulers.step(epoch=epoch + index / len(dataset_loader))
 
                 # Update metrics only if eval phase
                 if metrics is not None:
-                    _ = [metric.update(pred_labels, labels) for metric in metrics]
+                    metrics = [metric.update(pred_labels, labels) for metric in metrics]
+            # Accumulate minibatch into total loss
+            total_loss += mini_batch_loss.item()
 
         if metrics is not None:
             metrics_name = self.__options.METRICS.NAME_LIST
             metric_val = [metric.compute().item() for metric in metrics]
-            training_result = {**{"loss": loss.item()},
-                    **{metric_name: value for metric_name, value in zip(metrics_name, metric_val)}}
+            training_result = {**{"loss": total_loss / len(dataset_loader)},
+                               **{metric_name: value for metric_name, value in zip(metrics_name, metric_val)}
+                               }
         else:
-            training_result = {"loss": loss.item()}
+            training_result = {"loss": total_loss / len(dataset_loader)}
         return training_result
 
 
@@ -191,6 +203,7 @@ class Trainer:
             torch.save(obj=obj, f=save_name)
 
             # Update best accuracy
+            print(self.__best_val_loss)
             self.__best_val_loss = val_loss
 
         if not save_all and epoch - 1 > 0:
@@ -204,100 +217,3 @@ class Trainer:
             return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["val_loss"]
         else:
             return 1e9
-
-
-    def __init_model_optimizer_epoch(self) -> Tuple[int, torch.nn.Module, torch.optim.Optimizer]:
-        def init_optimizer(name: str, model_paras, state_dict: Dict = None, **kwargs) -> torch.optim.Optimizer:
-            available_optimizers = {
-                "Adam": Adam, "AdamW": AdamW, "NAdam": NAdam, "Adadelta": Adadelta, "Adagrad": Adagrad, "Adamax": Adamax,
-                "RAdam": RAdam, "SparseAdam": SparseAdam, "RMSprop": RMSprop, "Rprop": Rprop, "ASGD": ASGD, "LBFGS": LBFGS, "SGD": SGD
-            }
-            assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
-
-            # init optimizer
-            optim: torch.optim.Optimizer = available_optimizers[name](model_paras, **kwargs)
-
-            if state_dict is not None:
-                optim.load_state_dict(state_dict)
-            return optim
-
-        def init_model(cuda: bool, pretrained: bool, base: str, name: str, state_dict: dict, **kwargs) -> torch.nn.Module:
-            available_bases = {
-                "vgg": get_vgg_model,
-                "resnet": get_resnet_model
-            }
-            assert base in available_bases.keys(), "Your selected base is unavailable"
-            return available_bases[base](cuda, name, pretrained, state_dict, **kwargs)
-
-
-        model_state_dict = None
-        optimizer_state_dict = None
-        start_epoch = self.__options.EPOCH.START
-
-        if self.__options.CHECKPOINT.LOAD:
-            map_location = "cuda" if self.__options.MISC.CUDA else "cpu"
-            checkpoint = torch.load(f=os.path.join(self.__checkpoint_path, self.__options.CHECKPOINT.RESUME_NAME),
-                                    map_location=map_location)
-            start_epoch = checkpoint["epoch"] + 1
-            model_state_dict = checkpoint["model_state_dict"]
-            optimizer_state_dict = checkpoint["optimizer_state_dict"]
-
-        model: torch.nn.Module = init_model(cuda=self.__options.MISC.CUDA,
-                                            pretrained=self.__options.SOLVER.MODEL.PRETRAINED,
-                                            base=self.__options.SOLVER.MODEL.BASE,
-                                            name=self.__options.SOLVER.MODEL.NAME,
-                                            state_dict=model_state_dict,
-                                            **self.__options.SOLVER.MODEL.ARGS)
-
-        optimizer: torch.optim.Optimizer = init_optimizer(name=self.__options.SOLVER.OPTIMIZER.NAME,
-                                                          model_paras=model.parameters(),
-                                                          state_dict=optimizer_state_dict,
-                                                          **self.__options.SOLVER.OPTIMIZER.ARGS)
-        return start_epoch, model, optimizer
-
-
-    def __init_lr_scheduler(self):
-        available_lr_scheduler = {
-            "LambdaLR": LambdaLR, "MultiplicativeLR": MultiplicativeLR, "StepLR": StepLR, "MultiStepLR": MultiStepLR, "ConstantLR": ConstantLR,
-            "LinearLR": LinearLR, "ExponentialLR": ExponentialLR, "PolynomialLR": PolynomialLR, "CosineAnnealingLR": CosineAnnealingLR,
-            "CosineAnnealingWarmRestarts": CosineAnnealingWarmRestarts, "ChainedScheduler": ChainedScheduler, "SequentialLR": SequentialLR,
-            "ReduceLROnPlateau": ReduceLROnPlateau, "OneCycleLR": OneCycleLR
-        }
-        lr_scheduler_name = self.__options.SOLVER.LR_SCHEDULER.NAME
-
-        assert lr_scheduler_name in available_lr_scheduler.keys(), "Your selected lr scheduler is unavailable"
-        return available_lr_scheduler[lr_scheduler_name](self.__optimizer, **self.__options.SOLVER.LR_SCHEDULER.ARGS)
-
-
-    def __init_metrics(self) -> List[torcheval.metrics.Metric]:
-        available_metrics = {
-            "BinaryAccuracy": BinaryAccuracy,
-            "BinaryF1Score": BinaryF1Score,
-
-            "MulticlassAccuracy": MulticlassAccuracy,
-            "MulticlassF1Score": MulticlassF1Score
-        }
-
-        # check whether metrics available or not
-        for metric in self.__options.METRICS.NAME_LIST:
-            assert metric in available_metrics.keys(), "Your selected metric is unavailable"
-
-        metrics = []
-        for i in range(len(self.__options.METRICS.NAME_LIST)):
-            metrics.append(available_metrics[self.__options.METRICS.NAME_LIST[i]](**self.__options.METRICS.ARGS[str(i)]))
-
-        if self.__options.MISC.CUDA:
-            metrics = [metric.to("cuda") for metric in metrics]
-        return metrics
-
-
-    def __init_loss(self):
-        available_loss = {
-            "NLLLoss": NLLLoss, "NLLLoss2d": NLLLoss2d,
-            "CTCLoss": CTCLoss, "KLDivLoss": KLDivLoss,
-            "GaussianNLLLoss": GaussianNLLLoss, "PoissonNLLLoss": PoissonNLLLoss,
-            "CrossEntropyLoss": CrossEntropyLoss, "BCELoss": BCELoss, "BCEWithLogitsLoss": BCEWithLogitsLoss,
-            "L1Loss": L1Loss, "MSELoss": MSELoss, "HuberLoss": HuberLoss, "SmoothL1Loss": SmoothL1Loss,
-        }
-        assert self.__options.SOLVER.LOSS.NAME in available_loss.keys(), "Your selected loss function is unavailable"
-        return available_loss[self.__options.SOLVER.LOSS.NAME](** self.__options.SOLVER.LOSS.ARGS)

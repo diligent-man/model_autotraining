@@ -208,7 +208,7 @@ def vgg19_bn(pretrained=False, **kwargs):
     return model
 
 
-def get_vgg_model(cuda: bool, name: str, pretrained: bool = True, model_state_dict: dict = None, **kwargs):
+def get_vgg_model(device: str, name: str, pretrained: bool = True, model_state_dict: dict = None, **kwargs) -> torch.nn.Module:
     models = {
         "vgg13": vgg13,
         "vgg16": vgg16,
@@ -232,6 +232,5 @@ def get_vgg_model(cuda: bool, name: str, pretrained: bool = True, model_state_di
                 nn.init.xavier_uniform_(para)
         print("Finished.")
 
-    if cuda:
-        model = model.to("cuda")
+    model = model.to(device)
     return model
