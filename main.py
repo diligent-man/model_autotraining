@@ -2,11 +2,11 @@ import os
 import commentjson
 
 from box import Box
-from torch.utils.data import DataLoader
-
 from src.tools.train import Trainer
-from src.utils.utils import get_train_set, get_test_set
 from src.tools.inference import inference
+from src.utils.utils import get_train_set, get_test_set
+
+from torch.utils.data import DataLoader
 
 
 def train(option_path: str) -> None:

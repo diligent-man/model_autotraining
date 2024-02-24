@@ -1,8 +1,8 @@
 from box import Box
-from pprint import pprint as pp
 from tqdm import tqdm
-from src.utils.utils import init_metrics, init_model
 from src.utils.logger import Logger
+from src.utils.utils import init_metrics, init_model
+
 import torch
 
 from torch.utils.data import DataLoader
@@ -54,7 +54,7 @@ def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: Da
                 metrics = [metric.item() if metric.dim() == 1 else metric.detach().cpu().numpy().tolist() for metric in metrics]
 
                 # Logging
-                log_info = {**{"Dataset": options.DATA.DATASET_NAME, "Checkpoint name": options.CHECKPOINT.NAME},
+                log_info = {**{"Dataset": options.DATA.DATASET_NAME, "Checkpoint name": options.CHECKPOINT.NAME, "Threshold": threshold.item()},
                             **{name: metric for name, metric in zip(options.METRICS.NAME_LIST, metrics)}}
                 logger.write(file=log_path, log_info=log_info)
     return None

@@ -6,7 +6,7 @@
 
     "DATA":
     {
-        "DATASET_NAME": "celeb_A",
+        "DATASET_NAME": "collected_v4",
         "INPUT_SHAPE": [224, 224, 3],
         "BATCH_SIZE": 240,
         "NUM_WORKERS": 1
