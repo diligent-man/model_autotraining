@@ -10,7 +10,7 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 120,
+        "BATCH_SIZE": 96,
         "NUM_WORKERS": 4
     },
 
@@ -19,13 +19,13 @@
         "SAVE": true,
         "LOAD": true,
         "SAVE_ALL": true,
-        "RESUME_NAME": "epoch_20.pt"
+        "RESUME_NAME": "epoch_31.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 5
+        "EPOCHS": 4
     },
 
     "METRICS":
@@ -50,7 +50,7 @@
         "MODEL":
         {
             "BASE": "vgg",
-            "NAME": "vgg13",
+            "NAME": "vgg16",
             "PRETRAINED": false,
             "ARGS":
             {
@@ -65,7 +65,7 @@
             "ARGS":
             {
                 "lr": 1e-6,
-                //"weight_decay": 3.0517578125e-05, // 1/32768
+                "weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
             }
         },

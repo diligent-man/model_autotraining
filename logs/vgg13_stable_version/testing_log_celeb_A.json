@@ -1,0 +1,1683 @@
+[{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.01,
+    "BinaryPrecision": 0.794373095035553,
+    "BinaryRecall": 0.9964472055435181,
+    "BinaryConfusionMatrix": [
+        [
+            4820.0,
+            1089.0
+        ],
+        [
+            15.0,
+            4207.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.02,
+    "BinaryPrecision": 0.8339952230453491,
+    "BinaryRecall": 0.994789183139801,
+    "BinaryConfusionMatrix": [
+        [
+            5073.0,
+            836.0
+        ],
+        [
+            22.0,
+            4200.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.03,
+    "BinaryPrecision": 0.8523489832878113,
+    "BinaryRecall": 0.992657482624054,
+    "BinaryConfusionMatrix": [
+        [
+            5183.0,
+            726.0
+        ],
+        [
+            31.0,
+            4191.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.04,
+    "BinaryPrecision": 0.8687162399291992,
+    "BinaryRecall": 0.9905258417129517,
+    "BinaryConfusionMatrix": [
+        [
+            5277.0,
+            632.0
+        ],
+        [
+            40.0,
+            4182.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.05,
+    "BinaryPrecision": 0.8808268308639526,
+    "BinaryRecall": 0.989104688167572,
+    "BinaryConfusionMatrix": [
+        [
+            5344.0,
+            565.0
+        ],
+        [
+            46.0,
+            4176.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.06,
+    "BinaryPrecision": 0.8898359537124634,
+    "BinaryRecall": 0.989104688167572,
+    "BinaryConfusionMatrix": [
+        [
+            5392.0,
+            517.0
+        ],
+        [
+            46.0,
+            4176.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.07,
+    "BinaryPrecision": 0.8977787494659424,
+    "BinaryRecall": 0.9860255718231201,
+    "BinaryConfusionMatrix": [
+        [
+            5435.0,
+            474.0
+        ],
+        [
+            59.0,
+            4163.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.08,
+    "BinaryPrecision": 0.8985100388526917,
+    "BinaryRecall": 0.9855518937110901,
+    "BinaryConfusionMatrix": [
+        [
+            5439.0,
+            470.0
+        ],
+        [
+            61.0,
+            4161.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.09,
+    "BinaryPrecision": 0.9048242568969727,
+    "BinaryRecall": 0.981762170791626,
+    "BinaryConfusionMatrix": [
+        [
+            5473.0,
+            436.0
+        ],
+        [
+            77.0,
+            4145.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.1,
+    "BinaryPrecision": 0.9120105504989624,
+    "BinaryRecall": 0.9819990396499634,
+    "BinaryConfusionMatrix": [
+        [
+            5509.0,
+            400.0
+        ],
+        [
+            76.0,
+            4146.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.11,
+    "BinaryPrecision": 0.911848783493042,
+    "BinaryRecall": 0.9824727773666382,
+    "BinaryConfusionMatrix": [
+        [
+            5508.0,
+            401.0
+        ],
+        [
+            74.0,
+            4148.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.12,
+    "BinaryPrecision": 0.9183854460716248,
+    "BinaryRecall": 0.9808147549629211,
+    "BinaryConfusionMatrix": [
+        [
+            5541.0,
+            368.0
+        ],
+        [
+            81.0,
+            4141.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.13,
+    "BinaryPrecision": 0.9170354008674622,
+    "BinaryRecall": 0.981762170791626,
+    "BinaryConfusionMatrix": [
+        [
+            5534.0,
+            375.0
+        ],
+        [
+            77.0,
+            4145.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.14,
+    "BinaryPrecision": 0.923541247844696,
+    "BinaryRecall": 0.9784462451934814,
+    "BinaryConfusionMatrix": [
+        [
+            5567.0,
+            342.0
+        ],
+        [
+            91.0,
+            4131.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.15,
+    "BinaryPrecision": 0.9264838099479675,
+    "BinaryRecall": 0.976077675819397,
+    "BinaryConfusionMatrix": [
+        [
+            5582.0,
+            327.0
+        ],
+        [
+            101.0,
+            4121.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.16,
+    "BinaryPrecision": 0.9289900660514832,
+    "BinaryRecall": 0.976077675819397,
+    "BinaryConfusionMatrix": [
+        [
+            5594.0,
+            315.0
+        ],
+        [
+            101.0,
+            4121.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.17,
+    "BinaryPrecision": 0.9280559420585632,
+    "BinaryRecall": 0.9746565818786621,
+    "BinaryConfusionMatrix": [
+        [
+            5590.0,
+            319.0
+        ],
+        [
+            107.0,
+            4115.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.18,
+    "BinaryPrecision": 0.9329698085784912,
+    "BinaryRecall": 0.972524881362915,
+    "BinaryConfusionMatrix": [
+        [
+            5614.0,
+            295.0
+        ],
+        [
+            116.0,
+            4106.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.19,
+    "BinaryPrecision": 0.9307222366333008,
+    "BinaryRecall": 0.9737091660499573,
+    "BinaryConfusionMatrix": [
+        [
+            5603.0,
+            306.0
+        ],
+        [
+            111.0,
+            4111.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.2,
+    "BinaryPrecision": 0.9335457682609558,
+    "BinaryRecall": 0.9715774655342102,
+    "BinaryConfusionMatrix": [
+        [
+            5617.0,
+            292.0
+        ],
+        [
+            120.0,
+            4102.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.21,
+    "BinaryPrecision": 0.9369988441467285,
+    "BinaryRecall": 0.9687352180480957,
+    "BinaryConfusionMatrix": [
+        [
+            5634.0,
+            275.0
+        ],
+        [
+            132.0,
+            4090.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.22,
+    "BinaryPrecision": 0.9386867880821228,
+    "BinaryRecall": 0.9718143343925476,
+    "BinaryConfusionMatrix": [
+        [
+            5641.0,
+            268.0
+        ],
+        [
+            119.0,
+            4103.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.23,
+    "BinaryPrecision": 0.9402198791503906,
+    "BinaryRecall": 0.9722880125045776,
+    "BinaryConfusionMatrix": [
+        [
+            5648.0,
+            261.0
+        ],
+        [
+            117.0,
+            4105.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.24,
+    "BinaryPrecision": 0.9397978186607361,
+    "BinaryRecall": 0.9687352180480957,
+    "BinaryConfusionMatrix": [
+        [
+            5647.0,
+            262.0
+        ],
+        [
+            132.0,
+            4090.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.25,
+    "BinaryPrecision": 0.9429692625999451,
+    "BinaryRecall": 0.9673140645027161,
+    "BinaryConfusionMatrix": [
+        [
+            5662.0,
+            247.0
+        ],
+        [
+            138.0,
+            4084.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.26,
+    "BinaryPrecision": 0.9442645907402039,
+    "BinaryRecall": 0.9670771956443787,
+    "BinaryConfusionMatrix": [
+        [
+            5668.0,
+            241.0
+        ],
+        [
+            139.0,
+            4083.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.27,
+    "BinaryPrecision": 0.944341778755188,
+    "BinaryRecall": 0.9684983491897583,
+    "BinaryConfusionMatrix": [
+        [
+            5668.0,
+            241.0
+        ],
+        [
+            133.0,
+            4089.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.28,
+    "BinaryPrecision": 0.9453450441360474,
+    "BinaryRecall": 0.966840386390686,
+    "BinaryConfusionMatrix": [
+        [
+            5673.0,
+            236.0
+        ],
+        [
+            140.0,
+            4082.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.29,
+    "BinaryPrecision": 0.9474051594734192,
+    "BinaryRecall": 0.9642349481582642,
+    "BinaryConfusionMatrix": [
+        [
+            5683.0,
+            226.0
+        ],
+        [
+            151.0,
+            4071.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.3,
+    "BinaryPrecision": 0.9498951435089111,
+    "BinaryRecall": 0.9654192328453064,
+    "BinaryConfusionMatrix": [
+        [
+            5694.0,
+            215.0
+        ],
+        [
+            146.0,
+            4076.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.31,
+    "BinaryPrecision": 0.9487776756286621,
+    "BinaryRecall": 0.965182363986969,
+    "BinaryConfusionMatrix": [
+        [
+            5689.0,
+            220.0
+        ],
+        [
+            147.0,
+            4075.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.32,
+    "BinaryPrecision": 0.9479215145111084,
+    "BinaryRecall": 0.9613927006721497,
+    "BinaryConfusionMatrix": [
+        [
+            5686.0,
+            223.0
+        ],
+        [
+            163.0,
+            4059.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.33,
+    "BinaryPrecision": 0.9515109062194824,
+    "BinaryRecall": 0.9621032476425171,
+    "BinaryConfusionMatrix": [
+        [
+            5702.0,
+            207.0
+        ],
+        [
+            160.0,
+            4062.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.34,
+    "BinaryPrecision": 0.9526836276054382,
+    "BinaryRecall": 0.9585504531860352,
+    "BinaryConfusionMatrix": [
+        [
+            5708.0,
+            201.0
+        ],
+        [
+            175.0,
+            4047.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.35,
+    "BinaryPrecision": 0.9513222575187683,
+    "BinaryRecall": 0.9628138542175293,
+    "BinaryConfusionMatrix": [
+        [
+            5701.0,
+            208.0
+        ],
+        [
+            157.0,
+            4065.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.36,
+    "BinaryPrecision": 0.9516999125480652,
+    "BinaryRecall": 0.9613927006721497,
+    "BinaryConfusionMatrix": [
+        [
+            5703.0,
+            206.0
+        ],
+        [
+            163.0,
+            4059.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.37,
+    "BinaryPrecision": 0.9542776346206665,
+    "BinaryRecall": 0.9590241312980652,
+    "BinaryConfusionMatrix": [
+        [
+            5715.0,
+            194.0
+        ],
+        [
+            173.0,
+            4049.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.38,
+    "BinaryPrecision": 0.9562233686447144,
+    "BinaryRecall": 0.9571292996406555,
+    "BinaryConfusionMatrix": [
+        [
+            5724.0,
+            185.0
+        ],
+        [
+            181.0,
+            4041.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.39,
+    "BinaryPrecision": 0.9569026827812195,
+    "BinaryRecall": 0.9571292996406555,
+    "BinaryConfusionMatrix": [
+        [
+            5727.0,
+            182.0
+        ],
+        [
+            181.0,
+            4041.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.4,
+    "BinaryPrecision": 0.958264172077179,
+    "BinaryRecall": 0.9571292996406555,
+    "BinaryConfusionMatrix": [
+        [
+            5733.0,
+            176.0
+        ],
+        [
+            181.0,
+            4041.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.41,
+    "BinaryPrecision": 0.9591836929321289,
+    "BinaryRecall": 0.9573661684989929,
+    "BinaryConfusionMatrix": [
+        [
+            5737.0,
+            172.0
+        ],
+        [
+            180.0,
+            4042.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.42,
+    "BinaryPrecision": 0.9578198790550232,
+    "BinaryRecall": 0.9573661684989929,
+    "BinaryConfusionMatrix": [
+        [
+            5731.0,
+            178.0
+        ],
+        [
+            180.0,
+            4042.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.43,
+    "BinaryPrecision": 0.9586600065231323,
+    "BinaryRecall": 0.9557082056999207,
+    "BinaryConfusionMatrix": [
+        [
+            5735.0,
+            174.0
+        ],
+        [
+            187.0,
+            4035.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.44,
+    "BinaryPrecision": 0.960658073425293,
+    "BinaryRecall": 0.954287052154541,
+    "BinaryConfusionMatrix": [
+        [
+            5744.0,
+            165.0
+        ],
+        [
+            193.0,
+            4029.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.45,
+    "BinaryPrecision": 0.9611164331436157,
+    "BinaryRecall": 0.954287052154541,
+    "BinaryConfusionMatrix": [
+        [
+            5746.0,
+            163.0
+        ],
+        [
+            193.0,
+            4029.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.46,
+    "BinaryPrecision": 0.9580352902412415,
+    "BinaryRecall": 0.9516816735267639,
+    "BinaryConfusionMatrix": [
+        [
+            5733.0,
+            176.0
+        ],
+        [
+            204.0,
+            4018.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.47,
+    "BinaryPrecision": 0.9619799256324768,
+    "BinaryRecall": 0.9528659582138062,
+    "BinaryConfusionMatrix": [
+        [
+            5750.0,
+            159.0
+        ],
+        [
+            199.0,
+            4023.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.48,
+    "BinaryPrecision": 0.9626078605651855,
+    "BinaryRecall": 0.9512079358100891,
+    "BinaryConfusionMatrix": [
+        [
+            5753.0,
+            156.0
+        ],
+        [
+            206.0,
+            4016.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.49,
+    "BinaryPrecision": 0.9628297090530396,
+    "BinaryRecall": 0.9509711265563965,
+    "BinaryConfusionMatrix": [
+        [
+            5754.0,
+            155.0
+        ],
+        [
+            207.0,
+            4015.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.5,
+    "BinaryPrecision": 0.964595377445221,
+    "BinaryRecall": 0.948602557182312,
+    "BinaryConfusionMatrix": [
+        [
+            5762.0,
+            147.0
+        ],
+        [
+            217.0,
+            4005.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.51,
+    "BinaryPrecision": 0.9617512822151184,
+    "BinaryRecall": 0.9469445943832397,
+    "BinaryConfusionMatrix": [
+        [
+            5750.0,
+            159.0
+        ],
+        [
+            224.0,
+            3998.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.52,
+    "BinaryPrecision": 0.9630791544914246,
+    "BinaryRecall": 0.9452865719795227,
+    "BinaryConfusionMatrix": [
+        [
+            5756.0,
+            153.0
+        ],
+        [
+            231.0,
+            3991.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.53,
+    "BinaryPrecision": 0.9665778875350952,
+    "BinaryRecall": 0.9452865719795227,
+    "BinaryConfusionMatrix": [
+        [
+            5771.0,
+            138.0
+        ],
+        [
+            231.0,
+            3991.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.54,
+    "BinaryPrecision": 0.965018093585968,
+    "BinaryRecall": 0.9474182724952698,
+    "BinaryConfusionMatrix": [
+        [
+            5764.0,
+            145.0
+        ],
+        [
+            222.0,
+            4000.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.55,
+    "BinaryPrecision": 0.9655172228813171,
+    "BinaryRecall": 0.9483656883239746,
+    "BinaryConfusionMatrix": [
+        [
+            5766.0,
+            143.0
+        ],
+        [
+            218.0,
+            4004.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.56,
+    "BinaryPrecision": 0.9677340984344482,
+    "BinaryRecall": 0.9448128938674927,
+    "BinaryConfusionMatrix": [
+        [
+            5776.0,
+            133.0
+        ],
+        [
+            233.0,
+            3989.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.57,
+    "BinaryPrecision": 0.967444121837616,
+    "BinaryRecall": 0.9431549310684204,
+    "BinaryConfusionMatrix": [
+        [
+            5775.0,
+            134.0
+        ],
+        [
+            240.0,
+            3982.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.58,
+    "BinaryPrecision": 0.9681575298309326,
+    "BinaryRecall": 0.943391740322113,
+    "BinaryConfusionMatrix": [
+        [
+            5778.0,
+            131.0
+        ],
+        [
+            239.0,
+            3983.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.59,
+    "BinaryPrecision": 0.9683235883712769,
+    "BinaryRecall": 0.941260039806366,
+    "BinaryConfusionMatrix": [
+        [
+            5779.0,
+            130.0
+        ],
+        [
+            248.0,
+            3974.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.6,
+    "BinaryPrecision": 0.9697191715240479,
+    "BinaryRecall": 0.9405494928359985,
+    "BinaryConfusionMatrix": [
+        [
+            5785.0,
+            124.0
+        ],
+        [
+            251.0,
+            3971.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.61,
+    "BinaryPrecision": 0.9713024497032166,
+    "BinaryRecall": 0.9379441142082214,
+    "BinaryConfusionMatrix": [
+        [
+            5792.0,
+            117.0
+        ],
+        [
+            262.0,
+            3960.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.62,
+    "BinaryPrecision": 0.9703212976455688,
+    "BinaryRecall": 0.9369966983795166,
+    "BinaryConfusionMatrix": [
+        [
+            5788.0,
+            121.0
+        ],
+        [
+            266.0,
+            3956.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.63,
+    "BinaryPrecision": 0.9731791615486145,
+    "BinaryRecall": 0.9367598295211792,
+    "BinaryConfusionMatrix": [
+        [
+            5800.0,
+            109.0
+        ],
+        [
+            267.0,
+            3955.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.64,
+    "BinaryPrecision": 0.9731394648551941,
+    "BinaryRecall": 0.9353386759757996,
+    "BinaryConfusionMatrix": [
+        [
+            5800.0,
+            109.0
+        ],
+        [
+            273.0,
+            3949.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.65,
+    "BinaryPrecision": 0.9699062705039978,
+    "BinaryRecall": 0.9313122034072876,
+    "BinaryConfusionMatrix": [
+        [
+            5787.0,
+            122.0
+        ],
+        [
+            290.0,
+            3932.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.66,
+    "BinaryPrecision": 0.9720296859741211,
+    "BinaryRecall": 0.9301279187202454,
+    "BinaryConfusionMatrix": [
+        [
+            5796.0,
+            113.0
+        ],
+        [
+            295.0,
+            3927.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.67,
+    "BinaryPrecision": 0.9739389419555664,
+    "BinaryRecall": 0.9294173121452332,
+    "BinaryConfusionMatrix": [
+        [
+            5804.0,
+            105.0
+        ],
+        [
+            298.0,
+            3924.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.68,
+    "BinaryPrecision": 0.9761549830436707,
+    "BinaryRecall": 0.9308384656906128,
+    "BinaryConfusionMatrix": [
+        [
+            5813.0,
+            96.0
+        ],
+        [
+            292.0,
+            3930.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.69,
+    "BinaryPrecision": 0.9752932190895081,
+    "BinaryRecall": 0.9256276488304138,
+    "BinaryConfusionMatrix": [
+        [
+            5810.0,
+            99.0
+        ],
+        [
+            314.0,
+            3908.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.7,
+    "BinaryPrecision": 0.9757923483848572,
+    "BinaryRecall": 0.9261013865470886,
+    "BinaryConfusionMatrix": [
+        [
+            5812.0,
+            97.0
+        ],
+        [
+            312.0,
+            3910.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.71,
+    "BinaryPrecision": 0.9736055731773376,
+    "BinaryRecall": 0.9261013865470886,
+    "BinaryConfusionMatrix": [
+        [
+            5803.0,
+            106.0
+        ],
+        [
+            312.0,
+            3910.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.72,
+    "BinaryPrecision": 0.975493848323822,
+    "BinaryRecall": 0.9239696860313416,
+    "BinaryConfusionMatrix": [
+        [
+            5811.0,
+            98.0
+        ],
+        [
+            321.0,
+            3901.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.73,
+    "BinaryPrecision": 0.9778783321380615,
+    "BinaryRecall": 0.9213643074035645,
+    "BinaryConfusionMatrix": [
+        [
+            5821.0,
+            88.0
+        ],
+        [
+            332.0,
+            3890.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.74,
+    "BinaryPrecision": 0.977364182472229,
+    "BinaryRecall": 0.9204168915748596,
+    "BinaryConfusionMatrix": [
+        [
+            5819.0,
+            90.0
+        ],
+        [
+            336.0,
+            3886.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.75,
+    "BinaryPrecision": 0.9787718057632446,
+    "BinaryRecall": 0.9173377752304077,
+    "BinaryConfusionMatrix": [
+        [
+            5825.0,
+            84.0
+        ],
+        [
+            349.0,
+            3873.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.76,
+    "BinaryPrecision": 0.9779635071754456,
+    "BinaryRecall": 0.9144955277442932,
+    "BinaryConfusionMatrix": [
+        [
+            5822.0,
+            87.0
+        ],
+        [
+            361.0,
+            3861.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.77,
+    "BinaryPrecision": 0.9796954393386841,
+    "BinaryRecall": 0.9142586588859558,
+    "BinaryConfusionMatrix": [
+        [
+            5829.0,
+            80.0
+        ],
+        [
+            362.0,
+            3860.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.78,
+    "BinaryPrecision": 0.9771631360054016,
+    "BinaryRecall": 0.9121269583702087,
+    "BinaryConfusionMatrix": [
+        [
+            5819.0,
+            90.0
+        ],
+        [
+            371.0,
+            3851.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.79,
+    "BinaryPrecision": 0.9768977165222168,
+    "BinaryRecall": 0.9114164113998413,
+    "BinaryConfusionMatrix": [
+        [
+            5818.0,
+            91.0
+        ],
+        [
+            374.0,
+            3848.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.8,
+    "BinaryPrecision": 0.9801121950149536,
+    "BinaryRecall": 0.9104689955711365,
+    "BinaryConfusionMatrix": [
+        [
+            5831.0,
+            78.0
+        ],
+        [
+            378.0,
+            3844.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.81,
+    "BinaryPrecision": 0.9799692034721375,
+    "BinaryRecall": 0.9038370251655579,
+    "BinaryConfusionMatrix": [
+        [
+            5831.0,
+            78.0
+        ],
+        [
+            406.0,
+            3816.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.82,
+    "BinaryPrecision": 0.9824061989784241,
+    "BinaryRecall": 0.8993368148803711,
+    "BinaryConfusionMatrix": [
+        [
+            5841.0,
+            68.0
+        ],
+        [
+            425.0,
+            3797.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.83,
+    "BinaryPrecision": 0.9819401502609253,
+    "BinaryRecall": 0.9014685153961182,
+    "BinaryConfusionMatrix": [
+        [
+            5839.0,
+            70.0
+        ],
+        [
+            416.0,
+            3806.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.84,
+    "BinaryPrecision": 0.9841517210006714,
+    "BinaryRecall": 0.897205114364624,
+    "BinaryConfusionMatrix": [
+        [
+            5848.0,
+            61.0
+        ],
+        [
+            434.0,
+            3788.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.85,
+    "BinaryPrecision": 0.9838667511940002,
+    "BinaryRecall": 0.8955471515655518,
+    "BinaryConfusionMatrix": [
+        [
+            5847.0,
+            62.0
+        ],
+        [
+            441.0,
+            3781.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.86,
+    "BinaryPrecision": 0.9835551977157593,
+    "BinaryRecall": 0.8924680352210999,
+    "BinaryConfusionMatrix": [
+        [
+            5846.0,
+            63.0
+        ],
+        [
+            454.0,
+            3768.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.87,
+    "BinaryPrecision": 0.9862615466117859,
+    "BinaryRecall": 0.884178102016449,
+    "BinaryConfusionMatrix": [
+        [
+            5857.0,
+            52.0
+        ],
+        [
+            489.0,
+            3733.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.88,
+    "BinaryPrecision": 0.9838067293167114,
+    "BinaryRecall": 0.8777830600738525,
+    "BinaryConfusionMatrix": [
+        [
+            5848.0,
+            61.0
+        ],
+        [
+            516.0,
+            3706.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.89,
+    "BinaryPrecision": 0.9845621585845947,
+    "BinaryRecall": 0.8761250376701355,
+    "BinaryConfusionMatrix": [
+        [
+            5851.0,
+            58.0
+        ],
+        [
+            523.0,
+            3699.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.9,
+    "BinaryPrecision": 0.9881752133369446,
+    "BinaryRecall": 0.8709142804145813,
+    "BinaryConfusionMatrix": [
+        [
+            5865.0,
+            44.0
+        ],
+        [
+            545.0,
+            3677.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.91,
+    "BinaryPrecision": 0.9866703152656555,
+    "BinaryRecall": 0.8590715527534485,
+    "BinaryConfusionMatrix": [
+        [
+            5860.0,
+            49.0
+        ],
+        [
+            595.0,
+            3627.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.92,
+    "BinaryPrecision": 0.9893500804901123,
+    "BinaryRecall": 0.8581241369247437,
+    "BinaryConfusionMatrix": [
+        [
+            5870.0,
+            39.0
+        ],
+        [
+            599.0,
+            3623.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.93,
+    "BinaryPrecision": 0.9891696572303772,
+    "BinaryRecall": 0.843675971031189,
+    "BinaryConfusionMatrix": [
+        [
+            5870.0,
+            39.0
+        ],
+        [
+            660.0,
+            3562.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.94,
+    "BinaryPrecision": 0.9906647801399231,
+    "BinaryRecall": 0.8294647336006165,
+    "BinaryConfusionMatrix": [
+        [
+            5876.0,
+            33.0
+        ],
+        [
+            720.0,
+            3502.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.95,
+    "BinaryPrecision": 0.9891023635864258,
+    "BinaryRecall": 0.8169113993644714,
+    "BinaryConfusionMatrix": [
+        [
+            5871.0,
+            38.0
+        ],
+        [
+            773.0,
+            3449.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.96,
+    "BinaryPrecision": 0.9937814474105835,
+    "BinaryRecall": 0.7948839664459229,
+    "BinaryConfusionMatrix": [
+        [
+            5888.0,
+            21.0
+        ],
+        [
+            866.0,
+            3356.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.97,
+    "BinaryPrecision": 0.9947804808616638,
+    "BinaryRecall": 0.7674087882041931,
+    "BinaryConfusionMatrix": [
+        [
+            5892.0,
+            17.0
+        ],
+        [
+            982.0,
+            3240.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.98,
+    "BinaryPrecision": 0.995758593082428,
+    "BinaryRecall": 0.7228801250457764,
+    "BinaryConfusionMatrix": [
+        [
+            5896.0,
+            13.0
+        ],
+        [
+            1170.0,
+            3052.0
+        ]
+    ]
+},
+{
+    "Dataset": "celeb_A",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.99,
+    "BinaryPrecision": 0.9988876581192017,
+    "BinaryRecall": 0.638086199760437,
+    "BinaryConfusionMatrix": [
+        [
+            5906.0,
+            3.0
+        ],
+        [
+            1528.0,
+            2694.0
+        ]
+    ]
+}]

@@ -45,25 +45,27 @@ Training model {options.SOLVER.MODEL.NAME}
                       train_loader=train_loader,
                       validation_loader=validation_loader
                       )
-    trainer.train(metric_in_train=True)
+    trainer.train(metric_in_train=True, sleep_time=20)
     return None
 
 
 def test(option_path: str) -> None:
     options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
-    checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.MODEL.NAME, options.CHECKPOINT.NAME)
-    log_path = os.path.join(os.getcwd(), "logs", options.MODEL.NAME, "testing_log.json")
+    checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.MODEL.NAME + "_stable_version", options.CHECKPOINT.NAME)
 
-    test_loader: DataLoader = get_test_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
-                                           input_size=options.DATA.INPUT_SHAPE[0],
-                                           batch_size=options.DATA.BATCH_SIZE,
-                                           cuda=options.MISC.CUDA,
-                                           num_workers=options.DATA.NUM_WORKERS
-                                           )
-    print(f"""Test batch: {len(test_loader)}""")
+    for dataset in (["celeb_A", "collected_v3", "collected_v4"]):
+        options.DATA.DATASET_NAME = dataset
+        log_path = os.path.join(os.getcwd(), "logs", options.MODEL.NAME + "_stable_version", f"testing_log_{dataset}.json")
 
-    options: Box = Box(commentjson.loads(open(file=option_path, mode="r").read()))
-    inference(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader)
+        test_loader: DataLoader = get_test_set(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME),
+                                               input_size=options.DATA.INPUT_SHAPE[0],
+                                               batch_size=options.DATA.BATCH_SIZE,
+                                               cuda=options.MISC.CUDA,
+                                               num_workers=options.DATA.NUM_WORKERS
+                                               )
+        print(f"""Test batch: {len(test_loader)}""")
+
+        inference(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader, num_threshold=100)
     return None
 
 
@@ -71,15 +73,6 @@ def main() -> None:
     # train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
     test(option_path=os.path.join(os.getcwd(), "configs", "inference_config.json"))
 
-
-    # training_log_visualization(file_name="vgg13_training_log.json",
-    #                        metrics_lst=["loss", "acc", "f1"],
-    #                        base_name="vgg13"
-    #                        )
-    #
-    # To-do list
-    # Model evaluator
-    # Visualization
     return None
 
 

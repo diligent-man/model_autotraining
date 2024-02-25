@@ -1,5 +1,7 @@
+import json
 from box import Box
 from tqdm import tqdm
+from typing import List
 from src.utils.logger import Logger
 from src.utils.utils import init_metrics, init_model
 
@@ -15,6 +17,7 @@ __all__ = ["inference"]
 def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: DataLoader, num_threshold: int = 10) -> None:
     # Preliminary setups
     logger = Logger(phase="test")
+    json_obj_cache: List[json] = []
     device = "cuda" if options.MISC.CUDA else "cpu"
     checkpoint = torch.load(f=checkpoint_path, map_location=device)
     model = init_model(device=device, pretrained=False, base=options.MODEL.BASE, name=options.MODEL.NAME, state_dict=checkpoint["model_state_dict"], **options.MODEL.ARGS)
@@ -54,7 +57,13 @@ def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: Da
                 metrics = [metric.item() if metric.dim() == 1 else metric.detach().cpu().numpy().tolist() for metric in metrics]
 
                 # Logging
-                log_info = {**{"Dataset": options.DATA.DATASET_NAME, "Checkpoint name": options.CHECKPOINT.NAME, "Threshold": threshold.item()},
+                json_obj = {**{"Dataset": options.DATA.DATASET_NAME, "Checkpoint name": options.CHECKPOINT.NAME, "Threshold": round(threshold.item(), 2)},
                             **{name: metric for name, metric in zip(options.METRICS.NAME_LIST, metrics)}}
-                logger.write(file=log_path, log_info=log_info)
+                json_obj_cache.append(json.dumps(obj=json_obj, indent=4))
+
+    log_info  = ""
+    for json_obj in json_obj_cache:
+        log_info = log_info + json_obj + ",\n"
+    log_info = "[" + log_info[:-2] + "]"
+    logger.write(file=log_path, log_info=log_info)
     return None
