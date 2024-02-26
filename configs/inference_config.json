@@ -14,7 +14,10 @@
 
      "METRICS":
      {
-         "NAME_LIST": ["BinaryPrecision", "BinaryRecall", "BinaryConfusionMatrix"],
+         // Metric not use threshold must be relegated after the ones using threshold in argument
+         // Ref: torcheval.metrics
+         "NAME_LIST": ["BinaryPrecision", "BinaryRecall", "BinaryConfusionMatrix", "BinaryPrecisionRecallCurve"],
+         "NOT_USING_THRESHOLD_METRICS": 1,
          "ARGS":
          {
              "0":
@@ -30,6 +33,10 @@
              "2":
              {
                  "threshold": 0.5
+             },
+
+             "3":
+             {
              }
          }
      },

@@ -1,0 +1,17 @@
+[{
+    "Dataset": "collected_v3",
+    "Checkpoint name": "best_checkpoint.pt",
+    "Threshold": 0.5,
+    "BinaryPrecision": 0.6909975409507751,
+    "BinaryRecall": 0.8580060601234436,
+    "BinaryConfusionMatrix": [
+        [
+            289.0,
+            127.0
+        ],
+        [
+            47.0,
+            284.0
+        ]
+    ]
+}]

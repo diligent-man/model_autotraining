@@ -111,7 +111,7 @@ class Trainer:
                                                           metrics=metrics)
 
                 # Logging
-                self.__logger.write(file=log_path, log_info={**{"epoch": epoch}, **run_epoch_result})
+                self.__logger.write(log_path, {**{"epoch": epoch}, **run_epoch_result})
 
                 if phase == "eval":
                     # Save checkpoint

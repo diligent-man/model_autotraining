@@ -1,0 +1,153 @@
+[{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.1,
+    "BinaryPrecision": 0.4763948619365692,
+    "BinaryRecall": 0.982300877571106,
+    "BinaryConfusionMatrix": [
+        [
+            5.0,
+            122.0
+        ],
+        [
+            2.0,
+            111.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.2,
+    "BinaryPrecision": 0.4841628968715668,
+    "BinaryRecall": 0.9469026327133179,
+    "BinaryConfusionMatrix": [
+        [
+            13.0,
+            114.0
+        ],
+        [
+            6.0,
+            107.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.3,
+    "BinaryPrecision": 0.5124378204345703,
+    "BinaryRecall": 0.9115044474601746,
+    "BinaryConfusionMatrix": [
+        [
+            29.0,
+            98.0
+        ],
+        [
+            10.0,
+            103.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.4,
+    "BinaryPrecision": 0.5405405163764954,
+    "BinaryRecall": 0.8849557638168335,
+    "BinaryConfusionMatrix": [
+        [
+            42.0,
+            85.0
+        ],
+        [
+            13.0,
+            100.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.5,
+    "BinaryPrecision": 0.5375722646713257,
+    "BinaryRecall": 0.8230088353157043,
+    "BinaryConfusionMatrix": [
+        [
+            47.0,
+            80.0
+        ],
+        [
+            20.0,
+            93.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.6,
+    "BinaryPrecision": 0.5465838313102722,
+    "BinaryRecall": 0.778761088848114,
+    "BinaryConfusionMatrix": [
+        [
+            54.0,
+            73.0
+        ],
+        [
+            25.0,
+            88.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.7,
+    "BinaryPrecision": 0.5416666865348816,
+    "BinaryRecall": 0.6902654767036438,
+    "BinaryConfusionMatrix": [
+        [
+            61.0,
+            66.0
+        ],
+        [
+            35.0,
+            78.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.8,
+    "BinaryPrecision": 0.5762711763381958,
+    "BinaryRecall": 0.6017699241638184,
+    "BinaryConfusionMatrix": [
+        [
+            77.0,
+            50.0
+        ],
+        [
+            45.0,
+            68.0
+        ]
+    ]
+},
+{
+    "Dataset": "collected_v4",
+    "Checkpoint name": "epoch_4.pt",
+    "Threshold": 0.9,
+    "BinaryPrecision": 0.6202531456947327,
+    "BinaryRecall": 0.4336283206939697,
+    "BinaryConfusionMatrix": [
+        [
+            97.0,
+            30.0
+        ],
+        [
+            64.0,
+            49.0
+        ]
+    ]
+}]

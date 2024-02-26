@@ -2,16 +2,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.1,
-    "BinaryPrecision": 0.4977375566959381,
-    "BinaryRecall": 0.9734513163566589,
+    "BinaryPrecision": 0.4683544337749481,
+    "BinaryRecall": 0.982300877571106,
     "BinaryConfusionMatrix": [
         [
-            16.0,
-            111.0
+            1.0,
+            126.0
         ],
         [
-            3.0,
-            110.0
+            2.0,
+            111.0
         ]
     ]
 },
@@ -19,16 +19,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.2,
-    "BinaryPrecision": 0.5118483304977417,
-    "BinaryRecall": 0.9557521939277649,
+    "BinaryPrecision": 0.4727272689342499,
+    "BinaryRecall": 0.9203540086746216,
     "BinaryConfusionMatrix": [
         [
-            24.0,
-            103.0
+            11.0,
+            116.0
         ],
         [
-            5.0,
-            108.0
+            9.0,
+            104.0
         ]
     ]
 },
@@ -36,16 +36,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.3,
-    "BinaryPrecision": 0.5049999952316284,
-    "BinaryRecall": 0.8938053250312805,
+    "BinaryPrecision": 0.532608687877655,
+    "BinaryRecall": 0.8672566413879395,
     "BinaryConfusionMatrix": [
         [
-            28.0,
-            99.0
+            41.0,
+            86.0
         ],
         [
-            12.0,
-            101.0
+            15.0,
+            98.0
         ]
     ]
 },
@@ -53,16 +53,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.4,
-    "BinaryPrecision": 0.530386745929718,
-    "BinaryRecall": 0.8495575189590454,
+    "BinaryPrecision": 0.5460526347160339,
+    "BinaryRecall": 0.7345132827758789,
     "BinaryConfusionMatrix": [
         [
-            42.0,
-            85.0
+            58.0,
+            69.0
         ],
         [
-            17.0,
-            96.0
+            30.0,
+            83.0
         ]
     ]
 },
@@ -70,16 +70,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.5,
-    "BinaryPrecision": 0.5310734510421753,
-    "BinaryRecall": 0.8318583965301514,
+    "BinaryPrecision": 0.5643564462661743,
+    "BinaryRecall": 0.5044247508049011,
     "BinaryConfusionMatrix": [
         [
-            44.0,
-            83.0
+            83.0,
+            44.0
         ],
         [
-            19.0,
-            94.0
+            56.0,
+            57.0
         ]
     ]
 },
@@ -87,16 +87,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.6,
-    "BinaryPrecision": 0.5527950525283813,
-    "BinaryRecall": 0.7876105904579163,
+    "BinaryPrecision": 0.5322580933570862,
+    "BinaryRecall": 0.29203540086746216,
     "BinaryConfusionMatrix": [
         [
-            55.0,
-            72.0
+            98.0,
+            29.0
         ],
         [
-            24.0,
-            89.0
+            80.0,
+            33.0
         ]
     ]
 },
@@ -104,16 +104,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.7,
-    "BinaryPrecision": 0.5664335489273071,
-    "BinaryRecall": 0.7168141603469849,
+    "BinaryPrecision": 0.6388888955116272,
+    "BinaryRecall": 0.20353981852531433,
     "BinaryConfusionMatrix": [
         [
-            65.0,
-            62.0
+            114.0,
+            13.0
         ],
         [
-            32.0,
-            81.0
+            90.0,
+            23.0
         ]
     ]
 },
@@ -121,16 +121,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.8,
-    "BinaryPrecision": 0.5982906222343445,
-    "BinaryRecall": 0.6194690465927124,
+    "BinaryPrecision": 0.6470588445663452,
+    "BinaryRecall": 0.09734513610601425,
     "BinaryConfusionMatrix": [
         [
-            80.0,
-            47.0
+            121.0,
+            6.0
         ],
         [
-            43.0,
-            70.0
+            102.0,
+            11.0
         ]
     ]
 },
@@ -138,16 +138,16 @@
     "Dataset": "collected_v4",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.9,
-    "BinaryPrecision": 0.6666666865348816,
-    "BinaryRecall": 0.4955752193927765,
+    "BinaryPrecision": 1.0,
+    "BinaryRecall": 0.044247787445783615,
     "BinaryConfusionMatrix": [
         [
-            99.0,
-            28.0
+            127.0,
+            0.0
         ],
         [
-            57.0,
-            56.0
+            108.0,
+            5.0
         ]
     ]
 }]

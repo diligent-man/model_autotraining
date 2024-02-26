@@ -15,7 +15,9 @@ from torch.utils.data import DataLoader, random_split, Dataset
 
 from torch.optim import Adam, AdamW, NAdam, RAdam, SparseAdam, Adadelta, Adagrad, Adamax, ASGD, RMSprop, Rprop, LBFGS, SGD
 from torch.nn.modules import NLLLoss, NLLLoss2d, CTCLoss, KLDivLoss, GaussianNLLLoss, PoissonNLLLoss, L1Loss, MSELoss, HuberLoss, SmoothL1Loss, CrossEntropyLoss, BCELoss, BCEWithLogitsLoss
-from torcheval.metrics import BinaryAccuracy, BinaryF1Score, BinaryPrecision, BinaryRecall, BinaryConfusionMatrix, MulticlassAccuracy, MulticlassF1Score, MulticlassPrecision, MulticlassRecall, MulticlassConfusionMatrix
+from torcheval.metrics import BinaryAccuracy, BinaryF1Score, BinaryPrecision, BinaryRecall, BinaryConfusionMatrix, \
+    MulticlassAccuracy, MulticlassF1Score, MulticlassPrecision, MulticlassRecall, MulticlassConfusionMatrix, \
+    BinaryBinnedPrecisionRecallCurve, MulticlassBinnedPrecisionRecallCurve, BinaryPrecisionRecallCurve
 from torch.optim.lr_scheduler import LambdaLR, MultiplicativeLR, StepLR, MultiStepLR, ConstantLR, LinearLR, ExponentialLR, PolynomialLR, CosineAnnealingLR, CosineAnnealingWarmRestarts, ChainedScheduler, SequentialLR, ReduceLROnPlateau, OneCycleLR
 
 
@@ -96,12 +98,15 @@ def init_metrics(name_lst: List[str], args: Dict, device: str) -> List[torcheval
         "BinaryPrecision": BinaryPrecision,
         "BinaryRecall": BinaryRecall,
         "BinaryConfusionMatrix": BinaryConfusionMatrix,
+        "BinaryPrecisionRecallCurve": BinaryPrecisionRecallCurve,
+        "BinaryBinnedPrecisionRecallCurve": BinaryBinnedPrecisionRecallCurve,
 
         "MulticlassAccuracy": MulticlassAccuracy,
         "MulticlassF1Score": MulticlassF1Score,
         "MulticlassPrecision": MulticlassPrecision,
         "MulticlassRecall": MulticlassRecall,
         "MulticlassConfusionMatrix": MulticlassConfusionMatrix,
+        "MulticlassBinnedPrecisionRecallCurve": MulticlassBinnedPrecisionRecallCurve
     }
 
     # check whether metrics available or not

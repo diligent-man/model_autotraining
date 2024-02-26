@@ -2,16 +2,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.1,
-    "BinaryPrecision": 0.9100679755210876,
-    "BinaryRecall": 0.9827095866203308,
+    "BinaryPrecision": 0.7088271975517273,
+    "BinaryRecall": 0.9490762948989868,
     "BinaryConfusionMatrix": [
         [
-            5499.0,
-            410.0
+            4263.0,
+            1646.0
         ],
         [
-            73.0,
-            4149.0
+            215.0,
+            4007.0
         ]
     ]
 },
@@ -19,16 +19,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.2,
-    "BinaryPrecision": 0.9347430467605591,
-    "BinaryRecall": 0.9737091660499573,
+    "BinaryPrecision": 0.7639849781990051,
+    "BinaryRecall": 0.915442943572998,
     "BinaryConfusionMatrix": [
         [
-            5622.0,
-            287.0
+            4715.0,
+            1194.0
         ],
         [
-            111.0,
-            4111.0
+            357.0,
+            3865.0
         ]
     ]
 },
@@ -36,16 +36,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.3,
-    "BinaryPrecision": 0.9448563456535339,
-    "BinaryRecall": 0.9658929705619812,
+    "BinaryPrecision": 0.7950854897499084,
+    "BinaryRecall": 0.8813358545303345,
     "BinaryConfusionMatrix": [
         [
-            5671.0,
-            238.0
+            4950.0,
+            959.0
         ],
         [
-            144.0,
-            4078.0
+            501.0,
+            3721.0
         ]
     ]
 },
@@ -53,16 +53,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.4,
-    "BinaryPrecision": 0.9566042423248291,
-    "BinaryRecall": 0.9554713368415833,
+    "BinaryPrecision": 0.8229478001594543,
+    "BinaryRecall": 0.8477025032043457,
     "BinaryConfusionMatrix": [
         [
-            5726.0,
-            183.0
+            5139.0,
+            770.0
         ],
         [
-            188.0,
-            4034.0
+            643.0,
+            3579.0
         ]
     ]
 },
@@ -70,16 +70,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.5,
-    "BinaryPrecision": 0.9622414708137512,
-    "BinaryRecall": 0.9476551413536072,
+    "BinaryPrecision": 0.8411649465560913,
+    "BinaryRecall": 0.8140691518783569,
     "BinaryConfusionMatrix": [
         [
-            5752.0,
-            157.0
+            5260.0,
+            649.0
         ],
         [
-            221.0,
-            4001.0
+            785.0,
+            3437.0
         ]
     ]
 },
@@ -87,16 +87,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.6,
-    "BinaryPrecision": 0.9655172228813171,
-    "BinaryRecall": 0.9351018667221069,
+    "BinaryPrecision": 0.863551914691925,
+    "BinaryRecall": 0.770487904548645,
     "BinaryConfusionMatrix": [
         [
-            5768.0,
-            141.0
+            5395.0,
+            514.0
         ],
         [
-            274.0,
-            3948.0
+            969.0,
+            3253.0
         ]
     ]
 },
@@ -104,16 +104,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.7,
-    "BinaryPrecision": 0.9753178954124451,
-    "BinaryRecall": 0.9265750646591187,
+    "BinaryPrecision": 0.8850043416023254,
+    "BinaryRecall": 0.7254855632781982,
     "BinaryConfusionMatrix": [
         [
-            5810.0,
-            99.0
+            5511.0,
+            398.0
         ],
         [
-            310.0,
-            3912.0
+            1159.0,
+            3063.0
         ]
     ]
 },
@@ -121,16 +121,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.8,
-    "BinaryPrecision": 0.979299783706665,
-    "BinaryRecall": 0.9076266884803772,
+    "BinaryPrecision": 0.9055555462837219,
+    "BinaryRecall": 0.656324028968811,
     "BinaryConfusionMatrix": [
         [
-            5828.0,
-            81.0
+            5620.0,
+            289.0
         ],
         [
-            390.0,
-            3832.0
+            1451.0,
+            2771.0
         ]
     ]
 },
@@ -138,16 +138,16 @@
     "Dataset": "celeb_A",
     "Checkpoint name": "best_checkpoint.pt",
     "Threshold": 0.9,
-    "BinaryPrecision": 0.9878509640693665,
-    "BinaryRecall": 0.8666508793830872,
+    "BinaryPrecision": 0.9440162181854248,
+    "BinaryRecall": 0.5511605739593506,
     "BinaryConfusionMatrix": [
         [
-            5864.0,
-            45.0
+            5771.0,
+            138.0
         ],
         [
-            563.0,
-            3659.0
+            1895.0,
+            2327.0
         ]
     ]
 }]

@@ -17,7 +17,6 @@ __all__ = ["inference"]
 def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: DataLoader, num_threshold: int = 10) -> None:
     # Preliminary setups
     logger = Logger(phase="test")
-    json_obj_cache: List[json] = []
     device = "cuda" if options.MISC.CUDA else "cpu"
     checkpoint = torch.load(f=checkpoint_path, map_location=device)
     model = init_model(device=device, pretrained=False, base=options.MODEL.BASE, name=options.MODEL.NAME, state_dict=checkpoint["model_state_dict"], **options.MODEL.ARGS)
@@ -32,7 +31,8 @@ def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: Da
                 print("Testing with threshold =", round(threshold.item(), 2))
 
                 # Set metrics' threshold
-                for i in range(len(options.METRICS.NAME_LIST)):
+                # Metric not use threshold must be relegated after the ones using threshold in argument
+                for i in range(len(options.METRICS.NAME_LIST)-options.METRICS.NOT_USING_THRESHOLD_METRICS):
                     options.METRICS.ARGS[str(i)].threshold = threshold
 
                 metrics = init_metrics(name_lst=options.METRICS.NAME_LIST, args=options.METRICS.ARGS, device=device)
@@ -52,18 +52,25 @@ def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: Da
 
                     metrics = [metric.update(pred_labels, labels) for metric in metrics]
 
-                # Compute metrics
-                metrics = [metric.compute() for metric in metrics]
-                metrics = [metric.item() if metric.dim() == 1 else metric.detach().cpu().numpy().tolist() for metric in metrics]
+                # Compute metrics & Resolve output datatype returns from different metrics
+                for i in range(len(options.METRICS.NAME_LIST)):
+                    metrics[i] = metrics[i].compute()
 
-                # Logging
-                json_obj = {**{"Dataset": options.DATA.DATASET_NAME, "Checkpoint name": options.CHECKPOINT.NAME, "Threshold": round(threshold.item(), 2)},
-                            **{name: metric for name, metric in zip(options.METRICS.NAME_LIST, metrics)}}
-                json_obj_cache.append(json.dumps(obj=json_obj, indent=4))
+                    if isinstance(metrics[i], torch.Tensor):
+                        metrics[i] = metrics[i].item() if metrics[i].dim() == 1 else metrics[i].detach().cpu().numpy().tolist()
 
-    log_info  = ""
-    for json_obj in json_obj_cache:
-        log_info = log_info + json_obj + ",\n"
-    log_info = "[" + log_info[:-2] + "]"
-    logger.write(file=log_path, log_info=log_info)
+                    elif isinstance(metrics[i], tuple):
+                        metrics[i] = [ele.detach().cpu().numpy().tolist() for ele in metrics[i]]
+
+    json_obj = json.dumps(obj={
+        **{"Dataset": options.DATA.DATASET_NAME,
+           "Checkpoint name": options.CHECKPOINT.NAME,
+           "Threshold": round(threshold.item(), 2)
+           },
+        **{name: metric for name, metric in zip(options.METRICS.NAME_LIST, metrics)}
+    }, indent=4)
+
+    # Logging
+    log_info = "[\n" + json_obj + "\n]"
+    logger.write(log_path, log_info)
     return None
