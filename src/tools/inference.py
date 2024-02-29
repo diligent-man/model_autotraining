@@ -14,16 +14,17 @@ from torch.nn.functional import sigmoid, softmax
 __all__ = ["inference"]
 
 
-def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: DataLoader, num_threshold: int = 10) -> None:
+def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: DataLoader, num_threshold: int = 9) -> None:
     # Preliminary setups
     logger = Logger(phase="test")
+    json_obj_lst = []
     device = "cuda" if options.MISC.CUDA else "cpu"
     checkpoint = torch.load(f=checkpoint_path, map_location=device)
     model = init_model(device=device, pretrained=False, base=options.MODEL.BASE, name=options.MODEL.NAME, state_dict=checkpoint["model_state_dict"], **options.MODEL.ARGS)
 
     # Start inferring with different thresholds
     with torch.no_grad():
-        for threshold in torch.arange(0, 1, round(1/num_threshold, 2)):
+        for threshold in torch.arange(0, 1, round(1/(num_threshold+1), 2)):
             if threshold == 0:
                 # Threshold = 0 and 1 are ignored
                 continue
@@ -62,15 +63,19 @@ def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: Da
                     elif isinstance(metrics[i], tuple):
                         metrics[i] = [ele.detach().cpu().numpy().tolist() for ele in metrics[i]]
 
-    json_obj = json.dumps(obj={
-        **{"Dataset": options.DATA.DATASET_NAME,
-           "Checkpoint name": options.CHECKPOINT.NAME,
-           "Threshold": round(threshold.item(), 2)
-           },
-        **{name: metric for name, metric in zip(options.METRICS.NAME_LIST, metrics)}
-    }, indent=4)
+            json_obj = json.dumps(obj={
+                **{"Dataset": options.DATA.DATASET_NAME,
+                   "Checkpoint name": options.CHECKPOINT.NAME,
+                   "Threshold": round(threshold.item(), 2)
+                   },
+                **{name: metric for name, metric in zip(options.METRICS.NAME_LIST, metrics)}
+            }, indent=4)
+            json_obj_lst.append(json_obj)
 
     # Logging
-    log_info = "[\n" + json_obj + "\n]"
+    log_info = ""
+    for json_obj in json_obj_lst:
+        log_info = log_info + json_obj + ",\n"
+    log_info = "[\n" + log_info[:-2] + "\n]"  # ignore last line and comma
     logger.write(log_path, log_info)
     return None

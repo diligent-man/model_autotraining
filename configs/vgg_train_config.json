@@ -7,7 +7,7 @@
 
     "DATA":
     {
-        "DATASET_NAME": "small_celeb_A",
+        "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 96,
@@ -50,7 +50,7 @@
         "MODEL":
         {
             "BASE": "vgg",
-            "NAME": "vgg13",
+            "NAME": "vgg16",
             "PRETRAINED": false,
             "ARGS":
             {
@@ -64,7 +64,7 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-6,
+                "lr": 5e-8,
                 "weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
             }
