@@ -6,10 +6,34 @@
 
     "DATA":
     {
-        "DATASET_NAME": "celeb_A",
+        "DATASET_NAME": "small_celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "BATCH_SIZE": 240,
-        "NUM_WORKERS": 4
+        "NUM_WORKERS": 4,
+        // Transform for X/ Variables
+        "TRANSFORM":
+        {
+            "NAME_LIST": ["Resize", "PILToTensor", "ToDtype"],
+            "ARGS":
+            {
+                "0":
+                {
+                    // Upscaling to fit model input
+                    "size": [224, 224],
+                    "interpolation": "BICUBIC",
+                    "antialias": true
+                },
+
+                "1": {},  // Not need paras
+
+                "2":
+                {
+                    "dtype": "float32",
+                    // normalize image from range [0, 255] into range [0, 1]
+                    "scale": true
+                }
+            }
+        }
     },
 
      "METRICS":
@@ -48,12 +72,12 @@
 
     "MODEL":
     {
-        "BASE": "vgg",
-        "NAME": "vgg13",
+        "BASE": "resnet",
+        "NAME": "resnet18",
         "PRETRAINED": false,
         "ARGS":
         {
-            "dropout": 0.5,
+//            "dropout": 0.5,
             "num_classes": 1
         }
     },

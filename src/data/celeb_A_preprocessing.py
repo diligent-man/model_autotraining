@@ -41,22 +41,28 @@ def class_splitting_setup(src: Path, dest: Path, df: pd.DataFrame, field: str, t
 def main() -> None:
     """
     This script is used to split dataset into train and test sets based on gender
-    dataset -> Male
-                   img_1.jpg
-                   img_2.jpg
-                   img_3.jpg
-                   ...
-               Famale
-                   img_1.jpg
-                   img_2.jpg
-                   img_3.jpg
-                   ...
-
+    dataset ->
+        train
+            male
+                img_1.jpg
+                img_2.jpg
+                img_3.jpg
+                ...
+            female
+               img_1.jpg
+               img_2.jpg
+               img_3.jpg
+               ...
+        test
+            male
+                *,jpg
+            female
+                *.jpg
     """
     field = "Male"
     src = Path(r"D:\Dataset\Celeb_A\image")
-    dest = Path(r"D:\Local\Source\python\semester_6\face_attribute\celeb_A")
-    df = pd.read_csv(Path("D:\Dataset\Celeb_A\list_attr_celeba.csv")).loc[:, ["image_id", field]]
+    dest = Path(r"D:\Local\Source\python\semester_6\face_attribute\small_celeb_A")
+    df = pd.read_csv(Path("D:\Dataset\Celeb_A\list_attr_celeba.csv")).loc[:5000, ["image_id", field]]
     class_splitting_setup(src, dest, df, field=field)
     return None
 

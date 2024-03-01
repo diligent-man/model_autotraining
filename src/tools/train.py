@@ -1,16 +1,16 @@
 import os
 
-import torcheval.metrics
+
 from box import Box
 from tqdm import tqdm
-from time import time, sleep
-from typing import List, Tuple, Dict
+from time import sleep
+from typing import List, Dict
 from src.utils.logger import Logger
 from src.utils.early_stopping import EarlyStopper
 from src.utils.utils import init_loss, init_metrics, init_lr_scheduler, init_model_optimizer_start_epoch
 
 import torch
-from torcheval.metrics import Metric
+import torcheval
 
 from torch.nn.functional import sigmoid, softmax
 from torch.utils.data import DataLoader
@@ -39,7 +39,7 @@ class Trainer:
 
     def __init__(self, options: Box,
                  train_log_path: str, eval_log_path: str, checkpoint_path: str,
-                 train_loader: DataLoader, validation_loader: DataLoader
+                 train_loader: DataLoader, val_loader: DataLoader
                  ):
         self.__options: Box = options
         self.__train_log_path: str = train_log_path
@@ -48,7 +48,7 @@ class Trainer:
         self.__device: str = "cuda" if self.__options.MISC.CUDA else "cpu"
 
         self.__train_loader: DataLoader = train_loader
-        self.__validation_loader: DataLoader = validation_loader
+        self.__validation_loader: DataLoader = val_loader
 
         self.__early_stopper: EarlyStopper = EarlyStopper(**self.__options.SOLVER.EARLY_STOPPING)
         self.__logger: Logger = Logger()

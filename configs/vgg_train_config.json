@@ -8,10 +8,48 @@
     "DATA":
     {
         "DATASET_NAME": "celeb_A",
-        "INPUT_SHAPE": [224, 224, 3],
+        "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 96,
-        "NUM_WORKERS": 4
+        "NUM_WORKERS": 4,
+        // Transform for X/ Variables
+        "TRANSFORM":
+        {
+            "NAME_LIST": ["Resize", "Resize", "GaussianBlur", "PILToTensor", "ToDtype"],
+            "ARGS":
+            {
+                "0":
+                {
+                    // Downsampling
+                    // H = ceil(178 x 20%), W = ceil(218 x 20%)
+                    "size": [36, 44],
+                    "interpolation": "NEAREST",
+                    "antialias": true
+                },
+
+                "1":
+                {
+                    // Upsampling to fit model input
+                    "size": [224, 224],
+                    "interpolation": "BICUBIC",
+                    "antialias": true
+                },
+
+                "2":
+                {
+                    "kernel_size": 5
+                },
+
+                "3": {},                  // Not need paras
+
+                "4":
+                {
+                    "dtype": "float32",
+                    // normalize image from range [0, 255] into range [0, 1]
+                    "scale": true
+                }
+            }
+        }
     },
 
     "CHECKPOINT":

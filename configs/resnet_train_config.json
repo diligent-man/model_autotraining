@@ -6,25 +6,63 @@
 
     "DATA":
     {
-        "DATASET_NAME": "celeb_A",
+        "DATASET_NAME": "small_celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
         "BATCH_SIZE": 344,
-        "NUM_WORKERS": 4
+        "NUM_WORKERS": 4,
+                // Transform for X/ Variables
+        "TRANSFORM":
+        {
+            "NAME_LIST": ["Resize", "Resize", "GaussianBlur", "PILToTensor", "ToDtype"],
+            "ARGS":
+            {
+                "0":
+                {
+                    // Downsampling
+                    // H = ceil(178 x 20%), W = ceil(218 x 20%)
+                    "size": [36, 44],
+                    "interpolation": "NEAREST",
+                    "antialias": true
+                },
+
+                "1":
+                {
+                    // Upsampling to fit model input
+                    "size": [224, 224],
+                    "interpolation": "BICUBIC",
+                    "antialias": true
+                },
+
+                "2":
+                {
+                    "kernel_size": 5
+                },
+
+                "3": {},                  // Not need paras
+
+                "4":
+                {
+                    "dtype": "float32",
+                    // normalize image from range [0, 255] into range [0, 1]
+                    "scale": true
+                }
+            }
+        }
     },
 
     "CHECKPOINT":
     {
-        "SAVE": true,
-        "LOAD": true,
-        "SAVE_ALL": true,
-        "RESUME_NAME": "epoch_30.pt"
+        "SAVE": false,
+        "LOAD": false,
+        "SAVE_ALL": false,
+        "RESUME_NAME": "epoch_1.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 50
+        "EPOCHS": 1
     },
 
     "METRICS":

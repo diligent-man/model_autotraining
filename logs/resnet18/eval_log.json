@@ -208,3 +208,10 @@
     "BinaryAccuracy": 0.7710292339324951,
     "BinaryF1Score": 0.714812695980072
 },
+{
+    "Train at": "01/03/2024 13:58:55",
+    "epoch": 1,
+    "loss": 0.6929026246070862,
+    "BinaryAccuracy": 0.5768421292304993,
+    "BinaryF1Score": 0.0
+},
