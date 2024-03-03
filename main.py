@@ -40,14 +40,15 @@ def train(option_path: str) -> None:
 Training model {options.SOLVER.MODEL.NAME}
 """)
 
-    trainer = Trainer(options=options,
-                      train_log_path=train_log_path,
-                      eval_log_path=eval_log_path,
-                      checkpoint_path=checkpoint_path,
-                      train_loader=train_loader,
-                      val_loader=val_loader
-                      )
-    trainer.train(metric_in_train=True)
+    
+    # trainer = Trainer(options=options,
+    #                   train_log_path=train_log_path,
+    #                   eval_log_path=eval_log_path,
+    #                   checkpoint_path=checkpoint_path,
+    #                   train_loader=train_loader,
+    #                   val_loader=val_loader
+    #                   )
+    # trainer.train(metric_in_train=True)
     return None
 
 
@@ -73,8 +74,8 @@ def test(option_path: str) -> None:
 
 
 def main() -> None:
-    # train(option_path=os.path.join(os.getcwd(), "configs", "resnet_train_config.json"))
-    # test(option_path=os.path.join(os.getcwd(), "configs", "inference_config.json"))
+    train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
+    # test(option_path=os.path  .join(os.getcwd(), "configs", "inference_config.json"))
     return None
 
 

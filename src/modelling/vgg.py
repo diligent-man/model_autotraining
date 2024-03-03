@@ -36,23 +36,11 @@ class VGG(nn.Module):
             nn.ReLU(True),
             nn.Dropout(dropout),
 
-            nn.Linear(4096, 4096),
+            nn.Linear(4096, 1024),
             nn.ReLU(True),
             nn.Dropout(dropout),
 
-            nn.Linear(4096, 2048),
-            nn.ReLU(True),
-            nn.Dropout(dropout),
-
-            nn.Linear(2048, 1024),
-            nn.ReLU(True),
-            nn.Dropout(dropout),
-
-            nn.Linear(1024, 512),
-            nn.ReLU(True),
-            nn.Dropout(dropout),
-
-            nn.Linear(512, num_classes)
+            nn.Linear(1024, num_classes)
         )
         if init_weights:
             self._initialize_weights()

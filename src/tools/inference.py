@@ -1,7 +1,7 @@
 import json
+
 from box import Box
 from tqdm import tqdm
-from typing import List
 from src.utils.logger import Logger
 from src.utils.utils import init_metrics, init_model
 
@@ -24,7 +24,7 @@ def inference(options: Box, checkpoint_path: str, log_path: str, test_loader: Da
 
     # Start inferring with different thresholds
     with torch.no_grad():
-        for threshold in torch.arange(0, 1, round(1/(num_threshold+1), 2)):
+        for threshold in torch.arange(0, 1, (1 // num_threshold) + 1, 2):
             if threshold == 0:
                 # Threshold = 0 and 1 are ignored
                 continue

@@ -5,6 +5,8 @@ from multimethod import multimethod
 
 
 class Logger:
+    __time: datetime
+
     def __init__(self, phase: str = "train"):
         """
         phase: "train" || "test"

@@ -1,6 +1,5 @@
 import os
 
-
 from box import Box
 from tqdm import tqdm
 from time import sleep
@@ -71,7 +70,7 @@ class Trainer:
 
     @classmethod
     def __init_subclass__(cls):
-        """Check indispensable paras when instantiate Trainer"""
+        """Check indispensable args when instantiate Trainer"""
         required_class_variables = [
             "__options", "__train_log_path", "__eval_log_path", "__checkpoint_path", "__train_loader", "__val_loader"
         ]
@@ -207,7 +206,6 @@ class Trainer:
             torch.save(obj=obj, f=save_name)
 
             # Update best accuracy
-            print(self.__best_val_loss)
             self.__best_val_loss = val_loss
 
         if not save_all and epoch - 1 > 0:
@@ -216,7 +214,7 @@ class Trainer:
         return None
 
     def __get_best_val_loss(self) -> float:
-        if "best_checkpoint.pt" in self.__checkpoint_path:
+        if "best_checkpoint.pt" in os.listdir(self.__checkpoint_path):
             return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["val_loss"]
         else:
             return 1e9

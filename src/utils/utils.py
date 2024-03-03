@@ -7,8 +7,8 @@ from src.modelling.resnet import get_resnet_model
 
 import torch
 import torcheval
-from torchsummary import summary
 
+from torchsummary import summary
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import InterpolationMode, Compose
 from torch.utils.data import DataLoader, random_split, Dataset
