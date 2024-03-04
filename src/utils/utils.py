@@ -237,7 +237,7 @@ def get_transformation(transform_dict: Box = None) -> Compose:
             assert transform_lst[i] in available_transform.keys(), "Your selected transform is unavailable"
 
             # Verify interpolation mode & replace str name to its corresponding func
-            if transform_lst[i] == "Resize":
+            if transform_lst[i] in ("Resize", "RandomRotation"):
                 assert args[str(i)].interpolation in available_interpolation.keys(), "Your selected interpolation mode in unavailable"
                 args[str(i)].interpolation = available_interpolation[args[str(i)].interpolation]
 

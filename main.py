@@ -1,11 +1,14 @@
 import os
+import shutil
 import commentjson
 
 from box import Box
 from src.tools.train import Trainer
 from src.tools.inference import inference
+from src.data.celeb_A_preprocessing import generate_celeb_A_dataset
 from src.utils.utils import get_train_val_loader, get_test_loader, get_dataset
 
+import torchvision
 from torch.utils.data import DataLoader
 
 
@@ -40,15 +43,14 @@ def train(option_path: str) -> None:
 Training model {options.SOLVER.MODEL.NAME}
 """)
 
-    
-    # trainer = Trainer(options=options,
-    #                   train_log_path=train_log_path,
-    #                   eval_log_path=eval_log_path,
-    #                   checkpoint_path=checkpoint_path,
-    #                   train_loader=train_loader,
-    #                   val_loader=val_loader
-    #                   )
-    # trainer.train(metric_in_train=True)
+    trainer = Trainer(options=options,
+                      train_log_path=train_log_path,
+                      eval_log_path=eval_log_path,
+                      checkpoint_path=checkpoint_path,
+                      train_loader=train_loader,
+                      val_loader=val_loader
+                      )
+    trainer.train(metric_in_train=True)
     return None
 
 
@@ -73,7 +75,10 @@ def test(option_path: str) -> None:
     return None
 
 
+
+
 def main() -> None:
+    # generate_celeb_A_dataset()
     train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
     # test(option_path=os.path  .join(os.getcwd(), "configs", "inference_config.json"))
     return None
@@ -81,3 +86,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+
