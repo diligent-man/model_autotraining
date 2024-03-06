@@ -1,14 +1,12 @@
 import os
-import shutil
 import commentjson
 
 from box import Box
 from src.tools.train import Trainer
-from src.tools.inference import inference
+from src.tools.evaluate import evaluate
 from src.data.celeb_A_preprocessing import generate_celeb_A_dataset
 from src.utils.utils import get_train_val_loader, get_test_loader, get_dataset
 
-import torchvision
 from torch.utils.data import DataLoader
 
 
@@ -29,7 +27,6 @@ def train(option_path: str) -> None:
 
     train_log_path = os.path.join(log_path, f"training_log.json")
     eval_log_path = os.path.join(log_path, f"eval_log.json")
-
 
     train_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME, "train"),
                             transform=options.DATA.TRANSFORM)
@@ -71,19 +68,18 @@ def test(option_path: str) -> None:
                                                   )
         print(f"""Test batch: {len(test_loader)}""")
 
-        inference(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader, num_threshold=2)
+        evaluate(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader)
     return None
-
-
 
 
 def main() -> None:
     # generate_celeb_A_dataset()
     train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
-    # test(option_path=os.path  .join(os.getcwd(), "configs", "inference_config.json"))
+    # test(option_path=os.path  .join(os.getcwd(), "configs", "test_config.json"))
     return None
+
+
 
 
 if __name__ == '__main__':
     main()
-

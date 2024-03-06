@@ -21,6 +21,7 @@ class Trainer:
     __eval_log_path: str
     __checkpoint_path: str
     __device: str
+    __best_val_loss: float
 
     __train_loader: DataLoader
     __validation_loader: DataLoader
@@ -34,7 +35,6 @@ class Trainer:
     __start_epoch: int
     __model: torch.nn.Module
 
-    __best_val_loss: float
 
     def __init__(self, options: Box,
                  train_log_path: str, eval_log_path: str, checkpoint_path: str,
@@ -45,11 +45,12 @@ class Trainer:
         self.__eval_log_path: str = eval_log_path
         self.__checkpoint_path: str = checkpoint_path
         self.__device: str = "cuda" if self.__options.MISC.CUDA else "cpu"
+        self.__best_val_loss: float = self.__get_best_val_loss()
 
         self.__train_loader: DataLoader = train_loader
         self.__validation_loader: DataLoader = val_loader
 
-        self.__early_stopper: EarlyStopper = EarlyStopper(**self.__options.SOLVER.EARLY_STOPPING)
+        self.__early_stopper: EarlyStopper = EarlyStopper(self.__best_val_loss, **self.__options.SOLVER.EARLY_STOPPING)
         self.__logger: Logger = Logger()
 
         self.__loss = init_loss(name=self.__options.SOLVER.LOSS.NAME, args=self.__options.SOLVER.LOSS.ARGS)
@@ -66,7 +67,7 @@ class Trainer:
         self.__lr_schedulers: torch.optim.lr_scheduler.LRScheduler = init_lr_scheduler(
             name=self.__options.SOLVER.LR_SCHEDULER.NAME, args=self.__options.SOLVER.LR_SCHEDULER.ARGS,
             optimizer=self.__optimizer)
-        self.__best_val_loss: float = self.__get_best_val_loss()
+
 
     @classmethod
     def __init_subclass__(cls):
@@ -122,7 +123,7 @@ class Trainer:
                                                     "optimizer_state_dict": self.__optimizer.state_dict()
                                                     }
                                                )
-
+                    print("Early stopper", self.__early_stopper.min_val_loss, self.__early_stopper.counter)
                     # Early stopping checking
                     if self.__options.MISC.APPLY_EARLY_STOPPING:
                         if self.__early_stopper.check(val_loss=run_epoch_result["loss"]):
@@ -217,4 +218,4 @@ class Trainer:
         if "best_checkpoint.pt" in os.listdir(self.__checkpoint_path):
             return torch.load(f=os.path.join(self.__checkpoint_path, "best_checkpoint.pt"))["val_loss"]
         else:
-            return 1e9
+            return float("inf")

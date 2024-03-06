@@ -1,9 +1,9 @@
 class EarlyStopper:
-    def __init__(self, PATIENCE=1, MIN_DELTA=0):
+    def __init__(self, min_val_loss: float = float("inf"), patience=1, min_delta=0):
         self.counter = 0
-        self.min_delta = MIN_DELTA
-        self.patience = PATIENCE  # Num of epoch that val loss is allowed to increase
-        self.min_val_loss = float('inf')
+        self.min_delta = min_delta
+        self.patience = patience  # Num of epoch that val loss is allowed to increase
+        self.min_val_loss = min_val_loss
 
     def check(self, val_loss: float):
         if val_loss < self.min_val_loss:

@@ -1,5 +1,4 @@
 {
-    //
     "EXPERIMENTS":
     {
         "PROJECT_NAME": "face_attribute"
@@ -10,7 +9,7 @@
         "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 120,
+        "BATCH_SIZE": 176,
         "NUM_WORKERS": 4,
         // Transform for X/ Variables
         "TRANSFORM":
@@ -40,15 +39,15 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": true,
+        "LOAD": false,
         "SAVE_ALL": false,
-        "RESUME_NAME": "epoch_41.pt"
+        "RESUME_NAME": "epoch_39.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 9
+        "EPOCHS": 50
     },
 
     "METRICS":
@@ -87,7 +86,7 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-6,
+                "lr": 1e-7,
                 "amsgrad": true
             }
         },
@@ -98,7 +97,7 @@
             "ARGS":
             {
                 "T_0": 100,
-                "T_mult": 3,
+                "T_mult": 3
             }
         },
 
@@ -113,8 +112,8 @@
 
         "EARLY_STOPPING":
         {
-            "PATIENCE": 5,
-            "MIN_DELTA": 0
+            "patience": 5,
+            "min_delta": 0
         }
     },
 

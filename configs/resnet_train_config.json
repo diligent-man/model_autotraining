@@ -6,27 +6,18 @@
 
     "DATA":
     {
-        "DATASET_NAME": "small_celeb_A",
+        "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 344,
+        "BATCH_SIZE": 680,
         "NUM_WORKERS": 4,
-                // Transform for X/ Variables
+        // Transform for X/ Variables
         "TRANSFORM":
         {
-            "NAME_LIST": ["Resize", "Resize", "GaussianBlur", "PILToTensor", "ToDtype"],
+            "NAME_LIST": ["Resize", "PILToTensor", "ToDtype"],
             "ARGS":
             {
                 "0":
-                {
-                    // Downsampling
-                    // H = ceil(178 x 20%), W = ceil(218 x 20%)
-                    "size": [36, 44],
-                    "interpolation": "NEAREST",
-                    "antialias": true
-                },
-
-                "1":
                 {
                     // Upsampling to fit model input
                     "size": [224, 224],
@@ -34,14 +25,9 @@
                     "antialias": true
                 },
 
+                "1": {},
+
                 "2":
-                {
-                    "kernel_size": 5
-                },
-
-                "3": {},                  // Not need paras
-
-                "4":
                 {
                     "dtype": "float32",
                     // normalize image from range [0, 255] into range [0, 1]
@@ -53,16 +39,16 @@
 
     "CHECKPOINT":
     {
-        "SAVE": false,
+        "SAVE": true,
         "LOAD": false,
-        "SAVE_ALL": false,
+        "SAVE_ALL": true,
         "RESUME_NAME": "epoch_1.pt"
     },
 
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 1
+        "EPOCHS": 10
     },
 
     "METRICS":
@@ -101,7 +87,7 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-6,
+                "lr": 1e-3,
                  "weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
             }
@@ -115,7 +101,6 @@
             {
                 "T_0": 100,
                 "T_mult": 3,
-                "eta_min": 1e-8
             }
         },
 
@@ -130,8 +115,8 @@
 
         "EARLY_STOPPING":
         {
-            "PATIENCE": 5,
-            "MIN_DELTA": 0
+            "patience": 5,
+            "min_delta": 0
         }
     },
 
