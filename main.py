@@ -11,25 +11,25 @@ from torch.utils.data import DataLoader
 
 
 def train(option_path: str) -> None:
-    # Load dataset
     options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
 
     checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.SOLVER.MODEL.NAME)
     log_path = os.path.join(os.getcwd(), "logs", options.SOLVER.MODEL.NAME)
 
     if not os.path.isdir(checkpoint_path):
-        os.makedirs(checkpoint_path, 0x777, True)
+        os.makedirs(checkpoint_path, 0o777, True)
         print(f"Checkpoint dir for {options.SOLVER.MODEL.NAME} was created.")
 
     if not os.path.isdir(log_path):
-        os.makedirs(log_path, 0x777, True)
+        os.makedirs(log_path, 0o777, True)
         print(f"Log dir checkpoint for {options.SOLVER.MODEL.NAME} was created.")
 
     train_log_path = os.path.join(log_path, f"training_log.json")
     eval_log_path = os.path.join(log_path, f"eval_log.json")
 
     train_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME, "train"),
-                            transform=options.DATA.TRANSFORM)
+                            transform=options.DATA.TRANSFORM,
+                            )
 
     train_loader, val_loader = get_train_val_loader(dataset=train_set,
                                                     train_size=options.DATA.TRAIN_SIZE,
@@ -59,7 +59,9 @@ def test(option_path: str) -> None:
         options.DATA.DATASET_NAME = dataset
         log_path = os.path.join(os.getcwd(), "logs", options.MODEL.NAME, f"testing_log_{dataset}.json")
 
-        test_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME, "test"), transform=options.DATA.TRANSFORM)
+        test_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME, "test"),
+                               transform=options.DATA.TRANSFORM,
+                               )
 
         test_loader: DataLoader = get_test_loader(dataset=test_set,
                                                   batch_size=options.DATA.BATCH_SIZE,
@@ -74,7 +76,8 @@ def test(option_path: str) -> None:
 
 def main() -> None:
     # generate_celeb_A_dataset()
-    train(option_path=os.path.join(os.getcwd(), "configs", "vgg_train_config.json"))
+    train(option_path=os.path.join(os.getcwd(), "configs", "resnet_train_config.json"))
+    # train(option_path=os.path.join(os.getcwd(), "configs", "age_config.json"))
     # test(option_path=os.path  .join(os.getcwd(), "configs", "test_config.json"))
     return None
 

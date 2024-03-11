@@ -6,44 +6,41 @@
 
     "DATA":
     {
-        "DATASET_NAME": "small_celeb_A",
+        "DATASET_NAME": "celeb_A",
         "INPUT_SHAPE": [224, 224, 3],
         "TRAIN_SIZE": 0.9,
-        "BATCH_SIZE": 360,
+        "BATCH_SIZE": 80,
         "NUM_WORKERS": 4,
         // Transform for X/ Variables
-        "TRANSFORM": {
-            "NAME_LIST": [
-                "Resize",
-                "PILToTensor",
-                "ToDtype"
-            ],
-            "ARGS": {
-                "0": {
+        "TRANSFORM":
+        {
+            "NAME_LIST": ["Resize", "PILToTensor", "ToDtype"],
+            "ARGS":
+            {
+                "0":
+                {
                     // Upsampling to fit model input
-                    "size": [
-                        224,
-                        224
-                    ],
+                    "size": [224, 224],
                     "interpolation": "BICUBIC",
                     "antialias": true
                 },
+
                 "1": {},
-                "2": {
+
+                "2":
+                {
                     "dtype": "float32",
                     // normalize image from range [0, 255] into range [0, 1]
                     "scale": true
                 }
             }
-        },
-
-        "TARGET_TRANSFORM": {}
+        }
     },
 
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": false,
+        "LOAD": true,
         "SAVE_ALL": false,
         "RESUME_NAME": "epoch_50.pt"
     },
@@ -51,13 +48,12 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 1
+        "EPOCHS": 50
     },
 
     "METRICS":
     {
         "NAME_LIST": ["BinaryAccuracy", "BinaryF1Score"],
-//        "NAME_LIST": ["MulticlassAccuracy", "MulticlassF1Score","MulticlassConfusionMatrix"],
         "ARGS":
         {
             "0":
@@ -70,24 +66,6 @@
                "threshold": 0.5
             }
         }
-//        "ARGS":
-//        {
-//            "0":
-//            {
-//               "average": null,
-//                "num_classes": 2
-//            },
-//
-//            "1":
-//            {
-//               "average": null,
-//                "num_classes": 2
-//            },
-//            "2":
-//            {
-//                "num_classes": 2
-//            }
-//        }
     },
 
     "SOLVER":
@@ -96,7 +74,7 @@
         "MODEL":
         {
             "BASE": "resnet",
-            "NAME": "resnet18",
+            "NAME": "resnet152",
             "PRETRAINED": false,
             "ARGS":
             {
@@ -109,7 +87,7 @@
             "NAME": "Adam",
             "ARGS":
             {
-                "lr": 1e-5,
+                "lr": 1e-6,
                 "weight_decay": 3.0517578125e-05, // 1/32768
                 "amsgrad": true
             }
@@ -122,14 +100,13 @@
             "ARGS":
             {
                 "T_0": 100,
-                "T_mult": 3
+                "T_mult": 3,
             }
         },
 
         "LOSS":
         {
             "NAME": "BCELoss",
-//            "NAME": "CrossEntropyLoss",
             "ARGS":
             {
                 "reduction": "mean"

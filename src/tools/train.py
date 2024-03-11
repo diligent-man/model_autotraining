@@ -14,7 +14,7 @@ import torcheval
 from torch.nn.functional import sigmoid, softmax
 from torch.utils.data import DataLoader
 
-
+from torchvision.transforms import v2 
 class Trainer:
     __options: Box
     __train_log_path: str
@@ -150,14 +150,15 @@ class Trainer:
         # Epoch training
         for index, batch in tqdm(enumerate(dataset_loader), total=len(dataset_loader), colour="cyan",
                                  desc=phase.capitalize()):
-            imgs, labels = batch[0].type(torch.FloatTensor).to(self.__device), batch[1]
-
+            imgs, labels = batch[0].to(self.__device), batch[1]
+            
             # reset gradients prior to forward pass
             self.__optimizer.zero_grad()
 
             with torch.set_grad_enabled(phase == "train"):
                 # forward pass
                 pred_labels = self.__model(imgs)
+                
                 if num_class == 1:
                     # Shape: N1 -> N
                     pred_labels = sigmoid(pred_labels).squeeze(dim=1)
@@ -165,10 +166,11 @@ class Trainer:
                 else:
                     # Shape: NC -> N
                     pred_labels = softmax(pred_labels, dim=1)
-
+                    labels = labels.type(torch.LongTensor).to(self.__device)
+                
                 # Update loss
                 mini_batch_loss = self.__loss(pred_labels, labels)
-
+                
                 # backprop + optimize only if in training phase
                 if phase == 'train':
                     mini_batch_loss.backward()
@@ -178,14 +180,24 @@ class Trainer:
                 # Update metrics only if eval phase
                 if metrics is not None:
                     metrics = [metric.update(pred_labels, labels) for metric in metrics]
+
+                        
             # Accumulate minibatch into total loss
             total_loss += mini_batch_loss.item()
 
         if metrics is not None:
             metrics_name = self.__options.METRICS.NAME_LIST
-            metric_val = [metric.compute().item() for metric in metrics]
+
+            for i in range(len(metrics_name)):
+                metrics[i] = metrics[i].compute()
+                if isinstance(metrics[i], torch.Tensor):
+                    metrics[i] = metrics[i].item() if metrics[i].dim() == 1 and len(metrics[i]) == 1 else metrics[i].detach().cpu().numpy().tolist()
+
+                elif isinstance(metrics[i], tuple):
+                    metrics[i] = [ele.detach().cpu().numpy().tolist() for ele in metrics[i]]
+
             training_result = {**{"loss": total_loss / len(dataset_loader)},
-                               **{metric_name: value for metric_name, value in zip(metrics_name, metric_val)}
+                               **{metric_name: value for metric_name, value in zip(metrics_name, metrics)}
                                }
         else:
             training_result = {"loss": total_loss / len(dataset_loader)}

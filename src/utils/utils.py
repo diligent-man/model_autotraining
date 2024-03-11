@@ -133,7 +133,8 @@ from torchvision.transforms.v2 import (
     PILToTensor,
     ToImage,
     ToPILImage,
-    ToPureTensor
+    ToPureTensor,
+    ToTensor
 )
 
 
@@ -202,12 +203,14 @@ def get_transformation(transform_dict: Box = None) -> Compose:
         "PILToTensor": PILToTensor,
         "ToImage": ToImage,
         "ToPILImage": ToPILImage,
-        "ToPureTensor": ToPureTensor
+        "ToPureTensor": ToPureTensor,
+        "ToTensor": ToTensor
     }
 
     # Took from InterpolationMode of pytorch
     available_interpolation = {
         "NEAREST": InterpolationMode.NEAREST,
+        "NEAREST_EXACT": InterpolationMode.NEAREST_EXACT,
         "BILINEAR": InterpolationMode.BILINEAR,
         "BICUBIC": InterpolationMode.BICUBIC,
         # For PIL compatibility
@@ -226,7 +229,7 @@ def get_transformation(transform_dict: Box = None) -> Compose:
         "int8": torch.int8,
         "int16": torch.int16,
         "int32": torch.int32,
-        "int6": torch.int64
+        "int64": torch.int64
     }
 
     if transform_dict is not None:
