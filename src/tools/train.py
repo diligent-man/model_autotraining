@@ -15,6 +15,8 @@ from torch.nn.functional import sigmoid, softmax
 from torch.utils.data import DataLoader
 
 from torchvision.transforms import v2 
+
+
 class Trainer:
     __options: Box
     __train_log_path: str

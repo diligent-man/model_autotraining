@@ -51,7 +51,7 @@
     "EPOCH":
     {
         "START": 1,
-        "EPOCHS": 5
+        "EPOCHS": 1
     },
 
     "METRICS":

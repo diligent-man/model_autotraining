@@ -4,6 +4,7 @@ import commentjson
 from box import Box
 from src.tools.train import Trainer
 from src.tools.evaluate import evaluate
+from src.data.celeb_A_preprocessing import generate_celeb_A_dataset
 from src.utils.utils import get_train_val_loader, get_test_loader, get_dataset
 
 from torch.utils.data import DataLoader
