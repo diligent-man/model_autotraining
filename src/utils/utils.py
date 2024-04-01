@@ -1,305 +1,116 @@
 import os
 
-from box import Box
-from typing import Tuple, Dict, List
-from src.modelling.vgg import get_vgg_model
-from src.modelling.resnet import get_resnet_model
+from typing import Tuple, Dict, List, Any
+from src.utils.ConfigManager import ConfigManager
+from src.pytorch_src.Module.available_loss import available_loss
+from src.pytorch_src.Module.available_model import available_model, available_weight
+from src.pytorch_src.Optim.available_optimizer import available_optimizers
+from src.pytorch_src.Optim.available_lr_scheduler import available_lr_scheduler
+from src.pytorch_src.Transform.available_dtype import available_dtype
+from src.pytorch_src.Transform.available_interpolation import available_interpolation
+from src.pytorch_src.Transform.available_transform import available_transform
+from src.pytorch_src.Metric.available_metric import available_metrics
 
 import torch
 import torcheval
 
-from torchsummary import summary
+from torchvision.transforms import Compose
 from torchvision.datasets import ImageFolder
-from torchvision.transforms import InterpolationMode, Compose
 from torch.utils.data import DataLoader, random_split, Dataset
 
-from torch.optim import (
-    Adam,
-    AdamW,
-    NAdam,
-    RAdam,
-    SparseAdam,
-    Adadelta,
-    Adagrad,
-    Adamax,
-    ASGD,
-    RMSprop,
-    Rprop,
-    LBFGS,
-    SGD
-)
 
-from torch.nn.modules import (
-    NLLLoss,
-    NLLLoss2d,
-    CTCLoss,
-    KLDivLoss,
-    GaussianNLLLoss,
-    PoissonNLLLoss,
-    L1Loss,
-    MSELoss,
-    HuberLoss,
-    SmoothL1Loss,
-    CrossEntropyLoss,
-    BCELoss,
-    BCEWithLogitsLoss
-)
-
-from torcheval.metrics import (
-    BinaryAccuracy,
-    BinaryF1Score,
-    BinaryPrecision,
-    BinaryRecall,
-    BinaryConfusionMatrix,
-    MulticlassAccuracy,
-    MulticlassF1Score,
-    MulticlassPrecision,
-    MulticlassRecall,
-    MulticlassConfusionMatrix,
-    BinaryBinnedPrecisionRecallCurve,
-    MulticlassBinnedPrecisionRecallCurve,
-    BinaryPrecisionRecallCurve
-)
-
-from torch.optim.lr_scheduler import (
-    LambdaLR,
-    MultiplicativeLR,
-    StepLR,
-    MultiStepLR,
-    ConstantLR,
-    LinearLR,
-    ExponentialLR,
-    PolynomialLR,
-    CosineAnnealingLR,
-    CosineAnnealingWarmRestarts,
-    ChainedScheduler,
-    SequentialLR,
-    ReduceLROnPlateau,
-    OneCycleLR
-)
-
-from torchvision.transforms.v2 import (
-    # Color
-    ColorJitter,
-    Grayscale,
-    RandomAdjustSharpness,
-    RandomAutocontrast,
-    RandomChannelPermutation,
-    RandomEqualize,
-    RandomGrayscale,
-    RandomInvert,
-    RandomPhotometricDistort,
-    RandomPosterize,
-    RandomSolarize,
-
-    # Geometry
-    CenterCrop,
-    ElasticTransform,
-    FiveCrop,
-    Pad,
-    RandomAffine,
-    RandomCrop,
-    RandomHorizontalFlip,
-    RandomIoUCrop,
-    RandomPerspective,
-    RandomResize,
-    RandomResizedCrop,
-    RandomRotation,
-    RandomShortestSize,
-    RandomVerticalFlip,
-    RandomZoomOut,
-    Resize,
-    ScaleJitter,
-    TenCrop,
-
-    # Meta
-    ClampBoundingBoxes,
-    ConvertBoundingBoxFormat,
-
-    # Misc
-    ConvertImageDtype,
-    GaussianBlur,
-    Identity,
-    Lambda,
-    LinearTransformation,
-    Normalize,
-    SanitizeBoundingBoxes,
-    ToDtype,
-
-    # Temporal
-    UniformTemporalSubsample,
-
-    # Type conversion
-    PILToTensor,
-    ToImage,
-    ToPILImage,
-    ToPureTensor,
-    ToTensor
-)
-
-
-__all__ = ["get_dataset", "get_train_val_loader", "get_test_loader", "get_model_summary",
-           "init_loss", "init_lr_scheduler", "init_metrics", "init_model", "init_model_optimizer_start_epoch"
+__all__ = ["get_train_val_loader", "get_test_loader", "init_loss", "init_lr_scheduler",
+           "init_metrics", "init_model", "init_model_optimizer_start_epoch"
            ]
 
 
-def get_model_summary(model: torch.nn.Module, input_size: Tuple, device: str):
-    return summary(model=model, input_size=input_size, device=device)
-
-
-def get_transformation(transform_dict: Box = None) -> Compose:
-    available_transform = {
-        # Color
-        "ColorJitter": ColorJitter,
-        "Grayscale": Grayscale,
-        "RandomAdjustSharpness": RandomAdjustSharpness,
-        "RandomAutocontrast": RandomAutocontrast,
-        "RandomChannelPermutation": RandomChannelPermutation,
-        "RandomEqualize": RandomEqualize,
-        "RandomGrayscale": RandomGrayscale,
-        "RandomInvert": RandomInvert,
-        "RandomPhotometricDistort": RandomPhotometricDistort,
-        "RandomPosterize": RandomPosterize,
-        "RandomSolarize": RandomSolarize,
-
-        # Geometry
-        "CenterCrop": CenterCrop,
-        "ElasticTransform": ElasticTransform,
-        "FiveCrop": FiveCrop,
-        "Pad": Pad,
-        "RandomAffine": RandomAffine,
-        "RandomCrop": RandomCrop,
-        "RandomHorizontalFlip": RandomHorizontalFlip,
-        "RandomIoUCrop": RandomIoUCrop,
-        "RandomPerspective": RandomPerspective,
-        "RandomResize": RandomResize,
-        "RandomResizedCrop": RandomResizedCrop,
-        "RandomRotation": RandomRotation,
-        "RandomShortestSize": RandomShortestSize,
-        "RandomVerticalFlip": RandomVerticalFlip,
-        "RandomZoomOut": RandomZoomOut,
-        "Resize": Resize,
-        "ScaleJitter": ScaleJitter,
-        "TenCrop": TenCrop,
-
-        # Meta
-        "ClampBoundingBoxes": ClampBoundingBoxes,
-        "ConvertBoundingBoxFormat": ConvertBoundingBoxFormat,
-
-        # Misc
-        "ConvertImageDtype": ConvertImageDtype,
-        "GaussianBlur": GaussianBlur,
-        "Identity": Identity,
-        "Lambda": Lambda,
-        "LinearTransformation": LinearTransformation,
-        "Normalize": Normalize,
-        "SanitizeBoundingBoxes": SanitizeBoundingBoxes,
-        "ToDtype": ToDtype,
-
-        # Temporal
-        "UniformTemporalSubsample": UniformTemporalSubsample,
-
-        # Type conversion
-        "PILToTensor": PILToTensor,
-        "ToImage": ToImage,
-        "ToPILImage": ToPILImage,
-        "ToPureTensor": ToPureTensor,
-        "ToTensor": ToTensor
-    }
-
-    # Took from InterpolationMode of pytorch
-    available_interpolation = {
-        "NEAREST": InterpolationMode.NEAREST,
-        "NEAREST_EXACT": InterpolationMode.NEAREST_EXACT,
-        "BILINEAR": InterpolationMode.BILINEAR,
-        "BICUBIC": InterpolationMode.BICUBIC,
-        # For PIL compatibility
-        "BOX": InterpolationMode.BOX,
-        "HAMMING": InterpolationMode.HAMMING,
-        "LANCZOS": InterpolationMode.LANCZOS,
-    }
-
-    available_dtype = {
-        "complex64": torch.complex64,
-        "complex128": torch.complex128,
-        "float16": torch.float16,
-        "float32": torch.float32,
-        "float64": torch.float64,
-        "uint8": torch.uint8,
-        "int8": torch.int8,
-        "int16": torch.int16,
-        "int32": torch.int32,
-        "int64": torch.int64
-    }
-
-    if transform_dict is not None:
-        transform_lst: List[str] = transform_dict.NAME_LIST
-        args: Box = transform_dict.ARGS
+def _get_transformation(transforms: Dict[str, Dict] = None) -> Compose:
+    if transforms is not None:
         # Verify transformation
-        for i in range(len(transform_lst)):
-            assert transform_lst[i] in available_transform.keys(), "Your selected transform is unavailable"
+        for k in transforms.keys():
+            assert k in available_transform.keys(), "Your selected transform method is unavailable"
 
             # Verify interpolation mode & replace str name to its corresponding func
-            if transform_lst[i] in ("Resize", "RandomRotation"):
-                assert args[str(i)].interpolation in available_interpolation.keys(), "Your selected interpolation mode in unavailable"
-                args[str(i)].interpolation = available_interpolation[args[str(i)].interpolation]
+            if k in ("Resize", "RandomRotation"):
+                assert transforms[k]["interpolation"] in available_interpolation.keys(), "Your selected interpolation mode in unavailable"
+                transforms[k]["interpolation"] = available_interpolation[transforms[k]["interpolation"]]
 
             # Verify dtype & replace str name to its corresponding func
-            if transform_lst[i] == "ToDtype":
-                assert args[str(i)].dtype in available_dtype.keys(), "Your selected dtype in unavailable"
-                args[str(i)].dtype = available_dtype[args[str(i)].dtype]
-        compose: Compose = Compose([available_transform[transform_lst[i]](**args[str(i)]) for i in range(len(transform_lst))])
+            if k in ("ToDtype"):
+                assert transforms[k]["dtype"] in available_dtype.keys(), "Your selected dtype in unavailable"
+                transforms[k]["dtype"] = available_dtype[transforms[k]["dtype"]]
+
+        compose: Compose = Compose([available_transform[k](**v) for k, v in transforms.items()])
     else:
         compose: Compose = Compose([])
     return compose
 
 
-def get_dataset(root: str,
-                transform: Box = None,
-                target_transform: Box = None
+def _get_dataset(root: str,
+                transform: Dict[str, Dict] = None,
+                target_transform: Dict[str, Dict] = None
                 ) -> Dataset:
     """
-    root: dataset dir
-    input_shape: CHW
-    transform: Dict of transformation name and its corresponding args
-    target_transform:                     //                          but for labels/ target
+    Args:
+        root: dataset dir
+        transform: Dict of transformation name and its corresponding kwargs
+        target_transform:                     //                            but for labels
     """
     return ImageFolder(root=root,
-                       transform=get_transformation(transform_dict=transform),
-                       target_transform=get_transformation(transform_dict=target_transform)
+                       transform=_get_transformation(transforms=transform),
+                       target_transform=_get_transformation(transforms=target_transform)
                        )
 
 
-def get_train_val_loader(dataset: Dataset,
-                         train_size: float, batch_size: int,
-                         seed: int, cuda: bool, num_workers=1
-                         ) -> Tuple[DataLoader, DataLoader]:
-    train_size = round(len(dataset) * train_size)
-    pin_memory = True if cuda is True else False  # Use page-locked or not
-
-    train_set, validation_set = random_split(dataset=dataset,
-                                             generator=torch.Generator().manual_seed(seed),
-                                             lengths=[train_size, len(dataset) - train_size])
-
-    train_set = DataLoader(dataset=train_set,
-                           batch_size=batch_size,
-                           shuffle=True,
-                           num_workers=num_workers,
-                           pin_memory=pin_memory
+def get_train_val_loader(config_manager: ConfigManager, customDataloader=None) -> Tuple[DataLoader, DataLoader]:
+    dataset = _get_dataset(root=os.path.join(config_manager.DATA_PATH, "train"),
+                           transform=config_manager.DATA_TRANSFORM,
+                           target_transform=config_manager.DATA_TARGET_TRANSFORM
                            )
 
-    validation_set = DataLoader(dataset=validation_set,
-                                batch_size=batch_size,
-                                shuffle=True,
-                                num_workers=num_workers,
-                                pin_memory=pin_memory
-                                )
+    train_size = round(len(dataset) * config_manager.DATA_TRAIN_SIZE)
+    pin_memory = True if config_manager.DEVICE == "cuda" else False
+
+    train_set, validation_set = random_split(dataset=dataset,
+                                             generator=torch.Generator().manual_seed(config_manager.SEED),
+                                             lengths=[train_size, len(dataset) - train_size])
+    if customDataloader is None:
+        train_set = DataLoader(dataset=train_set,
+                               batch_size=config_manager.BATCH_SIZE,
+                               shuffle=True,
+                               num_workers=config_manager.DATA_NUM_WORKERS,
+                               pin_memory=pin_memory
+                               )
+
+        validation_set = DataLoader(dataset=validation_set,
+                                    batch_size=config_manager.BATCH_SIZE,
+                                    shuffle=True,
+                                    num_workers=config_manager.DATA_NUM_WORKERS,
+                                    pin_memory=pin_memory
+                                    )
+    else:
+        train_set = customDataloader(dataset=train_set,
+                                     batch_size=config_manager.BATCH_SIZE,
+                                     shuffle=True,
+                                     num_workers=config_manager.DATA_NUM_WORKERS,
+                                     pin_memory=pin_memory
+                                     )
+
+        validation_set = customDataloader(dataset=validation_set,
+                                          batch_size=config_manager.BATCH_SIZE,
+                                          shuffle=True,
+                                          num_workers=config_manager.DATA_NUM_WORKERS,
+                                          pin_memory=pin_memory
+                                          )
     return train_set, validation_set
 
 
-def get_test_loader(dataset: Dataset, batch_size: int, cuda: bool, num_workers=1) -> DataLoader:
+def get_test_loader(dataset: Dataset,
+                    batch_size: int = 32,
+                    device: str = "cpu",
+                    num_workers=1) -> DataLoader:
     # Use page-locked or not
-    pin_memory = True if cuda is True else False
+    pin_memory = True if device == "cuda" else False
     return DataLoader(dataset=dataset,
                       batch_size=batch_size,
                       shuffle=True,
@@ -309,51 +120,18 @@ def get_test_loader(dataset: Dataset, batch_size: int, cuda: bool, num_workers=1
 ##########################################################################################################################
 
 
-def init_loss(name: str, args: Dict) -> torch.nn.Module:
-    available_loss = {
-        "NLLLoss": NLLLoss, "NLLLoss2d": NLLLoss2d,
-        "CTCLoss": CTCLoss, "KLDivLoss": KLDivLoss,
-        "GaussianNLLLoss": GaussianNLLLoss, "PoissonNLLLoss": PoissonNLLLoss,
-        "CrossEntropyLoss": CrossEntropyLoss, "BCELoss": BCELoss, "BCEWithLogitsLoss": BCEWithLogitsLoss,
-        "L1Loss": L1Loss, "MSELoss": MSELoss, "HuberLoss": HuberLoss, "SmoothL1Loss": SmoothL1Loss,
-    }
+def init_loss(name: str, args: Dict[str, Any]) -> torch.nn.Module:
     assert name in available_loss.keys(), "Your selected loss function is unavailable"
     loss: torch.nn.Module = available_loss[name](**args)
     return loss
 
 
 def init_lr_scheduler(name: str, args: Dict, optimizer: torch.optim.Optimizer) -> torch.optim.lr_scheduler.LRScheduler:
-    available_lr_scheduler = {
-        "LambdaLR": LambdaLR, "MultiplicativeLR": MultiplicativeLR, "StepLR": StepLR, "MultiStepLR": MultiStepLR,
-        "ConstantLR": ConstantLR,
-        "LinearLR": LinearLR, "ExponentialLR": ExponentialLR, "PolynomialLR": PolynomialLR,
-        "CosineAnnealingLR": CosineAnnealingLR,
-        "CosineAnnealingWarmRestarts": CosineAnnealingWarmRestarts, "ChainedScheduler": ChainedScheduler,
-        "SequentialLR": SequentialLR,
-        "ReduceLROnPlateau": ReduceLROnPlateau, "OneCycleLR": OneCycleLR
-    }
     assert name in available_lr_scheduler.keys(), "Your selected lr scheduler is unavailable"
     return available_lr_scheduler[name](optimizer, **args)
 
 
 def init_metrics(name_lst: List[str], args: Dict, device: str) -> List[torcheval.metrics.Metric]:
-    available_metrics = {
-        "BinaryAccuracy": BinaryAccuracy,
-        "BinaryF1Score": BinaryF1Score,
-        "BinaryPrecision": BinaryPrecision,
-        "BinaryRecall": BinaryRecall,
-        "BinaryConfusionMatrix": BinaryConfusionMatrix,
-        "BinaryPrecisionRecallCurve": BinaryPrecisionRecallCurve,
-        "BinaryBinnedPrecisionRecallCurve": BinaryBinnedPrecisionRecallCurve,
-
-        "MulticlassAccuracy": MulticlassAccuracy,
-        "MulticlassF1Score": MulticlassF1Score,
-        "MulticlassPrecision": MulticlassPrecision,
-        "MulticlassRecall": MulticlassRecall,
-        "MulticlassConfusionMatrix": MulticlassConfusionMatrix,
-        "MulticlassBinnedPrecisionRecallCurve": MulticlassBinnedPrecisionRecallCurve
-    }
-
     # check whether metrics available or not
     for metric in name_lst:
         assert metric in available_metrics.keys(), "Your selected metric is unavailable"
@@ -366,23 +144,90 @@ def init_metrics(name_lst: List[str], args: Dict, device: str) -> List[torcheval
     return metrics
 
 
-def init_model(device: str, pretrained: bool, base: str,
-               name: str, state_dict: dict, **kwargs) -> torch.nn.Module:
-    available_bases = {
-        "vgg": get_vgg_model,
-        "resnet": get_resnet_model
-    }
-    assert base in available_bases.keys(), "Your selected base is unavailable"
-    model: torch.nn.Module = available_bases[base](device, name, pretrained, state_dict, **kwargs)
+def _adapt_classifier(modules: torch.nn.Module, num_classes: int):
+    """
+    Add one more linear layer to the model's output to make the model suitable to training dataset
+    """
+    out_features = _get_out_features(modules=modules)
+    if num_classes != out_features:
+        # Retrieve from the last module
+        for module in tuple(modules)[::-1]:
+            if isinstance(module, torch.nn.Conv2d) or isinstance(module, torch.nn.Linear):
+                break
+            else:
+                pass
+        # model = torch.nn.Sequential(
+        #     model,
+        #     torch.nn.ReLU(False),
+        #     torch.nn.Dropout(),
+        #     torch.nn.Linear(in_features=out_features, out_features=num_classes)
+        # )
+
+def init_model(device: str,
+               num_classes: int,
+               model_name: str,
+               model_args: Dict[str, Any],
+               state_dict: dict = None,
+               pretrained_weight: bool = False,
+               ) -> torch.nn.Module:
+    assert model_name in available_model.keys(), "Your selected model is unavailable"
+
+    if pretrained_weight:
+        """
+        Use pretrained weight from ImageNet-1K"""
+        model = available_model[model_name](weights=available_weight[model_name].DEFAULT, **kwargs)
+        # model = _adapt_classifier(model.modules(), num_classes)
+    else:
+        model = available_model[model_name](**model_args)
+
+        if state_dict is not None:
+            print("Loading pretrained model...")
+            model.load_state_dict(state_dict)
+            print("Finished.")
+        else:
+            print("Initializing parameters...")
+            for para in model.parameters():
+                if para.dim() > 1:
+                    torch.nn.init.xavier_uniform_(para)
+            print("Finished.")
+
+
+
+    # Temp sol for adding fc layer to suit current input num_classes when using pretrained weight
+
+
+
+
+    # Temp solution for Inception_v3 when using pretrained weight
+    # https://discuss.pytorch.org/t/questions-about-auxillary-classifier-of-inceptionv3/25211
+    # from pprint import pprint as pp
+    # if model_name in ("inception_v3", "googlenet"):
+    #     if kwargs.get("aux_logits", True):
+    #         for layer in model.modules():
+    #             # if isinstance(layer, InceptionAux):
+    #             print(layer)
+    #
+    #         # print(list(model.children())[-5])
+    #         # print(list(model.children()))
+    #     else:
+    #         model.aux_logits = False
+
+
+
+    # def _get_out_features(modules) -> int:
+    #     # Retrieve from the last module
+    #     for module in tuple(modules())[::-1]:
+    #         if isinstance(module, torch.nn.Conv2d):
+    #             return module.out_channels
+    #         elif isinstance(module, torch.nn.Linear):
+    #             return module.out_features
+
+    model = model.to(device)
     return model
 
 
 def init_optimizer(name: str, model_paras, state_dict: Dict = None, **kwargs) -> torch.optim.Optimizer:
-    available_optimizers = {
-        "Adam": Adam, "AdamW": AdamW, "NAdam": NAdam, "Adadelta": Adadelta, "Adagrad": Adagrad, "Adamax": Adamax,
-        "RAdam": RAdam, "SparseAdam": SparseAdam, "RMSprop": RMSprop, "Rprop": Rprop, "ASGD": ASGD, "LBFGS": LBFGS,
-        "SGD": SGD
-    }
+
     assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
 
     # init optimizer
@@ -394,10 +239,15 @@ def init_optimizer(name: str, model_paras, state_dict: Dict = None, **kwargs) ->
 
 
 def init_model_optimizer_start_epoch(device: str,
-                                     checkpoint_load: bool, checkpoint_path: str, resume_name: str,
-                                     optimizer_name: str, optimizer_args: Dict,
-                                     model_base: str, model_name: str, model_args: Dict,
-                                     pretrained: bool = False
+                                     num_classes: int,
+                                     checkpoint_load: bool,
+                                     checkpoint_path: str,
+                                     resume_name: str,
+                                     optimizer_name: str,
+                                     optimizer_args: Dict,
+                                     model_name: str,
+                                     model_args: Dict[str, Any],
+                                     pretrained_weight: bool = False
                                      ) -> Tuple[int, torch.nn.Module, torch.optim.Optimizer]:
     model_state_dict = None
     optimizer_state_dict = None
@@ -409,11 +259,22 @@ def init_model_optimizer_start_epoch(device: str,
         model_state_dict = checkpoint["model_state_dict"]
         optimizer_state_dict = checkpoint["optimizer_state_dict"]
 
-    model: torch.nn.Module = init_model(device=device, pretrained=pretrained, base=model_base,
-                                        name=model_name, state_dict=model_state_dict, **model_args
-                                        )
+    # In case of saving entire model
+    if not isinstance(model_state_dict, torch.nn.Module):
+        model: torch.nn.Module = init_model(device=device,
+                                            num_classes=num_classes,
+                                            model_name=model_name,
+                                            state_dict=model_state_dict,
+                                            pretrained_weight=pretrained_weight,
+                                            model_args=model_args
+                                            )
+    else:
+        model = model_state_dict
 
-    optimizer: torch.optim.Optimizer = init_optimizer(name=optimizer_name, model_paras=model.parameters(),
-                                                      state_dict=optimizer_state_dict, **optimizer_args
+    optimizer: torch.optim.Optimizer = init_optimizer(name=optimizer_name,
+                                                      model_paras=model.parameters(),
+                                                      state_dict=optimizer_state_dict,
+                                                      **optimizer_args
                                                       )
     return start_epoch, model, optimizer
+
