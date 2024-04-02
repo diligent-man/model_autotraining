@@ -41,6 +41,8 @@ class Trainer:
                                                                                               optimizer_args=self.__config_manager.OPTIMIZER_ARGS,
                                                                                               model_name=self.__config_manager.MODEL_NAME,
                                                                                               model_args=self.__config_manager.MODEL_ARGS,
+                                                                                              model_classifier_name=self.__config_manager.__dict__.get("MODEL_CLASSIFIER_NAME", None),
+                                                                                              model_classifier_args=self.__config_manager.__dict__.get("MODEL_CLASSIFIER_ARGS", None),
                                                                                               pretrained_weight=self.__config_manager.MODEL_PRETRAINED_WEIGHT
                                                                                               )
 
@@ -50,28 +52,28 @@ class Trainer:
         if self.__config_manager.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
             self.__early_stopper = EarlyStopper(self.__best_val_loss, **self.__config_manager.EARLY_STOPPING_ARGS)
-
-        from operator import add
-        def print_class_counts(data_loader_dict):
-            counter_lst = [0] * 2
-            for epoch in range(3):
-                for phase, data_loader in data_loader_dict.items():
-                    print(f"Phase: {phase}")
-                    for i, (inputs, labels) in enumerate(data_loader):
-                        class_counts = labels.bincount()
-                        # print(f"Batch {i + 1}: {class_counts.tolist()}")
-
-                        if len(class_counts.tolist()) < 2:
-                            counter_lst = list( map(add, counter_lst, class_counts.tolist() + [0]))
-                        else:
-                            counter_lst = list(map(add, counter_lst, class_counts.tolist()))
-                            print(counter_lst)
-                    print()
-                    print()
-
-        print_class_counts({
-            "train": self.__train_loader
-        })
+        #
+        # from operator import add
+        # def print_class_counts(data_loader_dict):
+        #     counter_lst = [0] * 2
+        #     for epoch in range(3):
+        #         for phase, data_loader in data_loader_dict.items():
+        #             print(f"Phase: {phase}")
+        #             for i, (inputs, labels) in enumerate(data_loader):
+        #                 class_counts = labels.bincount()
+        #                 # print(f"Batch {i + 1}: {class_counts.tolist()}")
+        #
+        #                 if len(class_counts.tolist()) < 2:
+        #                     counter_lst = list( map(add, counter_lst, class_counts.tolist() + [0]))
+        #                 else:
+        #                     counter_lst = list(map(add, counter_lst, class_counts.tolist()))
+        #                     print(counter_lst)
+        #             print()
+        #             print()
+        #
+        # print_class_counts({
+        #     "train": self.__train_loader
+        # })
 
     # Class methods
     @classmethod

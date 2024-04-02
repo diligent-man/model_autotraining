@@ -1,4 +1,11 @@
-from torch.nn import Dropout, Dropout1d, Dropout2d, Dropout3d, AlphaDropout, FeatureAlphaDropout
+from torch.nn import (
+    Dropout,
+    Dropout1d,
+    Dropout2d,
+    Dropout3d,
+    AlphaDropout,
+    FeatureAlphaDropout
+)
 
 available_dropout = {
     "Dropout": Dropout,

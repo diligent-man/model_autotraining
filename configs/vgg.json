@@ -3,9 +3,7 @@
 
     "DATA":
     {
-//        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
-        "PATH": "D:\\Local\\Source\\python\\semester_6\\face_attribute\\small_celeb_A",
-//        "PATH": "D:\\Local\\Source\\python\\semester_6\\face_attribute\\mega_age",
+        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
         "NUM_WORKERS": 4,
@@ -48,14 +46,29 @@
 
     "MODEL":
     {
-        "BASE": "alexnet",
-        "NAME": "alexnet",
-        "PRETRAINED_WEIGHT": false,
+        "BASE": "googlenet",
+        "NAME": "googlenet",
+        "PRETRAINED_WEIGHT": true,
         "REMOVE_PRETRAINED_WEIGHT": false,
+
         "ARGS":
         {
 //            "aux_logits": true,
-            "num_classes": 2
+//            "num_classes": 2
+        },
+
+        "CLASSIFIER_NAME": ["ReLU", "Dropout", "Linear"],
+
+        "CLASSIFIER_ARGS":
+        {
+            "0":{},
+            "1":{},
+            "2":
+            {
+                "in_features": 1000,
+                "out_features": 2
+            }
+
         }
     },
 

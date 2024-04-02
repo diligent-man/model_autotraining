@@ -1,15 +1,25 @@
 import os
 
-from typing import Tuple, Dict, List, Any
+from typing import Tuple, Dict, List, Any, Generator
 from src.utils.ConfigManager import ConfigManager
-from src.pytorch_src.Module.available_loss import available_loss
-from src.pytorch_src.Module.available_model import available_model, available_weight
-from src.pytorch_src.Optim.available_optimizer import available_optimizers
-from src.pytorch_src.Optim.available_lr_scheduler import available_lr_scheduler
-from src.pytorch_src.Transform.available_dtype import available_dtype
-from src.pytorch_src.Transform.available_interpolation import available_interpolation
-from src.pytorch_src.Transform.available_transform import available_transform
-from src.pytorch_src.Metric.available_metric import available_metrics
+
+from src.open_src.pytorch.nn.conv import available_conv
+from src.open_src.pytorch.nn.loss import available_loss
+from src.open_src.pytorch.nn.linear import available_linear
+from src.open_src.pytorch.nn.pooling import available_pooling
+from src.open_src.pytorch.nn.dropout import available_dropout
+from src.open_src.pytorch.nn.activation import available_activations
+from src.open_src.pytorch.nn.normalization import available_normalization
+from src.open_src.pytorch.optim.optimizer import available_optimizers
+from src.open_src.pytorch.optim.lr_scheduler import available_lr_scheduler
+from src.open_src.pytorch.Tensor.dtype import available_dtype
+
+from src.open_src.torcheval.metric import available_metrics
+
+from src.open_src.torchvision.models.model import available_model, available_weight
+from src.open_src.torchvision.transforms.v2 import available_transform
+from src.open_src.torchvision.transforms.interpolation import available_interpolation
+
 
 import torch
 import torcheval
@@ -144,29 +154,87 @@ def init_metrics(name_lst: List[str], args: Dict, device: str) -> List[torcheval
     return metrics
 
 
-def _adapt_classifier(modules: torch.nn.Module, num_classes: int):
-    """
-    Add one more linear layer to the model's output to make the model suitable to training dataset
-    """
-    out_features = _get_out_features(modules=modules)
-    if num_classes != out_features:
+def _adapt_classifier(model: torch.nn.Module, num_classes: int,
+                      model_classifier_name: str = None,
+                      model_classifier_args: Dict[str, Dict] = None) -> torch.nn.Module:
+    def _get_out_features(modules: Generator) -> int:
         # Retrieve from the last module
-        for module in tuple(modules)[::-1]:
-            if isinstance(module, torch.nn.Conv2d) or isinstance(module, torch.nn.Linear):
-                break
-            else:
-                pass
-        # model = torch.nn.Sequential(
-        #     model,
-        #     torch.nn.ReLU(False),
-        #     torch.nn.Dropout(),
-        #     torch.nn.Linear(in_features=out_features, out_features=num_classes)
-        # )
+        for module in list(modules)[::-1]:
+            if isinstance(module, torch.nn.Conv2d):
+                return module.out_channels
+            elif isinstance(module, torch.nn.Linear):
+                return module.out_features
+    def _get_new_classifier(model_classifier_name: str,
+                            model_classifier_args: Dict[str, Dict]) -> torch.nn.Sequential:
+        for layer in model_classifier_name:
+            assert layer in {**available_pooling, **available_dropout, **available_activations, **available_normalization, **available_lr_scheduler}
+
+    out_features: int = _get_out_features(modules=model.modules())
+    if num_classes != out_features:
+        # Case 1 (Default): Add activation, dropout, linear to the last model's layer
+        if model_classifier_name is None:
+            model = torch.nn.Sequential(
+                *list(model.children()),
+                torch.nn.ReLU(inplace=True),
+                torch.nn.Dropout(p=0.5),
+                torch.nn.Linear(in_features=out_features, out_features=num_classes)
+            )
+        # Case 2: Supersede entire last module with specified configs
+
+    print(model)
+
+    # if num_classes != out_features:
+    #     # Check whether last children is a Sequential module and it has pooling, activation or not
+    #     has_pooling: bool = False
+    #     has_activation: bool = False
+    #
+    #     if isinstance(list(model.children())[-1], torch.nn.Sequential):
+    #         for module in list(model.children())[-1]:
+    #             if isinstance(module, tuple(available_activations.values())):
+    #                 print(module)
+        # Retrieve from the last module
+
+
+        # for i in range(-1, -(len(list(model.children())) + 1), -1):
+        #     if isinstance(list(model.children())[i], torch.nn.Sequential):
+        #         model = torch.nn.Sequential(
+        #             *list(model.children()),
+        #             torch.nn.ReLU(inplace=True),
+        #             torch.nn.Dropout(p=0.5),
+        #             torch.nn.Linear(in_features=out_features, out_features=num_classes)
+        #         )
+        #         break
+        #     elif isinstance(list(model.children())[i], torch.nn.Linear):
+        #         model = torch.nn.Sequential(
+        #             *list(model.children()),
+        #             torch.nn.ReLU(inplace=True),
+        #             torch.nn.Dropout(p=0.5),
+        #             torch.nn.Linear(in_features=out_features, out_features=num_classes)
+        #         )
+        #         break
+
+            # Last module is Linear layer
+            # if isinstance(list(model.children())[i], torch.nn.Linear):
+            #     print("Linear")
+            #     print(module.out_features)
+            #     break
+            # Last module is Sequential container, then search from the last of it
+            # elif
+            # if isinstance(module, torch.nn.Conv2d):
+            #     print("Conv2d")
+            #     print(module)
+            #     break
+
+            # if isinstance(module, InceptionAux):
+            #     print(module)
+
 
 def init_model(device: str,
                num_classes: int,
                model_name: str,
                model_args: Dict[str, Any],
+               model_classifier_name: str = None,
+               model_classifier_args: Dict[str, Dict] = None,
                state_dict: dict = None,
                pretrained_weight: bool = False,
                ) -> torch.nn.Module:
@@ -175,8 +243,8 @@ def init_model(device: str,
     if pretrained_weight:
         """
         Use pretrained weight from ImageNet-1K"""
-        model = available_model[model_name](weights=available_weight[model_name].DEFAULT, **kwargs)
-        # model = _adapt_classifier(model.modules(), num_classes)
+        model = available_model[model_name](weights=available_weight[model_name].DEFAULT, **model_args)
+        model = _adapt_classifier(model, num_classes, model_classifier_name, model_classifier_args)
     else:
         model = available_model[model_name](**model_args)
 
@@ -214,13 +282,7 @@ def init_model(device: str,
 
 
 
-    # def _get_out_features(modules) -> int:
-    #     # Retrieve from the last module
-    #     for module in tuple(modules())[::-1]:
-    #         if isinstance(module, torch.nn.Conv2d):
-    #             return module.out_channels
-    #         elif isinstance(module, torch.nn.Linear):
-    #             return module.out_features
+
 
     model = model.to(device)
     return model
@@ -247,6 +309,8 @@ def init_model_optimizer_start_epoch(device: str,
                                      optimizer_args: Dict,
                                      model_name: str,
                                      model_args: Dict[str, Any],
+                                     model_classifier_name: List[str],
+                                     model_classifier_args: Dict[str, Dict],
                                      pretrained_weight: bool = False
                                      ) -> Tuple[int, torch.nn.Module, torch.optim.Optimizer]:
     model_state_dict = None
@@ -263,10 +327,12 @@ def init_model_optimizer_start_epoch(device: str,
     if not isinstance(model_state_dict, torch.nn.Module):
         model: torch.nn.Module = init_model(device=device,
                                             num_classes=num_classes,
-                                            model_name=model_name,
                                             state_dict=model_state_dict,
                                             pretrained_weight=pretrained_weight,
-                                            model_args=model_args
+                                            model_name=model_name,
+                                            model_args=model_args,
+                                            model_classifier_name=model_classifier_name,
+                                            model_classifier_args=model_classifier_args
                                             )
     else:
         model = model_state_dict

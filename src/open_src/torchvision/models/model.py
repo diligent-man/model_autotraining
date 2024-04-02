@@ -244,5 +244,5 @@ available_weight = {
     "swin_v2_t": Swin_V2_T_Weights.DEFAULT,
     "swin_v2_s": Swin_V2_S_Weights.DEFAULT,
     "swin_v2_b": Swin_V2_B_Weights.DEFAULT,
-    "maxvit": MaxVit_T_Weights.DEFAULT
+    "maxvit_t": MaxVit_T_Weights.DEFAULT
 }

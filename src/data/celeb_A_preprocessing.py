@@ -20,9 +20,9 @@ from torchvision.transforms import v2, InterpolationMode
 __all__ = ["generate_celeb_A_dataset"]
 
 
-BATCH_SIZE = 424
-NUM_WORKERS = 4
-CHECKPOINT_PATH = r"D:\Local\Pretrained_models\YOLOv8\Face_detection\yolov8n-face.pt"
+BATCH_SIZE = 384
+NUM_WORKERS = 6
+CHECKPOINT_PATH = "/home/trong/Downloads/Local/Pretrained_models/YOLOv8/Face_detection/yolov8n-face.pt"
 
 preprocessing_transformations = v2.Compose([
     v2.Resize(size=[50, 50], interpolation=InterpolationMode.NEAREST, antialias=True),
@@ -31,8 +31,8 @@ preprocessing_transformations = v2.Compose([
 ])
 
 yolo_transformations = v2.Compose([
-    v2.Resize(size=(640, 640), interpolation=InterpolationMode.BICUBIC, antialias=True),
     v2.PILToTensor(),
+    v2.Resize(size=(640, 640), interpolation=InterpolationMode.BICUBIC, antialias=True),
     v2.ToDtype(torch.float32, scale=True)
 ])
 
@@ -52,7 +52,8 @@ def crop_face(dataset_path: str, save_path: str, annotation_path: str,
 
     dataset = CelebADataset(dataset_path=dataset_path,
                             annotation=annotation,
-                            transform=yolo_transformations)
+                            transform=yolo_transformations
+                            )
 
     dataloader = DataLoader(dataset=dataset,
                             batch_size=BATCH_SIZE,
@@ -84,8 +85,8 @@ def crop_face(dataset_path: str, save_path: str, annotation_path: str,
                 img = preprocessing_transformations(img)
 
                 # Save img
-                torchvision.io.write_jpeg(input=img, filename=os.path.join(save_path, corresponding_annotation.loc[
-                    annotation_index, "image_id"]))
+                filename = os.path.join(save_path, corresponding_annotation.loc[annotation_index, "image_id"])
+                torchvision.io.write_jpeg(input=img, filename=filename)
 
                 # Write annotation to tmp
                 tmp_annotation = tmp_annotation._append(corresponding_annotation.loc[annotation_index, :],
@@ -157,17 +158,17 @@ def class_splitting_setup(dataset_path: str, save_path: str, annotation_path: st
 
 def generate_celeb_A_dataset(remove_tmp_dir: bool = True) -> None:
     funcs = [crop_face, class_splitting_setup]
-    dataset_paths = [r"D:\Dataset\Celeb_A\image", r"D:\Dataset\Celeb_A\tmp"]
-    save_paths = [r"D:\Dataset\Celeb_A\tmp", r"D:\Local\Source\python\semester_6\face_attribute\celeb_A"]
-    annotation_paths = [r"D:\Dataset\Celeb_A\list_attr_celeba.csv", r"D:\Dataset\Celeb_A\tmp.csv"]
+    dataset_paths = ["/home/trong/Downloads/Dataset/Celeb_A/image", "/home/trong/Downloads/Dataset/Celeb_A/tmp"]
+    save_paths = ["/home/trong/Downloads/Dataset/Celeb_A/tmp", "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/celeb_A"]
+    annotation_paths = ["/home/trong/Downloads/Dataset/Celeb_A/list_attr_celeba.csv", "/home/trong/Downloads/Dataset/Celeb_A/tmp.csv"]
 
     # Check path availability
     for path in save_paths:
         if not os.path.isdir(path):
-            os.makedirs(name=path, mode=0x777, exist_ok=True)
+            os.makedirs(name=path, mode=0o777, exist_ok=True)
         else:
             shutil.rmtree(path=path)
-            os.makedirs(name=path, mode=0x777, exist_ok=True)
+            os.makedirs(name=path, mode=0o777, exist_ok=True)
 
     for func, dataset_path, save_path, annotation_path in zip(funcs, dataset_paths, save_paths, annotation_paths):
         func(dataset_path, save_path, annotation_path)
