@@ -11,8 +11,6 @@ from src.utils.utils import init_loss, init_metrics, init_lr_scheduler, init_mod
 
 import torch, torcheval, torchinfo
 from torch.utils.data import DataLoader
-from torchvision.models.googlenet import GoogLeNetOutputs
-from torchvision.models.inception import InceptionOutputs
 
 
 class Trainer:

@@ -1,6 +1,5 @@
 import os
 import shutil
-import pathlib
 
 # Counter for each class
 label_counter = {

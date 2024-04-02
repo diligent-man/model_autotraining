@@ -188,13 +188,14 @@ def _adapt_classifier(model: torch.nn.Module,
             *[available_layer[name](**arg) for name, arg in zip(new_classifier_name, new_classifier_args)]
         )
 
-
     out_features: int = _get_out_features(modules=model.modules())
     if num_classes != out_features:
         # Case 1 (Default): Add activation, dropout, linear to the last model's layer
         if new_classifier_name is None:
             model = torch.nn.Sequential(
-                *list(model.children()),
+                # Existent model
+                model,
+                # Adapted classifier
                 torch.nn.Sequential(
                     torch.nn.ReLU(inplace=True),
                     torch.nn.Dropout(p=0.5),
@@ -204,15 +205,15 @@ def _adapt_classifier(model: torch.nn.Module,
 
         # Case 2: Supersede entire last module with specified configs
         else:
-            print(list(model.children()))
-
             model = torch.nn.Sequential(
                 *list(model.children())[:-1],
                 _get_new_classifier(new_classifier_name, new_classifier_args)
                 )
 
-        # print(list(model.modules()))
-        print()
+
+        for layer in list(model.children()):
+            print(layer)
+            print("####################################3")
     return model
 
 

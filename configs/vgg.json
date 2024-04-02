@@ -36,9 +36,9 @@
 
     "CHECKPOINT":
     {
-        "SAVE": false,
+        "SAVE": true,
         "LOAD": false,
-        "SAVE_ALL": false,
+        "SAVE_ALL": true,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": false,
         "RESUME_NAME": "epoch_3.pt"
@@ -46,8 +46,8 @@
 
     "MODEL":
     {
-        "BASE": "googlenet",
-        "NAME": "googlenet",
+        "BASE": "vgg",
+        "NAME": "vgg16",
         "PRETRAINED_WEIGHT": true,
         "REMOVE_PRETRAINED_WEIGHT": false,
 
@@ -69,7 +69,7 @@
         "NEW_CLASSIFIER_ARGS":[
             {"start_dim": 1},
             {},
-            {"in_features": 9216, "out_features": 4096}, {}, {},
+            {"in_features": 25088, "out_features": 4096}, {}, {},
             {"in_features": 4096, "out_features": 4096}, {}, {},
             {"in_features": 4096, "out_features": 1000}, {},
             {"in_features": 1000, "out_features": 2}
