@@ -1,25 +1,25 @@
 import os
 
+from src.open_src import (
+    available_conv,
+    available_loss,
+    available_linear,
+    available_pooling,
+    available_dropout,
+    available_flatten,
+    available_activation,
+    available_normalization,
+    available_optimizers,
+    available_lr_scheduler,
+    available_dtype,
+    available_metrics,
+    available_weight,
+    available_transform,
+    available_interpolation,
+    available_model
+)
 from typing import Tuple, Dict, List, Any, Generator
 from src.utils.ConfigManager import ConfigManager
-
-from src.open_src.pytorch.nn.conv import available_conv
-from src.open_src.pytorch.nn.loss import available_loss
-from src.open_src.pytorch.nn.linear import available_linear
-from src.open_src.pytorch.nn.pooling import available_pooling
-from src.open_src.pytorch.nn.dropout import available_dropout
-from src.open_src.pytorch.nn.flatten import available_flatten
-from src.open_src.pytorch.nn.activation import available_activation
-from src.open_src.pytorch.nn.normalization import available_normalization
-from src.open_src.pytorch.optim.optimizer import available_optimizers
-from src.open_src.pytorch.optim.lr_scheduler import available_lr_scheduler
-from src.open_src.pytorch.Tensor.dtype import available_dtype
-
-from src.open_src.torcheval.metric import available_metrics
-
-from src.open_src.torchvision.models.model import available_model, available_weight
-from src.open_src.torchvision.transforms.v2 import available_transform
-from src.open_src.torchvision.transforms.interpolation import available_interpolation
 
 
 import torch
@@ -225,6 +225,7 @@ def init_model(device: str,
                state_dict: dict = None,
                pretrained_weight: bool = False,
                ) -> torch.nn.Module:
+    # TODO: New classifier for AUX_LOGITS is undone -> still not train googlelenet & inceptionv3
     assert model_name in available_model.keys(), "Your selected model is unavailable"
 
     if pretrained_weight:
@@ -246,13 +247,6 @@ def init_model(device: str,
                     torch.nn.init.xavier_uniform_(para)
             print("Finished.")
 
-
-
-    # Temp sol for adding fc layer to suit current input num_classes when using pretrained weight
-
-
-
-
     # Temp solution for Inception_v3 when using pretrained weight
     # https://discuss.pytorch.org/t/questions-about-auxillary-classifier-of-inceptionv3/25211
     # from pprint import pprint as pp
@@ -266,11 +260,6 @@ def init_model(device: str,
     #         # print(list(model.children()))
     #     else:
     #         model.aux_logits = False
-
-
-
-
-
     model = model.to(device)
     return model
 
