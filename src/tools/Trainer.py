@@ -41,8 +41,8 @@ class Trainer:
                                                                                               optimizer_args=self.__config_manager.OPTIMIZER_ARGS,
                                                                                               model_name=self.__config_manager.MODEL_NAME,
                                                                                               model_args=self.__config_manager.MODEL_ARGS,
-                                                                                              model_classifier_name=self.__config_manager.__dict__.get("MODEL_CLASSIFIER_NAME", None),
-                                                                                              model_classifier_args=self.__config_manager.__dict__.get("MODEL_CLASSIFIER_ARGS", None),
+                                                                                              new_classifier_name=self.__config_manager.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
+                                                                                              new_classifier_args=self.__config_manager.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
                                                                                               pretrained_weight=self.__config_manager.MODEL_PRETRAINED_WEIGHT
                                                                                               )
 

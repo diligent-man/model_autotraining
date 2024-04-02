@@ -2,7 +2,7 @@ from torch.nn import (
     Bilinear,
     Identity,
     LazyLinear,
-    Linear
+    Linear,
 )
 
 available_linear = {

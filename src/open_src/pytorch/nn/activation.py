@@ -34,7 +34,7 @@ from torch.nn import (
     AdaptiveLogSoftmaxWithLoss
 )
 
-available_activations = {
+available_activation = {
     "ELU": ELU,
     "Hardshrink": Hardshrink,
     "Hardsigmoid": Hardsigmoid,
