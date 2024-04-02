@@ -3,11 +3,11 @@
 
     "DATA":
     {
-        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
+        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
         "NUM_WORKERS": 4,
-        "NUM_CLASSES": 2,
+        "NUM_CLASSES": 1,
         "TRANSFORM":
         {
             "Resize":
@@ -37,43 +37,41 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": false,
-        "SAVE_ALL": true,
+        "LOAD": true,
+        "SAVE_ALL": false,
         "SAVE_WEIGHT_ONLY": false,
-        "INCLUDE_CONFIG": false,
-        "RESUME_NAME": "epoch_3.pt"
+        "INCLUDE_CONFIG": true,
+        "RESUME_NAME": "epoch_14.pt"
     },
 
     "MODEL":
     {
         "BASE": "vgg",
-        "NAME": "vgg16",
-        "PRETRAINED_WEIGHT": true,
+        "NAME": "vgg11",
+        "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
-
         "ARGS":
         {
-//            "aux_logits": true,
-//            "num_classes": 2
-        },
+            "num_classes": 1
+        }
 
-        "NEW_CLASSIFIER_NAME":[
-            "Flatten",
-            "Dropout",
-            "Linear", "ReLU", "Dropout",
-            "Linear", "ReLU", "Dropout",
-            "Linear", "ReLU",
-            "Linear"
-        ],
-
-        "NEW_CLASSIFIER_ARGS":[
-            {"start_dim": 1},
-            {},
-            {"in_features": 25088, "out_features": 4096}, {}, {},
-            {"in_features": 4096, "out_features": 4096}, {}, {},
-            {"in_features": 4096, "out_features": 1000}, {},
-            {"in_features": 1000, "out_features": 2}
-        ]
+//        "NEW_CLASSIFIER_NAME":[
+//            "Flatten",
+//            "Dropout",
+//            "Linear", "ReLU", "Dropout",
+//            "Linear", "ReLU", "Dropout",
+//            "Linear", "ReLU",
+//            "Linear"
+//        ],
+//
+//        "NEW_CLASSIFIER_ARGS":[
+//            {"start_dim": 1},
+//            {},
+//            {"in_features": 25088, "out_features": 4096}, {}, {},
+//            {"in_features": 4096, "out_features": 4096}, {}, {},
+//            {"in_features": 4096, "out_features": 1000}, {},
+//            {"in_features": 1000, "out_features": 2}
+//        ]
     },
 
     "OPTIMIZER":
@@ -99,37 +97,23 @@
 
     "METRICS":
     {
-//        "NAME": ["BinaryAccuracy", "BinaryF1Score"],
-//        "ARGS":
-//        {
-//            "0":
-//            {
-//                "threshold": 0.5
-//            },
-//
-//            "1":
-//            {
-//                "threshold": 0.5
-//            }
-        "NAME": ["MulticlassAccuracy", "MulticlassF1Score"],
+        "NAME": ["BinaryAccuracy", "BinaryF1Score"],
         "ARGS":
         {
             "0":
             {
-                "num_classes": 2
+                "threshold": 0.5
             },
-
             "1":
             {
-                "num_classes": 2
+                "threshold": 0.5
             }
         }
     },
 
     "LOSS":
     {
-        "NAME": "CrossEntropyLoss",
-//        "NAME": "BCELoss",
+        "NAME": "BCELoss",
         "ARGS":
         {
             "reduction": "mean"
@@ -141,7 +125,7 @@
         "APPLY": true,
         "ARGS":
         {
-            "patience": 5,
+            "patience": 10,
             "min_delta": 0
         }
     },
@@ -153,7 +137,7 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "BATCH_SIZE": 32,
-    "TRAINING_EPOCHS": 1,
-    "EVALUATION_STRATEGY": "no"
+    "BATCH_SIZE": 168,
+    "TRAINING_EPOCHS": 50,
+//    "EVALUATION_STRATEGY": "no"
 }

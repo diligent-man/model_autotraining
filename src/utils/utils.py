@@ -202,18 +202,12 @@ def _adapt_classifier(model: torch.nn.Module,
                     torch.nn.Linear(in_features=out_features, out_features=num_classes)
                 )
             )
-
         # Case 2: Supersede entire last module with specified configs
         else:
             model = torch.nn.Sequential(
                 *list(model.children())[:-1],
                 _get_new_classifier(new_classifier_name, new_classifier_args)
                 )
-
-
-        for layer in list(model.children()):
-            print(layer)
-            print("####################################3")
     return model
 
 
