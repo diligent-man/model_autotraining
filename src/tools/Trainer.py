@@ -1,15 +1,18 @@
 import os, shutil
+from collections.abc import Iterable
 
 from tqdm import tqdm
 from time import sleep
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Any
 
 from src.utils.Logger import Logger
+from src.utils.LossManager import LossManager
 from src.utils.EarlyStopper import EarlyStopper
 from src.utils.utils import get_train_val_loader
 from src.utils.MetricManager import MetricManager
 from src.utils.ConfigManager import ConfigManager
-from src.utils.utils import init_loss, init_lr_scheduler, init_model_optimizer_start_epoch
+
+from src.utils.utils import init_lr_scheduler, init_model_optimizer_start_epoch
 
 
 import torch, torchinfo
@@ -22,7 +25,7 @@ class Trainer:
     __train_loader: DataLoader
     __validation_loader: DataLoader
 
-    __logger: Logger = Logger()
+    __logger: Logger
     __loss: torch.nn.Module
     __lr_scheduler: torch.optim.lr_scheduler.LRScheduler = None
 
@@ -33,7 +36,9 @@ class Trainer:
         # Compulsory fields
         self.__config: ConfigManager = config_manager
         self.__train_loader, self.__validation_loader = get_train_val_loader(self.__config)
-        self.__loss = init_loss(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
+        self.__logger = Logger()
+        self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
+
         self.__start_epoch, self.__model, self.__optimizer = init_model_optimizer_start_epoch(device=self.__config.DEVICE,
                                                                                               num_classes=self.__config.DATA_NUM_CLASSES,
                                                                                               checkpoint_load=self.__config.CHECKPOINT_LOAD,
@@ -86,7 +91,7 @@ class Trainer:
         ]
         for var in required_class_variables:
             if not hasattr(cls, var):
-                raise NotImplementedError(
+                raise AttributeError(
                     f'Class {cls} lacks required `{var}` class attribute'
                 )
 
@@ -94,7 +99,6 @@ class Trainer:
     @property
     def model(self):
         return self.__model
-
 
     def get_model_summary(self, depth=3, col_width=20, batch_size=1) -> torchinfo.summary:
         """
@@ -116,7 +120,8 @@ class Trainer:
                                  col_names=col_names,
                                  col_width=col_width,
                                  depth=depth,
-                                 device=self.__config.DEVICE)
+                                 device=self.__config.DEVICE
+                                 )
 
     # Public methods
     def train(self, sleep_time: int = None) -> None:
@@ -136,17 +141,15 @@ class Trainer:
                     metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME,
                                                           self.__config.METRIC_ARGS,
                                                           self.__config.DEVICE
-                                                          )  if self.__config.__dict__.get("METRIC_IN_TRAIN", False) else None
+                                                          ) if self.__config.__dict__.get("METRIC_IN_TRAIN", False) else None
                 elif phase == "eval":
                     self.__model.eval()
                     metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME,
                                                           self.__config.METRIC_ARGS,
                                                           self.__config.DEVICE
                                                           )
-
                 # Epoch running
-                run_epoch_result: Dict = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader, metrics=metrics)
-                print(run_epoch_result)
+                run_epoch_result: Dict[str, Any] = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader, metrics=metrics)
 
                 # Logging
                 self.__logger.write(f"{self.__config.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
@@ -187,18 +190,6 @@ class Trainer:
         return None
 
     # Private methods
-    def __compute_batch_loss(self, pred_labels: Union[List[torch.Tensor], torch.Tensor], labels: torch.Tensor):
-        # len > 1: pred_labels includes aux logits (GoogleLeNet, InceptionV3)
-        if isinstance(pred_labels, List):
-            batch_loss = [self.__loss(pred_labels[i], labels) for i in range(len(pred_labels))]
-            batch_loss = batch_loss[0] + sum(batch_loss) * self.__config.__dict__.get("MODEL_AUX_LOGITS_WEIGHT",
-                                                                                              0.3)
-            return pred_labels[0], batch_loss
-
-        elif isinstance(pred_labels, torch.Tensor):
-            batch_loss = self.__loss(pred_labels, labels)
-            return pred_labels, batch_loss
-
     def __get_best_val_loss(self) -> float:
         if "best_checkpoint.pt" in os.listdir(self.__config.CHECKPOINT_PATH):
             return torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, "best_checkpoint.pt"))["val_loss"]
@@ -268,7 +259,11 @@ class Trainer:
                 pred_labels = list(map(self.__activate, pred_labels)) if isinstance(pred_labels, Tuple) else self.__activate(pred_labels)
 
                 # Compute loss
-                pred_labels, batch_loss = self.__compute_batch_loss(pred_labels, labels)
+                batch_loss = self.__loss.compute_batch_loss(pred_labels, labels)
+
+                # Get pred_labels from main output
+                if isinstance(pred_labels, List):
+                    pred_labels = pred_labels[0]
 
                 # Update metrics only if eval phase
                 if metrics is not None:

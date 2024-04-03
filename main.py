@@ -1,4 +1,4 @@
-import os, copy
+import os
 from pprint import pp
 
 from src.tools.Trainer import Trainer

@@ -142,19 +142,6 @@ def init_lr_scheduler(name: str, args: Dict, optimizer: torch.optim.Optimizer) -
     return available_lr_scheduler[name](optimizer, **args)
 
 
-def init_metrics(name_lst: List[str], args: Dict, device: str) -> List[torcheval.metrics.Metric]:
-    # check whether metrics available or not
-    for metric in name_lst:
-        assert metric in available_metrics.keys(), "Your selected metric is unavailable"
-
-    metrics: List[torcheval.metrics.Metric] = []
-    for i in range(len(name_lst)):
-        metrics.append(available_metrics[name_lst[i]](**args[str(i)]))
-
-    metrics = [metric.to(device) for metric in metrics]
-    return metrics
-
-
 def _adapt_classifier(model: torch.nn.Module,
                       num_classes: int,
                       new_classifier_name: List[str] = None,

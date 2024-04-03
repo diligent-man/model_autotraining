@@ -6,7 +6,7 @@
         "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
-        "NUM_WORKERS": 4,
+        "NUM_WORKERS": 2,
         "NUM_CLASSES": 1,
         "TRANSFORM":
         {
@@ -46,12 +46,13 @@
 
     "MODEL":
     {
-        "BASE": "vgg",
-        "NAME": "vgg11",
+        "BASE": "googlenet",
+        "NAME": "googlenet",
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
+            "aux_logits": true,
             "num_classes": 1
         }
 
@@ -98,7 +99,7 @@
 
     "METRIC":
     {
-        "IN_TRAIN": false,
+        "IN_TRAIN": true,
         "NAME": ["BinaryAccuracy", "BinaryF1Score"],
         "ARGS":
         {
@@ -140,7 +141,7 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "BATCH_SIZE": 128,
-    "TRAINING_EPOCHS": 3
+    "BATCH_SIZE": 232,
+    "TRAINING_EPOCHS": 1
 //    "EVALUATION_STRATEGY": "no"
 }
