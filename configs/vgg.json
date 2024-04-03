@@ -3,11 +3,11 @@
 
     "DATA":
     {
-        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/mega_age",
+        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
         "NUM_WORKERS": 4,
-        "NUM_CLASSES": 5,
+        "NUM_CLASSES": 1,
         "TRANSFORM":
         {
             "Resize":
@@ -52,7 +52,7 @@
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "num_classes": 5
+            "num_classes": 1
         }
 
 //        "NEW_CLASSIFIER_NAME":[
@@ -96,42 +96,27 @@
         }
     },
 
-    "METRICS":
+    "METRIC":
     {
-//        "NAME": ["BinaryAccuracy", "BinaryF1Score"],
-        "NAME": ["MulticlassAccuracy", "MulticlassF1Score", "MulticlassPrecisionRecallCurve", "MulticlassAUROC", "MulticlassConfusionMatrix"],
+        "IN_TRAIN": false,
+        "NAME": ["BinaryAccuracy", "BinaryF1Score"],
         "ARGS":
         {
             "0":
             {
-//                "threshold": 0.5
+                "threshold": 0.5
             },
+
             "1":
             {
-//                "threshold": 0.5
-            },
-
-            "2":
-            {
-                "num_classes": 5
-            },
-
-            "3":
-            {
-                "num_classes": 5
-            },
-
-            "4":
-            {
-                "num_classes": 5
+                "threshold": 0.5
             }
         }
     },
 
     "LOSS":
     {
-//        "NAME": "BCELoss",
-        "NAME": "CrossEntropyLoss",
+        "NAME": "BCELoss",
         "ARGS":
         {
             "reduction": "mean"
@@ -156,6 +141,6 @@
     "SEED": 12345,
     "DEVICE": "cuda",
     "BATCH_SIZE": 128,
-    "TRAINING_EPOCHS": 30,
+    "TRAINING_EPOCHS": 2
 //    "EVALUATION_STRATEGY": "no"
 }

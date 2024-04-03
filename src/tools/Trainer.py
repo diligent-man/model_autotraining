@@ -1,38 +1,21 @@
-import os, shutil, multimethod
+import os, shutil
 
 from tqdm import tqdm
 from time import sleep
-from multipledispatch import dispatch
-from typing import List, Dict, Tuple, Union, overload
+from typing import List, Dict, Tuple, Union
 
 from src.utils.Logger import Logger
 from src.utils.EarlyStopper import EarlyStopper
-from src.utils.ConfigManager import ConfigManager
 from src.utils.utils import get_train_val_loader
-from src.utils.utils import init_loss, init_metrics, init_lr_scheduler, init_model_optimizer_start_epoch
+from src.utils.MetricManager import MetricManager
+from src.utils.ConfigManager import ConfigManager
+from src.utils.utils import init_loss, init_lr_scheduler, init_model_optimizer_start_epoch
 
-import torch, torcheval, torchinfo
+
+import torch, torchinfo
+from torcheval.metrics import Metric
 from torch.utils.data import DataLoader
 
-@overload
-@dispatch(torch.Tensor)
-def _get_metric_result(computed_metric: torch.Tensor) -> List:
-    print("Tensor metric")
-    return computed_metric.item() if computed_metric.dim() == 1 and len(
-        computed_metric) == 1 else computed_metric.detach().cpu().numpy().tolist()
-
-
-@overload
-@dispatch(tuple)
-def _get_metric_result(computed_metric: tuple) -> None:
-    print("Tuple metric")
-    metric_result = []
-    for constituent_metric in computed_metric:
-        contituent_result = []
-        for tensor in constituent_metric:
-            contituent_result.append(_get_metric_result(tensor))
-        metric_result.append(contituent_result)
-    return metric_result
 
 
 class Trainer:
@@ -137,7 +120,7 @@ class Trainer:
                                  device=self.__config_manager.DEVICE)
 
     # Public methods
-    def train(self, sleep_time: int = None, compute_metric_in_train: bool = False) -> None:
+    def train(self, sleep_time: int = None) -> None:
         """
         sleep_time: temporarily cease the training process
         compute_metric_in_train: compute metrics during training phase or not
@@ -149,13 +132,22 @@ class Trainer:
 
             for phase, dataset_loader in zip(("train", "eval"), (self.__train_loader, self.__validation_loader)):
                 # Preliminary setups
-                self.__model.train() if phase == "train" else self.__model.eval()
-                metrics: List[torcheval.metrics.Metric] = init_metrics(name_lst=self.__config_manager.METRICS_NAME,
-                                                                       args=self.__config_manager.METRICS_ARGS,
-                                                                       device=self.__config_manager.DEVICE) if compute_metric_in_train else None
+                if phase == "train":
+                    self.__model.train()
+                    metrics: List[Metric] = MetricManager(self.__config_manager.METRIC_NAME,
+                                                          self.__config_manager.METRIC_ARGS,
+                                                          self.__config_manager.DEVICE
+                                                          )
+                elif phase == "eval":
+                    self.__model.eval()
+                    metrics: List[Metric] = MetricManager(self.__config_manager.METRIC_NAME,
+                                                          self.__config_manager.METRIC_ARGS,
+                                                          self.__config_manager.DEVICE
+                                                          ) if self.__config_manager.__dict__.get("METRIC_IN_TRAIN", False) else None
 
                 # Epoch running
                 run_epoch_result: Dict = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader, metrics=metrics)
+                print(run_epoch_result)
 
                 # Logging
                 self.__logger.write(f"{self.__config_manager.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
@@ -245,9 +237,11 @@ class Trainer:
         return None
 
 
-    def __run_epoch(self, phase: str, epoch: int,
+    def __run_epoch(self,
+                    phase: str,
+                    epoch: int,
                     dataset_loader: DataLoader,
-                    metrics: List[torcheval.metrics.Metric] = None
+                    metrics: List[Metric] = None
                     ) -> Dict:
         """
         phase: "train" || "eval"
@@ -269,7 +263,7 @@ class Trainer:
             # reset gradients prior to forward pass
             self.__optimizer.zero_grad()
 
-            with torch.set_grad_enabled(phase == "train"):
+            with (torch.set_grad_enabled(phase == "train")):
                 # forward pass
                 pred_labels = self.__model(imgs)
                 pred_labels = list(map(self.__activate, pred_labels)) if isinstance(pred_labels, Tuple) else self.__activate(pred_labels)
@@ -279,7 +273,7 @@ class Trainer:
 
                 # Update metrics only if eval phase
                 if metrics is not None:
-                    metrics = [metric.update(pred_labels, labels) for metric in metrics]
+                    metrics.update(pred_labels, labels)
 
             # Accumulate minibatch into total loss
             total_loss += batch_loss.item()
@@ -292,10 +286,11 @@ class Trainer:
                 self.__lr_schedulers.step()
 
         if metrics is not None:
-            metrics_name = self.__config_manager.METRICS_NAME
-            print(metrics, "fgsfgf")
-            metrics = [_get_metric_result(metric.compute()) for metric in metrics]
-            print(metrics)
+            metric_name = metrics.name
+
+            metrics.compute()
+            metrics = metrics.get_result()
+
             # for i in range(len(metrics_name)):
             #     metrics[i] = metrics[i].compute()
             #     # In case of metric return tensor
@@ -313,7 +308,7 @@ class Trainer:
             #         metrics[i] = [ele.detach().cpu().numpy().tolist() for ele in metrics[i]]
 
             run_epoch_result = {**{"loss": total_loss / len(dataset_loader)},
-                               **{metric_name: value for metric_name, value in zip(metrics_name, metrics)}
+                               **{metric_name: value for metric_name, value in zip(metric_name, metrics)}
                                }
         else:
             run_epoch_result = {"loss": total_loss / len(dataset_loader)}
