@@ -141,6 +141,6 @@
     "SEED": 12345,
     "DEVICE": "cuda",
     "BATCH_SIZE": 128,
-    "TRAINING_EPOCHS": 2
+    "TRAINING_EPOCHS": 3
 //    "EVALUATION_STRATEGY": "no"
 }

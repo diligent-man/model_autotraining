@@ -5,8 +5,8 @@ from src.tools.Trainer import Trainer
 from src.utils.ConfigManager import ConfigManager
 
 
-def train(config_manager: ConfigManager) -> None:
-    trainer = Trainer(config_manager=config_manager)
+def train(config: ConfigManager) -> None:
+    trainer = Trainer(config_manager=config)
     trainer.get_model_summary()
     trainer.train()
     return None
@@ -37,8 +37,8 @@ def train(config_manager: ConfigManager) -> None:
 
 def main() -> None:
     # generate_celeb_A_dataset()
-    config_manager = ConfigManager(path=os.path.join(os.getcwd(), "configs", "vgg.json"))
-    train(config_manager)
+    config = ConfigManager(path=os.path.join(os.getcwd(), "configs", "vgg.json"))
+    train(config)
     # test(option_path=os.path  .join(os.getcwd(), "configs", "test_config.json"))
     return None
 
