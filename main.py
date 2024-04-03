@@ -2,43 +2,50 @@ import os
 from pprint import pp
 
 from src.tools.Trainer import Trainer
+from src.utils.DataManager import DataManager
 from src.utils.ConfigManager import ConfigManager
 
 
-def train(config: ConfigManager) -> None:
-    trainer = Trainer(config_manager=config)
-    trainer.get_model_summary()
-    trainer.train()
+def train(config: ConfigManager, data_manager: DataManager) -> None:
+    train_loader, val_loader = data_manager.get_train_val_loader(
+        train_size=config.DATA_TRAIN_SIZE,
+        dataloader_args=config.DATA_TRAIN_LOADER_ARGS
+    )
+    print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
+
+
+
+
+
+    # trainer = Trainer(config, train_loader, val_loader)
+
+    # trainer.get_model_summary()
+    # trainer.train()
     return None
 
-#
-# def test(option_path: str) -> None:
-#     for dataset in (["celeb_A", "collected_v3", "collected_v4"]):
-#         options = Box(commentjson.loads(open(file=option_path, mode="r").read()))
-#         checkpoint_path = os.path.join(os.getcwd(), "checkpoints", options.MODEL.NAME, options.CHECKPOINT.NAME)
-#
-#         options.DATA.DATASET_NAME = dataset
-#         log_path = os.path.join(os.getcwd(), "logs", options.MODEL.NAME, f"testing_log_{dataset}.json")
-#
-#         test_set = get_dataset(root=os.path.join(os.getcwd(), options.DATA.DATASET_NAME, "test"),
-#                                transform=options.DATA.TRANSFORM,
-#                                )
-#
-#         test_loader: DataLoader = get_test_loader(dataset=test_set,
-#                                                   batch_size=options.DATA.BATCH_SIZE,
-#                                                   cuda=options.MISC.CUDA,
-#                                                   num_workers=options.DATA.NUM_WORKERS
-#                                                   )
-#         print(f"""Test batch: {len(test_loader)}""")
-#
-#         evaluate(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader)
-#     return None
+
+def test(config: ConfigManager, data_manager: DataManager) -> None:
+    test_loader = data_manager.get_test_loader(
+        dataloader_args=config.DATA_TRAIN_LOADER_ARGS
+    )
+    print(f"Test: {len(test_loader)}")
+    # evaluate(options=options, checkpoint_path=checkpoint_path, log_path=log_path, test_loader=test_loader)
+    return None
 
 
 def main() -> None:
     # generate_celeb_A_dataset()
     config = ConfigManager(path=os.path.join(os.getcwd(), "configs", "vgg.json"))
-    train(config)
+
+    data_manager = DataManager(
+        root=config.DATA_PATH,
+        seed=config.SEED,
+        device=config.DEVICE,
+        transform=config.DATA_TRANSFORM,
+        target_transform=config.DATA_TARGET_TRANSFORM
+    )
+
+    train(config, data_manager)
     # test(option_path=os.path  .join(os.getcwd(), "configs", "test_config.json"))
     return None
 

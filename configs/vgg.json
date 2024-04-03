@@ -6,7 +6,17 @@
         "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
-        "NUM_WORKERS": 2,
+        "TRAIN_LOADER_ARGS":
+        {
+            "batch_size": 232,
+            "shuffle": true,
+            "num_workers": 2,
+            "drop_last": false,
+            "pin_memory": true
+        },
+
+
+
         "NUM_CLASSES": 1,
         "TRANSFORM":
         {
@@ -141,7 +151,6 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "BATCH_SIZE": 232,
     "TRAINING_EPOCHS": 1
 //    "EVALUATION_STRATEGY": "no"
 }

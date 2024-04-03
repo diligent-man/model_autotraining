@@ -32,10 +32,16 @@ class Trainer:
     __early_stopper: EarlyStopper = None
     __best_val_loss: float = None
 
-    def __init__(self, config_manager: ConfigManager):
+    def __init__(self, config_manager: ConfigManager,
+                 train_loader: DataLoader,
+                 validation_loader: DataLoader
+                 ):
         # Compulsory fields
         self.__config: ConfigManager = config_manager
-        self.__train_loader, self.__validation_loader = get_train_val_loader(self.__config)
+
+        self.__train_loader = train_loader
+        self.__validation_loader = validation_loader
+
         self.__logger = Logger()
         self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
 
