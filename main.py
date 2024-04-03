@@ -13,14 +13,9 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
     )
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
-
-
-
-
-    # trainer = Trainer(config, train_loader, val_loader)
-
+    trainer = Trainer(config, train_loader, val_loader)
     # trainer.get_model_summary()
-    # trainer.train()
+    trainer.train()
     return None
 
 
@@ -46,7 +41,6 @@ def main() -> None:
     )
 
     train(config, data_manager)
-    # test(option_path=os.path  .join(os.getcwd(), "configs", "test_config.json"))
     return None
 
 

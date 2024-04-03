@@ -1,18 +1,15 @@
 import os, shutil
-from collections.abc import Iterable
 
 from tqdm import tqdm
 from time import sleep
-from typing import List, Dict, Tuple, Union, Any
-
+from typing import List, Dict, Tuple, Any
 from src.utils.Logger import Logger
 from src.utils.LossManager import LossManager
 from src.utils.EarlyStopper import EarlyStopper
-from src.utils.utils import get_train_val_loader
+from src.open_src import available_lr_scheduler
 from src.utils.MetricManager import MetricManager
 from src.utils.ConfigManager import ConfigManager
-
-from src.utils.utils import init_lr_scheduler, init_model_optimizer_start_epoch
+from src.utils.utils import init_model_optimizer_start_epoch
 
 
 import torch, torchinfo
@@ -22,10 +19,12 @@ from torch.utils.data import DataLoader
 
 class Trainer:
     __config: ConfigManager
+
+    __logger: Logger = Logger()
+
     __train_loader: DataLoader
     __validation_loader: DataLoader
 
-    __logger: Logger
     __loss: torch.nn.Module
     __lr_scheduler: torch.optim.lr_scheduler.LRScheduler = None
 
@@ -42,7 +41,6 @@ class Trainer:
         self.__train_loader = train_loader
         self.__validation_loader = validation_loader
 
-        self.__logger = Logger()
         self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
 
         self.__start_epoch, self.__model, self.__optimizer = init_model_optimizer_start_epoch(device=self.__config.DEVICE,
@@ -60,7 +58,7 @@ class Trainer:
                                                                                               )
 
         if self.__config.LR_SCHEDULER_APPLY:
-            self.__lr_schedulers = init_lr_scheduler(self.__config.LR_SCHEDULER_NAME, self.__config.LR_SCHEDULER_ARGS, self.__optimizer)
+            self.__lr_schedulers = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME, self.__config.LR_SCHEDULER_ARGS, self.__optimizer)
 
         if self.__config.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
@@ -293,8 +291,18 @@ class Trainer:
         else:
             run_epoch_result = {"loss": total_loss / len(dataset_loader)}
         return run_epoch_result
+    #################################################################################################################################
 
-    # Static methods
+
+    @staticmethod
+    def __init_lr_scheduler(name: str,
+                            args: Dict[str, Any],
+                            optimizer: torch.optim.Optimizer
+                            ) -> torch.optim.lr_scheduler.LRScheduler:
+        assert name in available_lr_scheduler.keys(), "Your selected lr scheduler is unavailable"
+        return available_lr_scheduler[name](optimizer, **args)
+
+
     @staticmethod
     def __activate(pred_labels: torch.Tensor) -> None:
         if pred_labels.shape[1] == 1:

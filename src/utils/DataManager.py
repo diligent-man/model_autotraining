@@ -92,4 +92,3 @@ class DataManager:
 
             compose = Compose([available_transform[transform](**args) for transform, args in transforms.items()])
         return compose
-
