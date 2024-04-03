@@ -3,11 +3,11 @@
 
     "DATA":
     {
-        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/celeb_A",
+        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/mega_age",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
         "NUM_WORKERS": 4,
-        "NUM_CLASSES": 1,
+        "NUM_CLASSES": 5,
         "TRANSFORM":
         {
             "Resize":
@@ -37,11 +37,11 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": true,
-        "SAVE_ALL": false,
+        "LOAD": false,
+        "SAVE_ALL": true,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": true,
-        "RESUME_NAME": "epoch_14.pt"
+        "RESUME_NAME": "epoch_1.pt"
     },
 
     "MODEL":
@@ -52,7 +52,7 @@
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "num_classes": 1
+            "num_classes": 5
         }
 
 //        "NEW_CLASSIFIER_NAME":[
@@ -79,8 +79,9 @@
         "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-7,
-            "amsgrad": true
+            "lr": 1e-6,
+            "amsgrad": true,
+            "weight_decay": 1e-7
         }
     },
 
@@ -97,23 +98,40 @@
 
     "METRICS":
     {
-        "NAME": ["BinaryAccuracy", "BinaryF1Score"],
+//        "NAME": ["BinaryAccuracy", "BinaryF1Score"],
+        "NAME": ["MulticlassAccuracy", "MulticlassF1Score", "MulticlassPrecisionRecallCurve", "MulticlassAUROC", "MulticlassConfusionMatrix"],
         "ARGS":
         {
             "0":
             {
-                "threshold": 0.5
+//                "threshold": 0.5
             },
             "1":
             {
-                "threshold": 0.5
+//                "threshold": 0.5
+            },
+
+            "2":
+            {
+                "num_classes": 5
+            },
+
+            "3":
+            {
+                "num_classes": 5
+            },
+
+            "4":
+            {
+                "num_classes": 5
             }
         }
     },
 
     "LOSS":
     {
-        "NAME": "BCELoss",
+//        "NAME": "BCELoss",
+        "NAME": "CrossEntropyLoss",
         "ARGS":
         {
             "reduction": "mean"
@@ -137,7 +155,7 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "BATCH_SIZE": 168,
-    "TRAINING_EPOCHS": 50,
+    "BATCH_SIZE": 128,
+    "TRAINING_EPOCHS": 30,
 //    "EVALUATION_STRATEGY": "no"
 }

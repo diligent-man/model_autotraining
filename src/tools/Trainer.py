@@ -1,8 +1,10 @@
-import os, shutil
+import os, shutil, multimethod
 
 from tqdm import tqdm
 from time import sleep
-from typing import List, Dict, Tuple, Union
+from multipledispatch import dispatch
+from typing import List, Dict, Tuple, Union, overload
+
 from src.utils.Logger import Logger
 from src.utils.EarlyStopper import EarlyStopper
 from src.utils.ConfigManager import ConfigManager
@@ -11,6 +13,26 @@ from src.utils.utils import init_loss, init_metrics, init_lr_scheduler, init_mod
 
 import torch, torcheval, torchinfo
 from torch.utils.data import DataLoader
+
+@overload
+@dispatch(torch.Tensor)
+def _get_metric_result(computed_metric: torch.Tensor) -> List:
+    print("Tensor metric")
+    return computed_metric.item() if computed_metric.dim() == 1 and len(
+        computed_metric) == 1 else computed_metric.detach().cpu().numpy().tolist()
+
+
+@overload
+@dispatch(tuple)
+def _get_metric_result(computed_metric: tuple) -> None:
+    print("Tuple metric")
+    metric_result = []
+    for constituent_metric in computed_metric:
+        contituent_result = []
+        for tensor in constituent_metric:
+            contituent_result.append(_get_metric_result(tensor))
+        metric_result.append(contituent_result)
+    return metric_result
 
 
 class Trainer:
@@ -222,6 +244,7 @@ class Trainer:
             os.remove(os.path.join(self.__config_manager.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt"))
         return None
 
+
     def __run_epoch(self, phase: str, epoch: int,
                     dataset_loader: DataLoader,
                     metrics: List[torcheval.metrics.Metric] = None
@@ -270,23 +293,31 @@ class Trainer:
 
         if metrics is not None:
             metrics_name = self.__config_manager.METRICS_NAME
+            print(metrics, "fgsfgf")
+            metrics = [_get_metric_result(metric.compute()) for metric in metrics]
+            print(metrics)
+            # for i in range(len(metrics_name)):
+            #     metrics[i] = metrics[i].compute()
+            #     # In case of metric return tensor
+            #     if isinstance(metrics[i], torch.Tensor):
+            #         metrics[i] = metrics[i].item() if metrics[i].dim() == 1 and len(metrics[i]) == 1 else metrics[i].detach().cpu().numpy().tolist()
+            #
+            #     # In case of metric return tuple
+            #     elif isinstance(metrics[i], tuple):
+            #         print(type(metrics[i]))
+            #         print(metrics[i])
+            #         print(len(metrics[i]))
+            #         print(len(metrics[i][0]))
+            #         print(len(metrics[i][1]))
+            #         print(len(metrics[i][2]))
+            #         metrics[i] = [ele.detach().cpu().numpy().tolist() for ele in metrics[i]]
 
-            for i in range(len(metrics_name)):
-                metrics[i] = metrics[i].compute()
-                # In case of metric return tensor
-                if isinstance(metrics[i], torch.Tensor):
-                    metrics[i] = metrics[i].item() if metrics[i].dim() == 1 and len(metrics[i]) == 1 else metrics[i].detach().cpu().numpy().tolist()
-
-                # In case of metric return tuple
-                elif isinstance(metrics[i], tuple):
-                    metrics[i] = [ele.detach().cpu().numpy().tolist() for ele in metrics[i]]
-
-            training_result = {**{"loss": total_loss / len(dataset_loader)},
+            run_epoch_result = {**{"loss": total_loss / len(dataset_loader)},
                                **{metric_name: value for metric_name, value in zip(metrics_name, metrics)}
                                }
         else:
-            training_result = {"loss": total_loss / len(dataset_loader)}
-        return training_result
+            run_epoch_result = {"loss": total_loss / len(dataset_loader)}
+        return run_epoch_result
 
     # Static methods
     @staticmethod
