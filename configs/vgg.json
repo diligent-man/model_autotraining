@@ -56,15 +56,15 @@
 
     "MODEL":
     {
-        "BASE": "googlenet",
-        "NAME": "googlenet",
+        "BASE": "vgg",
+        "NAME": "vgg11",
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "aux_logits": true,
+//            "aux_logits": true,
             "num_classes": 1
-        }
+        },
 
 //        "NEW_CLASSIFIER_NAME":[
 //            "Flatten",

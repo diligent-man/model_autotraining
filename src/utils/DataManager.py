@@ -43,6 +43,7 @@ class DataManager:
                                                  generator=torch.Generator().manual_seed(self.__seed),
                                                  lengths=[train_size, len(dataset) - train_size]
                                                  )
+
         if customDataloader is None:
             train_set = DataLoader(dataset=train_set, **dataloader_args)
             validation_set = DataLoader(dataset=validation_set, **dataloader_args)
@@ -92,3 +93,27 @@ class DataManager:
 
             compose = Compose([available_transform[transform](**args) for transform, args in transforms.items()])
         return compose
+
+
+    # Code snippet for tracking how each class is drawn by dataloader
+    # from operator import add
+    # def print_class_counts(data_loader_dict):
+    #     counter_lst = [0] * 2
+    #     for epoch in range(3):
+    #         for phase, data_loader in data_loader_dict.items():
+    #             print(f"Phase: {phase}")
+    #             for i, (inputs, labels) in enumerate(data_loader):
+    #                 class_counts = labels.bincount()
+    #                 # print(f"Batch {i + 1}: {class_counts.tolist()}")
+    #
+    #                 if len(class_counts.tolist()) < 2:
+    #                     counter_lst = list( map(add, counter_lst, class_counts.tolist() + [0]))
+    #                 else:
+    #                     counter_lst = list(map(add, counter_lst, class_counts.tolist()))
+    #                     print(counter_lst)
+    #             print()
+    #             print()
+    #
+    # print_class_counts({
+    #     "train": self.__train_loader
+    # })

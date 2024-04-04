@@ -2,17 +2,18 @@ import os, shutil
 
 from tqdm import tqdm
 from time import sleep
-from typing import List, Dict, Tuple, Any
+from typing import List, Dict, Tuple, Any, Generator
 from src.utils.Logger import Logger
 from src.utils.LossManager import LossManager
 from src.utils.EarlyStopper import EarlyStopper
-from src.open_src import available_lr_scheduler
+from src.utils.ModelManager import ModelManager
 from src.utils.MetricManager import MetricManager
 from src.utils.ConfigManager import ConfigManager
-from src.utils.utils import init_model_optimizer_start_epoch
+from src.open_src import available_lr_scheduler, available_optimizers
 
 
 import torch, torchinfo
+
 from torcheval.metrics import Metric
 from torch.utils.data import DataLoader
 
@@ -31,60 +32,55 @@ class Trainer:
     __early_stopper: EarlyStopper = None
     __best_val_loss: float = None
 
-    def __init__(self, config_manager: ConfigManager,
+    def __init__(self,
+                 config: ConfigManager,
                  train_loader: DataLoader,
                  validation_loader: DataLoader
                  ):
         # Compulsory fields
-        self.__config: ConfigManager = config_manager
+        self.__config: ConfigManager = config
 
         self.__train_loader = train_loader
         self.__validation_loader = validation_loader
 
         self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
 
-        self.__start_epoch, self.__model, self.__optimizer = init_model_optimizer_start_epoch(device=self.__config.DEVICE,
-                                                                                              num_classes=self.__config.DATA_NUM_CLASSES,
-                                                                                              checkpoint_load=self.__config.CHECKPOINT_LOAD,
-                                                                                              checkpoint_path=self.__config.CHECKPOINT_PATH,
-                                                                                              resume_name=self.__config.CHECKPOINT_RESUME_NAME,
-                                                                                              optimizer_name=self.__config.OPTIMIZER_NAME,
-                                                                                              optimizer_args=self.__config.OPTIMIZER_ARGS,
-                                                                                              model_name=self.__config.MODEL_NAME,
-                                                                                              model_args=self.__config.MODEL_ARGS,
-                                                                                              new_classifier_name=self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
-                                                                                              new_classifier_args=self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
-                                                                                              pretrained_weight=self.__config.MODEL_PRETRAINED_WEIGHT
-                                                                                              )
+        self.__model = ModelManager(self.__config.MODEL_NAME,
+                                    self.__config.MODEL_ARGS,
+                                    self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
+                                    self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
+                                    self.__config.DEVICE,
+                                    self.__config.MODEL_PRETRAINED_WEIGHT
+                                    ).model
+
+        self.__optimizer = self.__init_optimizer(self.__config.OPTIMIZER_NAME,
+                                                 self.__config.OPTIMIZER_ARGS,
+                                                 self.__model.parameters()
+                                                 )
+
+        # self.__start_epoch, self.__model, self.__optimizer = init_model_optimizer_start_epoch(device=self.__config.DEVICE,
+        #                                                                                       num_classes=self.__config.DATA_NUM_CLASSES,
+        #                                                                                       checkpoint_load=self.__config.CHECKPOINT_LOAD,
+        #                                                                                       checkpoint_path=self.__config.CHECKPOINT_PATH,
+        #                                                                                       resume_name=self.__config.CHECKPOINT_RESUME_NAME,
+        #                                                                                       optimizer_name=self.__config.OPTIMIZER_NAME,
+        #                                                                                       optimizer_args=self.__config.OPTIMIZER_ARGS,
+        #                                                                                       model_name=self.__config.MODEL_NAME,
+        #                                                                                       model_args=self.__config.MODEL_ARGS,
+        #                                                                                       new_classifier_name=self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
+        #                                                                                       new_classifier_args=self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
+        #                                                                                       pretrained_weight=self.__config.MODEL_PRETRAINED_WEIGHT
+        #                                                                                       )
 
         if self.__config.LR_SCHEDULER_APPLY:
-            self.__lr_schedulers = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME, self.__config.LR_SCHEDULER_ARGS, self.__optimizer)
+            self.__lr_schedulers = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME,
+                                                            self.__config.LR_SCHEDULER_ARGS,
+                                                            self.__optimizer
+                                                            )
 
         if self.__config.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
             self.__early_stopper = EarlyStopper(self.__best_val_loss, **self.__config.EARLY_STOPPING_ARGS)
-        #
-        # from operator import add
-        # def print_class_counts(data_loader_dict):
-        #     counter_lst = [0] * 2
-        #     for epoch in range(3):
-        #         for phase, data_loader in data_loader_dict.items():
-        #             print(f"Phase: {phase}")
-        #             for i, (inputs, labels) in enumerate(data_loader):
-        #                 class_counts = labels.bincount()
-        #                 # print(f"Batch {i + 1}: {class_counts.tolist()}")
-        #
-        #                 if len(class_counts.tolist()) < 2:
-        #                     counter_lst = list( map(add, counter_lst, class_counts.tolist() + [0]))
-        #                 else:
-        #                     counter_lst = list(map(add, counter_lst, class_counts.tolist()))
-        #                     print(counter_lst)
-        #             print()
-        #             print()
-        #
-        # print_class_counts({
-        #     "train": self.__train_loader
-        # })
 
     # Class methods
     @classmethod
@@ -293,6 +289,14 @@ class Trainer:
         return run_epoch_result
     #################################################################################################################################
 
+    @staticmethod
+    def __init_optimizer(name: str,
+                         args: Dict[str, Any],
+                         model_paras: Generator
+                         ) -> torch.optim.Optimizer:
+        assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
+        optimizer: torch.optim.Optimizer = available_optimizers[name](model_paras, **args)
+        return optimizer
 
     @staticmethod
     def __init_lr_scheduler(name: str,

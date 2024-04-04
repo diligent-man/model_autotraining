@@ -1,5 +1,5 @@
 import os
-from pprint import pp
+from collections import Counter
 
 from src.tools.Trainer import Trainer
 from src.utils.DataManager import DataManager
@@ -15,7 +15,7 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
 
     trainer = Trainer(config, train_loader, val_loader)
     # trainer.get_model_summary()
-    trainer.train()
+    # trainer.train()
     return None
 
 
