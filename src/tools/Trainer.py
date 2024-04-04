@@ -132,15 +132,22 @@ class Trainer:
                 # Preliminary setups
                 if phase == "train":
                     self.__model.train()
-                    metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME, self.__config.METRIC_ARGS, self.__config.DEVICE) if self.__config.__dict__.get("METRIC_IN_TRAIN", False) else None
+                    metrics: MetricManager = MetricManager(self.__config.METRIC_NAME,
+                                                           self.__config.METRIC_ARGS,
+                                                           self.__config.DEVICE
+                                                           ) if self.__config.__dict__.get("METRIC_IN_TRAIN", False) else None
+
                     run_epoch_result: Dict[str, Any] = self.__train(epoch, data_loader, metrics)
 
                 elif phase == "eval":
                     self.__model.eval()
-                    metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME, self.__config.METRIC_ARGS, self.__config.DEVICE)
-                    run_epoch_result: Dict[str, Any] = self.__run_epoch(epoch, data_loader, metrics)
+                    metrics: MetricManager = MetricManager(self.__config.METRIC_NAME,
+                                                           self.__config.METRIC_ARGS,
+                                                           self.__config.DEVICE)
+                    run_epoch_result: Dict[str, Any] = self.__eval(epoch, data_loader, metrics)
 
                 # Logging
+                print(run_epoch_result)
                 self.__logger.write(f"{self.__config.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
 
                 # Stop program in the meantime
@@ -192,7 +199,7 @@ class Trainer:
                     phase: str,
                     epoch: int,
                     data_loader: DataLoader,
-                    metrics: List[Metric] = None
+                    metrics: MetricManager = None
                     ) -> Dict:
         """
         phase: "train" || "eval"
@@ -201,6 +208,7 @@ class Trainer:
 
         Notes: loss of last iter is taken as loss of that epoch
         """
+        # print(phase, epoch, data_loader, metrics)
         num_class = self.__config.DATA_NUM_CLASSES
         total_loss = 0
 
@@ -243,7 +251,7 @@ class Trainer:
         if metrics is not None:
             metrics.compute()
             run_epoch_result = {**{"loss": total_loss / len(data_loader)},
-                                **{metric_name: round(value, 4) for metric_name, value in zip(metrics.name, metrics.get_result())}
+                                **{metric_name: value for metric_name, value in zip(metrics.name, metrics.get_result())}
                                 }
         else:
             run_epoch_result = {"loss": total_loss / len(data_loader)}

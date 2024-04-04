@@ -13,7 +13,7 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
     trainer = Trainer(config, train_loader, val_loader)
-    trainer.get_model_summary()
+    # trainer.get_model_summary()
     trainer.train()
     return None
 
@@ -29,7 +29,7 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
 
 def main() -> None:
     # generate_celeb_A_dataset()
-    config = ConfigManager(path=os.path.join(os.getcwd(), "configs", "vgg.json"))
+    config = ConfigManager(path=os.path.join(os.getcwd(), "configs", "alexnet_binary_class.json"))
 
     data_manager = DataManager(
         root=config.DATA_PATH,

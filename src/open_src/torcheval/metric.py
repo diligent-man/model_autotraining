@@ -22,6 +22,7 @@ from torcheval.metrics import (
     BinaryPrecisionRecallCurve,
     BinaryRecall,
     BinaryRecallAtFixedPrecision,
+
     MulticlassAccuracy,
     MulticlassAUPRC,
     MulticlassAUROC,
@@ -33,6 +34,7 @@ from torcheval.metrics import (
     MulticlassPrecision,
     MulticlassPrecisionRecallCurve,
     MulticlassRecall,
+
     MultilabelAccuracy,
     MultilabelAUPRC,
     MultilabelBinnedAUPRC,

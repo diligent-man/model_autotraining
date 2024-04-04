@@ -1,0 +1,134 @@
+{
+    "PROJECT_NAME": "face_attribute",
+
+    "DATA":
+    {
+        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
+        "INPUT_SHAPE": [3, 224, 224],
+        "TRAIN_SIZE": 0.9,
+        "TRAIN_LOADER_ARGS":
+        {
+            "batch_size": 1024,
+            "shuffle": true,
+            "num_workers": 2,
+            "drop_last": false,
+            "pin_memory": true
+        },
+
+        "NUM_CLASSES": 1,
+
+        "TRANSFORM":
+        {
+            "Resize":
+            {
+                "size": [224, 224],
+                "interpolation": "BICUBIC",
+                "antialias": true
+            },
+
+            "PILToTensor": {},
+
+            "ToDtype":
+            {
+                "dtype": "float32",
+                "scale": true
+            },
+
+            "RandomRotation":
+            {
+                "degrees": [-10, 10],
+                "interpolation": "NEAREST"
+            }
+        },
+
+        "TARGET_TRANSFORM": {}
+    },
+
+    "CHECKPOINT":
+    {
+        "SAVE": true,
+        "LOAD": false,
+        "SAVE_ALL": true,
+        "SAVE_WEIGHT_ONLY": false,
+        "INCLUDE_CONFIG": true,
+        "RESUME_NAME": "epoch_1.pt"
+    },
+
+    "MODEL":
+    {
+        "BASE": "alexnet",
+        "NAME": "alexnet",
+        "PRETRAINED_WEIGHT": false,
+        "REMOVE_PRETRAINED_WEIGHT": false,
+        "ARGS":
+        {
+            "num_classes": 1
+        }
+    },
+
+    "OPTIMIZER":
+    {
+        "NAME": "Adam",
+        "ARGS":
+        {
+            "lr": 1e-6,
+            "amsgrad": true,
+            "weight_decay": 1e-7
+        }
+    },
+
+    "LR_SCHEDULER":
+    {
+        "APPLY": true,
+        "NAME": "CosineAnnealingWarmRestarts",
+        "ARGS":
+        {
+            "T_0": 100,
+            "T_mult": 3
+        }
+    },
+
+    "METRIC":
+    {
+        "IN_TRAIN": true,
+        "NAME": [
+            "BinaryAccuracy", "BinaryF1Score", "BinaryAUROC"
+        ],
+        "ARGS":
+        {
+            "0": {},
+            "1": {},
+            "2": {}
+        }
+    },
+
+    "LOSS":
+    {
+        "NAME": "BCELoss",
+        "NAME": "CrossEntropyLoss",
+        "ARGS":
+        {
+            "reduction": "mean"
+        }
+    },
+
+    "EARLY_STOPPING":
+    {
+        "APPLY": true,
+        "ARGS":
+        {
+            "patience": 10,
+            "min_delta": 0
+        }
+    },
+
+    "LOGGING":
+    {
+        "STRATEGY": "epoch"
+    },
+
+    "SEED": 12345,
+    "DEVICE": "cuda",
+    "TRAINING_EPOCHS": 1
+//    "EVALUATION_STRATEGY": "no"
+}
