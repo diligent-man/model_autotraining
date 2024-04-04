@@ -3,6 +3,8 @@ import json
 from datetime import datetime
 from multimethod import multimethod
 
+__all__ = ["Logger"]
+
 
 class Logger:
     __time: datetime

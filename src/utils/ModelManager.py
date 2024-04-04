@@ -18,6 +18,9 @@ import torch
 
 from src.utils.ConfigManager import ConfigManager
 
+__all__ = ["ModelManager"]
+
+
 available_layer = {
     **available_conv,
     **available_linear,
@@ -27,7 +30,6 @@ available_layer = {
     **available_activation,
     **available_normalization
 }
-
 
 class ModelManager:
     __num_classes: int

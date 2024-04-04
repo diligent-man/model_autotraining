@@ -9,6 +9,8 @@ from torchvision.transforms import Compose
 from torchvision.datasets import ImageFolder
 from torch.utils.data import Dataset, DataLoader, random_split
 
+__all__ = ['DataManager']
+
 
 class DataManager:
     __root: str

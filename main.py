@@ -1,8 +1,7 @@
 import os
 
-from src.tools.Trainer import Trainer
-from src.utils.DataManager import DataManager
-from src.utils.ConfigManager import ConfigManager
+from src.tools import Trainer
+from src.utils import DataManager, ConfigManager
 
 
 def train(config: ConfigManager, data_manager: DataManager) -> None:

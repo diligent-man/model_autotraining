@@ -1,3 +1,6 @@
+__all__ = ['EarlyStopper']
+
+
 class EarlyStopper:
     def __init__(self, min_val_loss: float = float("inf"), patience=1, min_delta=0):
         self.counter = 0

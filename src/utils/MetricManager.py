@@ -10,6 +10,8 @@ from collections.abc import Iterable
 from multipledispatch import dispatch
 from src.open_src import available_metrics
 
+__all__ = ['MetricManager']
+
 
 @dispatch(torch.Tensor)
 def _get_metric_result(computed_metric: torch.Tensor) -> Union[float, List[float]]:

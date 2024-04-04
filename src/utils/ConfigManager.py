@@ -3,6 +3,8 @@ import commentjson
 
 from typing import Dict, Any
 
+__all__ = ['ConfigManager']
+
 
 class ConfigManager:
     def __init__(self, path: str):

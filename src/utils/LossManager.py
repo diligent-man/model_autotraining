@@ -3,6 +3,8 @@ from typing import Dict, Any, Union, List
 import torch
 from src.open_src import available_loss
 
+__all__ = ['LossManager']
+
 
 class LossManager:
     __loss: torch.nn.Module
