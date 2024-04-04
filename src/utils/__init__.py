@@ -1,17 +1,18 @@
-from ConfigManager import ConfigManager
-from DataManager import DataManager
-from EarlyStopper import EarlyStopper
-from Logger import Logger
-from LossManager import LossManager
-from MetricManager import MetricManager
-from ModelManager import ModelManager
+from .Logger import Logger
+from .LossManager import LossManager
+from .DataManager import DataManager
+from .ModelManager import ModelManager
+from .EarlyStopper import EarlyStopper
+from .ConfigManager import ConfigManager
+from .MetricManager import MetricManager
+
 
 __all__ = [
-    "ConfigManager",
-    "DataManager",
-    "EarlyStopper",
     "Logger",
     "LossManager",
-    "MetricManager",
-    "ModelManager"
+    "DataManager",
+    "ModelManager",
+    "EarlyStopper",
+    "ConfigManager",
+    "MetricManager"
 ]

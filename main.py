@@ -13,7 +13,7 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
 
     trainer = Trainer(config, train_loader, val_loader)
     # trainer.get_model_summary()
-    trainer.train()
+    # trainer.train()
     return None
 
 

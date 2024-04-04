@@ -30,7 +30,7 @@ import torch, torchinfo
 
 from torch.utils.data import DataLoader
 
-__all__ = ['Trainer']
+__all__ = ["Trainer"]
 
 
 class Trainer:
