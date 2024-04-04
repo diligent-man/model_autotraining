@@ -8,7 +8,7 @@
         "TRAIN_SIZE": 0.9,
         "TRAIN_LOADER_ARGS":
         {
-            "batch_size": 232,
+            "batch_size": 128,
             "shuffle": true,
             "num_workers": 2,
             "drop_last": false,

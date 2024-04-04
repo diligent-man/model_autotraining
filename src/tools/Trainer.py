@@ -20,7 +20,7 @@ from torch.utils.data import DataLoader
 
 class Trainer:
     __config: ConfigManager
-
+    __start_epoch: int = 1
     __logger: Logger = Logger()
 
     __train_loader: DataLoader
@@ -58,19 +58,13 @@ class Trainer:
                                                  self.__model.parameters()
                                                  )
 
-        # self.__start_epoch, self.__model, self.__optimizer = init_model_optimizer_start_epoch(device=self.__config.DEVICE,
-        #                                                                                       num_classes=self.__config.DATA_NUM_CLASSES,
-        #                                                                                       checkpoint_load=self.__config.CHECKPOINT_LOAD,
-        #                                                                                       checkpoint_path=self.__config.CHECKPOINT_PATH,
-        #                                                                                       resume_name=self.__config.CHECKPOINT_RESUME_NAME,
-        #                                                                                       optimizer_name=self.__config.OPTIMIZER_NAME,
-        #                                                                                       optimizer_args=self.__config.OPTIMIZER_ARGS,
-        #                                                                                       model_name=self.__config.MODEL_NAME,
-        #                                                                                       model_args=self.__config.MODEL_ARGS,
-        #                                                                                       new_classifier_name=self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
-        #                                                                                       new_classifier_args=self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
-        #                                                                                       pretrained_weight=self.__config.MODEL_PRETRAINED_WEIGHT
-        #                                                                                       )
+        # Load checkpoint from local
+        if self.__config.CHECKPOINT_LOAD:
+            checkpoint = torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, self.__config.CHECKPOINT_RESUME_NAME), map_location=self.__config.DEVICE)
+            self.__start_epoch = checkpoint["epoch"] + 1
+            self.__model.load_state_dict(checkpoint["model_state_dict"])
+            self.__optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+            del checkpoint
 
         if self.__config.LR_SCHEDULER_APPLY:
             self.__lr_schedulers = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME,
@@ -134,50 +128,20 @@ class Trainer:
         for epoch in range(self.__start_epoch, self.__start_epoch + self.__config.TRAINING_EPOCHS):
             print("Epoch:", epoch)
 
-            for phase, dataset_loader in zip(("train", "eval"), (self.__train_loader, self.__validation_loader)):
+            for phase, data_loader in zip(("train", "eval"), (self.__train_loader, self.__validation_loader)):
                 # Preliminary setups
                 if phase == "train":
                     self.__model.train()
-                    metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME,
-                                                          self.__config.METRIC_ARGS,
-                                                          self.__config.DEVICE
-                                                          ) if self.__config.__dict__.get("METRIC_IN_TRAIN", False) else None
+                    metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME, self.__config.METRIC_ARGS, self.__config.DEVICE) if self.__config.__dict__.get("METRIC_IN_TRAIN", False) else None
+                    run_epoch_result: Dict[str, Any] = self.__train(epoch, data_loader, metrics)
+
                 elif phase == "eval":
                     self.__model.eval()
-                    metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME,
-                                                          self.__config.METRIC_ARGS,
-                                                          self.__config.DEVICE
-                                                          )
-                # Epoch running
-                run_epoch_result: Dict[str, Any] = self.__run_epoch(phase=phase, epoch=epoch, dataset_loader=dataset_loader, metrics=metrics)
+                    metrics: List[Metric] = MetricManager(self.__config.METRIC_NAME, self.__config.METRIC_ARGS, self.__config.DEVICE)
+                    run_epoch_result: Dict[str, Any] = self.__run_epoch(epoch, data_loader, metrics)
 
                 # Logging
                 self.__logger.write(f"{self.__config.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
-
-                if phase == "eval":
-                    # Save checkpoint
-                    if self.__config.CHECKPOINT_SAVE:
-                        model_state_dict = self.__model.state_dict() if self.__config.CHECKPOINT_SAVE_WEIGHT_ONLY else self.__model
-
-                        obj = {"epoch": epoch, "val_loss": run_epoch_result["loss"],
-                               "model_state_dict": model_state_dict,
-                               "optimizer_state_dict": self.__optimizer.state_dict()
-                               }
-
-                        # Include config to checkpoint or not
-                        if self.__config.CHECKPOINT_INCLUDE_CONFIG:
-                            obj["config"] = self.__config.__dict__
-
-                        # Save cpkt
-                        self.__save_checkpoint(epoch=epoch, val_loss=run_epoch_result["loss"],
-                                               save_all=self.__config.CHECKPOINT_SAVE_ALL,
-                                               obj=obj
-                                               )
-
-                    # Early stopping checking
-                    if self.__config.EARLY_STOPPING_APPLY:
-                        if self.__early_stopper.check(val_loss=run_epoch_result["loss"]):
-                            exit()
 
                 # Stop program in the meantime
                 if sleep_time is not None:
@@ -188,8 +152,103 @@ class Trainer:
             shutil.rmtree(os.path.join(torch.hub._get_torch_home(), "hub", "checkpoints"))
         print("Training finished")
         return None
+    #################################################################################################################3
+
 
     # Private methods
+    def __train(self, epoch, data_loader, metrics):
+        return self.__run_epoch("train", epoch, data_loader, metrics)
+
+
+    def __eval(self, epoch, data_loader, metrics):
+        run_epoch_result = self.__run_epoch("eval", epoch, data_loader, metrics)
+
+        # Save checkpoint
+        if self.__config.CHECKPOINT_SAVE:
+            model_state_dict = self.__model.state_dict() if self.__config.CHECKPOINT_SAVE_WEIGHT_ONLY else self.__model
+
+            obj = {"epoch": epoch, "val_loss": run_epoch_result["loss"],
+                   "model_state_dict": model_state_dict,
+                   "optimizer_state_dict": self.__optimizer.state_dict()
+                   }
+
+            # Include config to checkpoint or not
+            if self.__config.CHECKPOINT_INCLUDE_CONFIG:
+                obj["config"] = self.__config.__dict__
+
+            # Save cpkt
+            self.__save_checkpoint(epoch=epoch, val_loss=run_epoch_result["loss"],
+                                   save_all=self.__config.CHECKPOINT_SAVE_ALL,
+                                   obj=obj
+                                   )
+
+        # Early stopping checking
+        if self.__config.EARLY_STOPPING_APPLY:
+            if self.__early_stopper.check(val_loss=run_epoch_result["loss"]):
+                exit()
+        return run_epoch_result
+
+    def __run_epoch(self,
+                    phase: str,
+                    epoch: int,
+                    data_loader: DataLoader,
+                    metrics: List[Metric] = None
+                    ) -> Dict:
+        """
+        phase: "train" || "eval"
+        data_loader: train_loader || val_loader
+        metrics: only available in eval phase
+
+        Notes: loss of last iter is taken as loss of that epoch
+        """
+        num_class = self.__config.DATA_NUM_CLASSES
+        total_loss = 0
+
+        # Epoch training
+        for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
+            imgs = batch[0].to(self.__config.DEVICE)
+
+            labels = batch[1].type(torch.FloatTensor) if num_class == 1 else batch[1].type(torch.LongTensor)
+            labels = labels.to(self.__config.DEVICE)
+
+            # reset gradients prior to forward pass
+            self.__optimizer.zero_grad()
+
+            with (torch.set_grad_enabled(phase == "train")):
+                # forward pass
+                pred_labels = self.__model(imgs)
+                pred_labels = list(map(self.__activate, pred_labels)) if isinstance(pred_labels, Tuple) else self.__activate(pred_labels)
+
+                # Compute loss
+                batch_loss = self.__loss.compute_batch_loss(pred_labels, labels)
+
+                # Get pred_labels from main output
+                if isinstance(pred_labels, List):
+                    pred_labels = pred_labels[0]
+
+                # Update metrics only if eval phase
+                if metrics is not None:
+                    metrics.update(pred_labels, labels)
+
+            # Accumulate minibatch into total loss
+            total_loss += batch_loss.item()
+
+            # backprop + optimize only if in training phase
+            if phase == 'train':
+                batch_loss.backward()
+                self.__optimizer.step()
+                # epoch=epoch + index / len(data_loader)
+                self.__lr_schedulers.step()
+
+        if metrics is not None:
+            metrics.compute()
+            run_epoch_result = {**{"loss": total_loss / len(data_loader)},
+                                **{metric_name: round(value, 4) for metric_name, value in zip(metrics.name, metrics.get_result())}
+                                }
+        else:
+            run_epoch_result = {"loss": total_loss / len(data_loader)}
+        return run_epoch_result
+
     def __get_best_val_loss(self) -> float:
         if "best_checkpoint.pt" in os.listdir(self.__config.CHECKPOINT_PATH):
             return torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, "best_checkpoint.pt"))["val_loss"]
@@ -225,69 +284,8 @@ class Trainer:
             # Remove previous epoch
             os.remove(os.path.join(self.__config.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt"))
         return None
-
-
-    def __run_epoch(self,
-                    phase: str,
-                    epoch: int,
-                    dataset_loader: DataLoader,
-                    metrics: List[Metric] = None
-                    ) -> Dict:
-        """
-        phase: "train" || "eval"
-        dataset_loader: train_loader || val_loader
-        metrics: only available in eval phase
-
-        Notes: loss of last iter is taken as loss of that epoch
-        """
-        num_class = self.__config.DATA_NUM_CLASSES
-        total_loss = 0
-
-        # Epoch training
-        for index, batch in tqdm(enumerate(dataset_loader), total=len(dataset_loader), colour="cyan", desc=phase.capitalize()):
-            imgs = batch[0].to(self.__config.DEVICE)
-
-            labels = batch[1].type(torch.FloatTensor) if num_class == 1 else batch[1].type(torch.LongTensor)
-            labels = labels.to(self.__config.DEVICE)
-
-            # reset gradients prior to forward pass
-            self.__optimizer.zero_grad()
-
-            with (torch.set_grad_enabled(phase == "train")):
-                # forward pass
-                pred_labels = self.__model(imgs)
-                pred_labels = list(map(self.__activate, pred_labels)) if isinstance(pred_labels, Tuple) else self.__activate(pred_labels)
-
-                # Compute loss
-                batch_loss = self.__loss.compute_batch_loss(pred_labels, labels)
-
-                # Get pred_labels from main output
-                if isinstance(pred_labels, List):
-                    pred_labels = pred_labels[0]
-
-                # Update metrics only if eval phase
-                if metrics is not None:
-                    metrics.update(pred_labels, labels)
-
-            # Accumulate minibatch into total loss
-            total_loss += batch_loss.item()
-
-            # backprop + optimize only if in training phase
-            if phase == 'train':
-                batch_loss.backward()
-                self.__optimizer.step()
-                # epoch=epoch + index / len(dataset_loader
-                self.__lr_schedulers.step()
-
-        if metrics is not None:
-            metrics.compute()
-            run_epoch_result = {**{"loss": total_loss / len(dataset_loader)},
-                                **{metric_name: round(value, 4) for metric_name, value in zip(metrics.name, metrics.get_result())}
-                                }
-        else:
-            run_epoch_result = {"loss": total_loss / len(dataset_loader)}
-        return run_epoch_result
     #################################################################################################################################
+
 
     @staticmethod
     def __init_optimizer(name: str,

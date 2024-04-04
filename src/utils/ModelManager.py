@@ -42,9 +42,7 @@ class ModelManager:
                  pretrained_weight: bool = False
                  ):
         self.__num_classes = model_args.pop("num_classes", 1000)
-        self.__model = self.__init_model(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight)
-        self.__model.to(device)
-
+        self.__model = self.__init_model(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight).to(device)
 
     @property
     def model(self):
@@ -71,7 +69,7 @@ class ModelManager:
             print("Adapting new classifier")
             model = self.__adapt_classifier(model, new_classifier_name, new_classifier_args)
         else:
-            model = available_model[model_name](**model_args)
+            model = available_model[model_name](**{"num_classes": self.__num_classes, **model_args})
             # if state_dict is not None:
             #     print("Loading pretrained model...")
             #     model.load_state_dict(state_dict)

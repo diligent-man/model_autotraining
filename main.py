@@ -1,5 +1,4 @@
 import os
-from collections import Counter
 
 from src.tools.Trainer import Trainer
 from src.utils.DataManager import DataManager
@@ -14,8 +13,8 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
     trainer = Trainer(config, train_loader, val_loader)
-    # trainer.get_model_summary()
-    # trainer.train()
+    trainer.get_model_summary()
+    trainer.train()
     return None
 
 
