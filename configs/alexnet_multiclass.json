@@ -8,16 +8,15 @@
         "TRAIN_SIZE": 0.9,
         "TRAIN_LOADER_ARGS":
         {
-            "batch_size": 128,
+            "batch_size": 1024,
             "shuffle": true,
             "num_workers": 2,
             "drop_last": false,
             "pin_memory": true
         },
 
+        "NUM_CLASSES": 2,
 
-
-        "NUM_CLASSES": 5,
         "TRANSFORM":
         {
             "Resize":
@@ -56,33 +55,14 @@
 
     "MODEL":
     {
-        "BASE": "vgg",
-        "NAME": "vgg11",
+        "BASE": "alexnet",
+        "NAME": "alexnet",
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-//            "aux_logits": true,
             "num_classes": 2
-        },
-
-//        "NEW_CLASSIFIER_NAME":[
-//            "Flatten",
-//            "Dropout",
-//            "Linear", "ReLU", "Dropout",
-//            "Linear", "ReLU", "Dropout",
-//            "Linear", "ReLU",
-//            "Linear"
-//        ],
-//
-//        "NEW_CLASSIFIER_ARGS":[
-//            {"start_dim": 1},
-//            {},
-//            {"in_features": 25088, "out_features": 4096}, {}, {},
-//            {"in_features": 4096, "out_features": 4096}, {}, {},
-//            {"in_features": 4096, "out_features": 1000}, {},
-//            {"in_features": 1000, "out_features": 2}
-//        ]
+        }
     },
 
     "OPTIMIZER":
@@ -110,31 +90,33 @@
     "METRIC":
     {
         "IN_TRAIN": true,
-//        "NAME": ["BinaryAccuracy", "BinaryF1Score", "BinaryAUROC"],
-        "NAME": ["MulticlassAccuracy", "MulticlassF1Score", "MulticlassConfusionMatrix", "MulticlassPrecisionRecallCurve"],
+        "NAME": [
+            "MulticlassAccuracy",
+            "MulticlassAUPRC",
+            "MulticlassAUROC",
+            "MulticlassBinnedAUPRC",
+            "MulticlassBinnedAUROC",
+            "MulticlassBinnedPrecisionRecallCurve",
+            "MulticlassConfusionMatrix",
+            "MulticlassF1Score",
+            "MulticlassPrecision",
+            "MulticlassPrecisionRecallCurve",
+            "MulticlassRecall"
+        ],
+
         "ARGS":
         {
-            "0":
-            {
-//                "threshold": 0.5
-                "num_classes": 5
-            },
-
-            "1":
-            {
-//                "threshold": 0.5
-                "num_classes": 5
-            },
-
-            "2":
-            {
-                "num_classes": 5
-            },
-
-            "3":
-            {
-                "num_classes": 5
-            }
+            "0": {"num_classes": 2},
+            "1": {"num_classes": 2},
+            "2": {"num_classes": 2},
+            "3": {"num_classes": 2},
+            "4": {"num_classes": 2},
+            "5": {"num_classes": 2},
+            "6": {"num_classes": 2},
+            "7": {"num_classes": 2},
+            "8": {"num_classes": 2},
+            "9": {"num_classes": 2},
+            "10": {"num_classes": 2}
         }
     },
 

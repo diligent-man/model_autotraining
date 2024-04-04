@@ -158,11 +158,11 @@ class Trainer:
                     self.__model.eval()
                     metrics: MetricManager = MetricManager(self.__config.METRIC_NAME,
                                                            self.__config.METRIC_ARGS,
-                                                           self.__config.DEVICE)
+                                                           self.__config.DEVICE
+                                                           )
                     run_epoch_result: Dict[str, Any] = self.__eval(epoch, data_loader, metrics)
 
                 # Logging
-                print(run_epoch_result)
                 self.__logger.write(f"{self.__config.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
 
                 # Stop program in the meantime
@@ -210,6 +210,7 @@ class Trainer:
                 exit()
         return run_epoch_result
 
+
     def __run_epoch(self,
                     phase: str,
                     epoch: int,
@@ -237,7 +238,7 @@ class Trainer:
             # reset gradients prior to forward pass
             self.__optimizer.zero_grad()
 
-            with (torch.set_grad_enabled(phase == "train")):
+            with torch.set_grad_enabled(phase == "train"):
                 # forward pass
                 pred_labels = self.__model(imgs)
                 pred_labels = list(map(self.__activate, pred_labels)) if isinstance(pred_labels, Tuple) else self.__activate(pred_labels)
@@ -260,8 +261,7 @@ class Trainer:
             if phase == 'train':
                 batch_loss.backward()
                 self.__optimizer.step()
-                # epoch=epoch + index / len(data_loader)
-                self.__lr_schedulers.step()
+                self.__lr_schedulers.step(epoch=epoch + index / len(data_loader)) ## Review lr scheduler mechanism
 
         if metrics is not None:
             metrics.compute()

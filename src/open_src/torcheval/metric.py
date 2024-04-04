@@ -1,13 +1,4 @@
 from torcheval.metrics import (
-    #Aggregation
-    AUC,
-    Cat,
-    Max,
-    Mean,
-    Min,
-    Sum,
-    Throughput,
-
     # Classification
     BinaryAccuracy,
     BinaryAUPRC,
@@ -44,17 +35,8 @@ from torcheval.metrics import (
     TopKMultilabelAccuracy
 )
 
+# All metrics for classification puzzle
 available_metrics = {
-    # Aggregation
-    "AUC": AUC,
-    "Cat": Cat,
-    "Max": Max,
-    "Mean": Mean,
-    "Min": Min,
-    "Sum": Sum,
-    "Throughput": Throughput,
-
-    # Classification
     "BinaryAccuracy": BinaryAccuracy,
     "BinaryAUPRC": BinaryAUPRC,
     "BinaryAUROC": BinaryAUROC,
@@ -68,6 +50,7 @@ available_metrics = {
     "BinaryPrecisionRecallCurve": BinaryPrecisionRecallCurve,
     "BinaryRecall": BinaryRecall,
     "BinaryRecallAtFixedPrecision": BinaryRecallAtFixedPrecision,
+
     "MulticlassAccuracy": MulticlassAccuracy,
     "MulticlassAUPRC": MulticlassAUPRC,
     "MulticlassAUROC": MulticlassAUROC,
@@ -79,6 +62,8 @@ available_metrics = {
     "MulticlassPrecision": MulticlassPrecision,
     "MulticlassPrecisionRecallCurve": MulticlassPrecisionRecallCurve,
     "MulticlassRecall": MulticlassRecall,
+
+    # Not tested
     "MultilabelAccuracy": MultilabelAccuracy,
     "MultilabelAUPRC": MultilabelAUPRC,
     "MultilabelBinnedAUPRC": MultilabelBinnedAUPRC,

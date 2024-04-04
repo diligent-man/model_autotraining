@@ -6,6 +6,7 @@ from typing import (
     Dict,
     Union
 )
+
 from collections.abc import Iterable
 from multipledispatch import dispatch
 from src.open_src import available_metrics
@@ -15,19 +16,23 @@ __all__ = ['MetricManager']
 
 @dispatch(torch.Tensor)
 def _get_metric_result(computed_metric: torch.Tensor) -> Union[float, List[float]]:
-    return computed_metric.item()\
-        if computed_metric.dim() == 1 and len(computed_metric) == 1\
-        else computed_metric.detach().cpu().numpy().tolist()
+    return computed_metric.item() if computed_metric.dim() == 1 and len(computed_metric) == 1 else computed_metric.detach().cpu().numpy().tolist()
 
 
 @dispatch(Iterable)
 def _get_metric_result(computed_metric: Iterable) -> List[float]:
     result = []
     for constituent in computed_metric:
-        contituent_result = []
-        for tensor in constituent:
-            contituent_result.append(_get_metric_result(tensor))
-        result.append(contituent_result)
+        if isinstance(constituent, List):
+            result.append(_get_metric_result(constituent))
+        else:
+            if constituent.dim() == 0:
+                result.append(_get_metric_result(constituent))
+            else:
+                contituent_result = []
+                for tensor in constituent:
+                    contituent_result.append(_get_metric_result(tensor))
+                result.append(contituent_result)
     return result
 
 
@@ -45,7 +50,7 @@ class MetricManager:
         for metric in metrics:
             assert metric in available_metrics.keys(), "Your selected metric is unavailable"
 
-        self.__metrics = [available_metrics[metrics[i]](**args[str(i)]).to(device) for i in range(len(metrics))]
+        self.__metrics = [available_metrics[metrics[i]](**args[str(i)]) for i in range(len(metrics))]
         self.__name = metrics
 
     @property
@@ -57,7 +62,16 @@ class MetricManager:
         return self.__name
 
     def update(self, inputs: torch.Tensor, targets: torch.Tensor) -> None:
-        self.__metrics = [metric.update(inputs, targets) for metric in self.__metrics]
+        for metric in self.__metrics:
+            try:
+                metric.update(inputs, targets)
+            except:
+                if targets.dtype == torch.float:
+                    targets = targets.type(torch.int)
+                    metric.update(inputs, targets)
+                elif targets.dtype == torch.int:
+                    targets = targets.type(torch.float)
+                    metric.update(inputs, targets)
 
     def compute(self) -> None:
         self.__metrics = [metric.compute() for metric in self.__metrics]
