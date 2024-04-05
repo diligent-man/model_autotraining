@@ -1,4 +1,5 @@
 import os
+import argparse
 
 from src.tools import Trainer
 from src.utils import DataManager, ConfigManager
@@ -27,8 +28,11 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
 
 
 def main() -> None:
-    # generate_celeb_A_dataset()
-    config = ConfigManager(path=os.path.join(os.getcwd(), "configs", "alexnet_multiclass.json"))
+    args = argparse.ArgumentParser()
+    args.add_argument("--config", default="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_binary_class.json", type=str, help="Path to config file")
+    args = args.parse_args()
+
+    config = ConfigManager(path=args.config)
 
     data_manager = DataManager(
         root=config.DATA_PATH,

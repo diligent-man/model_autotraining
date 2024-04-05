@@ -34,7 +34,7 @@ class DataManager:
 
     def get_train_val_loader(self,
                              train_size: float = 0.9,
-                             dataloader_args: dict[str, Any] = None,
+                             dataloader_args: Dict[str, Any] = None,
                              customDataloader: DataLoader = None
                              ) -> Tuple[DataLoader, DataLoader]:
         dataset = self.__get_dataset("train")
@@ -54,7 +54,7 @@ class DataManager:
             validation_set = customDataloader(dataset=validation_set, **dataloader_args)
         return train_set, validation_set
 
-    def get_test_loader(self, dataloader_args: dict[str, Any], customDataloader: DataLoader = None) -> DataLoader:
+    def get_test_loader(self, dataloader_args: Dict[str, Any], customDataloader: DataLoader = None) -> DataLoader:
         dataset = self.__get_dataset("test")
         if customDataloader:
             return customDataloader(dataset=dataset, **dataloader_args)

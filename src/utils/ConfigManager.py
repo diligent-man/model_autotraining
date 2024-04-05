@@ -41,14 +41,14 @@ class ConfigManager:
 
     def __post_init(self):
         # Check dataset
-        self.__check_dataset()
+        self.__check_dataset_format()
 
         # Set output path
         self.__set_output_path()
         # check paths existence
         # self.__check_output_path()
 
-    def __check_dataset(self) -> None:
+    def __check_dataset_format(self) -> None:
         """
         Things to check
             1/ Existence
