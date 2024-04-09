@@ -1,30 +1,22 @@
-import os
-
-from pprint import pprint as pp
-
-import torch
-
-from src.utils.ConfigManager import ConfigManager
-from src.utils.MetricManager import MetricManager
+import re
 
 
-def main() -> None:
-    # Your code
-    config_manager = ConfigManager(path=os.path.join(os.getcwd(), "configs", "vgg.json"))
-    metric_manager = MetricManager(metrics=config_manager.METRIC_NAME, args=config_manager.METRIC_ARGS, device=config_manager.DEVICE)
+def replace_json_placeholders(json, values):
+    # find all placeholders
+    placeholders = re.findall('<[\w ]+>', json)
+    # clear_placeholders = list(map(lambda x: x.replace('<', '').replace('>', ''), placeholders))
 
-    inputs = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5], [1, 2, 3, 4, 5]])
-    targets = torch.tensor([0, 1, 2])
+    assert len(placeholders) == len(values), "Please enter the values of all placeholders."
 
-    metric_manager.update(inputs=inputs, targets=targets)
-    metric_manager.compute()
-    pp(metric_manager.get_result())
+    # replaces all placeholders with values
+    for k, v in values.items():
+        placeholder = "<%s>" % k
+        json = json.replace(placeholder, v)
+
+    return json
 
 
-
-
-
-    return None
-
-if __name__ == '__main__':
-    main()
+# Example
+json = "{'firstName':'<first_name>','lastName':'<last_name>','country':'Turkey','city':'Istanbul'}"
+values = {'first_name': 'muhammet', 'last_name': 'guner'}
+print(replace_json_placeholders(json, values))

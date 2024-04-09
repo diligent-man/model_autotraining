@@ -4,10 +4,9 @@
     "DATA":
     {
         // Path to training dataset
-        "PATH": "",
-
+        "PATH": $S1,
         // List of H, W, C of an image
-        "INPUT_SHAPE": [],
+        "INPUT_SHAPE": $2,
 
         // Ratio for train/ val splitting
         "TRAIN_SIZE": 0.9,
