@@ -1,22 +1,61 @@
-import re
+import os
+import torch
+from torchvision.io.image import read_image
+from torchvision.transforms import v2, Compose
+
+from pathlib import Path
+from tqdm import tqdm
+from minio import Minio
 
 
-def replace_json_placeholders(json, values):
-    # find all placeholders
-    placeholders = re.findall('<[\w ]+>', json)
-    # clear_placeholders = list(map(lambda x: x.replace('<', '').replace('>', ''), placeholders))
+def main() -> None:
+    # Your code
+    client = Minio(
+        endpoint="127.0.0.1:9000",
+        access_key="trong",
+        secret_key="Trong123@",
+        secure=False
+    )
 
-    assert len(placeholders) == len(values), "Please enter the values of all placeholders."
+    filepath = os.path.join(os.getcwd(), "demo_minio")
+    os.makedirs(filepath, exist_ok=True)
+    bucket_name = "small-celeb-a"
+    prefixes = ("train", "test")
+    #
+    # for prefix in prefixes:
+    #     total = len(list(client.list_objects(bucket_name, recursive=True, prefix=prefix)))
+    #     for obj in tqdm(client.list_objects(bucket_name, recursive=True, prefix=prefix), total=total):
+    #         client.fget_object(bucket_name=bucket_name, object_name=obj.object_name, file_path=os.path.join(filepath, obj.object_name))
 
-    # replaces all placeholders with values
-    for k, v in values.items():
-        placeholder = "<%s>" % k
-        json = json.replace(placeholder, v)
 
-    return json
+    bucket_name = "small-celeb-a"
+    client.make_bucket(bucket_name=bucket_name)
+
+    dataset_path = "/home/trong/Downloads/Dataset/small_celeb_A"
+    prefix_level1 = ("train", "test")
+    prefix_level2 = ("male", "female")
+    compose = Compose([
+        v2.ToDtype(torch.float),
+        v2.ToPILImage()
+    ])
+
+    for prefix1 in prefix_level1:
+        for prefix2 in prefix_level2:
+            total = len(os.listdir(os.path.join(dataset_path, prefix1, prefix2)))
+
+            for img in tqdm(os.listdir(os.path.join(dataset_path, prefix1, prefix2)), total=total):
+                object_name = os.path.join(prefix1, prefix2, img)
+                file_path = os.path.join(dataset_path, object_name)
+
+                client.fput_object(
+                    bucket_name=bucket_name,
+                    object_name=object_name,
+                    file_path=file_path
+                )
 
 
-# Example
-json = "{'firstName':'<first_name>','lastName':'<last_name>','country':'Turkey','city':'Istanbul'}"
-values = {'first_name': 'muhammet', 'last_name': 'guner'}
-print(replace_json_placeholders(json, values))
+    
+    return None
+
+if __name__ == '__main__':
+    main()

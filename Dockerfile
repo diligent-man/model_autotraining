@@ -1,7 +1,10 @@
-FROM nvidia/cuda:12.3.2-runtime-ubuntu22.04
+ARG UBUNTU_VERSION
+ARG PYTHON_VERSION
+
+# FROM nvidia/cuda:12.3.2-runtime-ubuntu"${VERSION}"
+FROM ubuntu:$UBUNTU_VERSION
 LABEL maintainer=NDT email=<trongnd02@gmail.com>
 
-ARG PYTHON_VERSION=3.11
 #ARG DEBIAN_FRONTEND=noninteractive
 
 ADD main.py requirements.txt /face_attribute/
@@ -27,6 +30,7 @@ RUN <<EOF
     apt-get clean
 EOF
 
-RUN pip install -r requirements.txt
+
+# RUN pip install -r requirements.txt
 # Run command
 # docker run --rm -it --name test_cuda --gpus all --ipc host -v /home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs:/configs -v /home/trong/Downloads/Dataset:/Dataset python3 main.py  --config /configs/alexnet_binary_class.json
