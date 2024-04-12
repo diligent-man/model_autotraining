@@ -1,4 +1,4 @@
-from src.open_src import (
+from src_dev.open_src import (
     available_model,
     available_weight,
 
@@ -16,7 +16,7 @@ from typing import Dict, List, Any, Generator
 
 import torch
 
-from src.utils.ConfigManager import ConfigManager
+from src_dev.utils.ConfigManager import ConfigManager
 
 __all__ = ["ModelManager"]
 

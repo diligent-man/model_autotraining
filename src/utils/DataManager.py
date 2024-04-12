@@ -1,7 +1,11 @@
 import os
 
 from typing import Dict, Tuple, Any
-from src.open_src import available_transform, available_interpolation, available_dtype
+
+from src_dev.Dataset.DefaultDataset import DefaultDataset
+from src_dev.DataLoader.DefaultDataLoader import DefaultDataLoader
+
+from src_dev.open_src import available_transform, available_interpolation, available_dtype
 
 import torch
 
@@ -13,64 +17,51 @@ __all__ = ['DataManager']
 
 
 class DataManager:
-    __root: str
     __seed: float = 12345
     __device: str = "cpu"
-    transform: Dict[str, Any] = None
-    target_transform: Dict[str, Any] = None
+
+    __transform: Dict[str, Any] = None
+    __target_transform: Dict[str, Any] = None
+
+    __available_dataset: Dict[str, Dataset] = {
+        "DefaultDataset": DefaultDataset
+    }
+
+    __available_dataloader: Dict[str, DataLoader] = {
+        "DefaultDataLoader": DefaultDataLoader
+    }
+
 
     def __init__(self,
-                 root: str,
                  seed: float = 12345,
                  device: str = "cpu",
                  transform: Dict[str, Dict] = None,
                  target_transform: Dict[str, Dict] = None
                  ):
-        self.__root = root
         self.__seed = seed
         self.__device = device
         self.__transform = self.__get_transformation(transform)
         self.__target_transform = self.__get_transformation(target_transform)
 
-    def get_train_val_loader(self,
-                             train_size: float = 0.9,
-                             dataloader_args: Dict[str, Any] = None,
-                             customDataloader: DataLoader = None
-                             ) -> Tuple[DataLoader, DataLoader]:
-        dataset = self.__get_dataset("train")
+    def get_dataloader(self,
+                       dataset: str,
+                       dataset_args: str,
+                       dataloader: str,
+                       dataloader_args: Dict[str, Any] = None,
+                       ) -> DataLoader:
+        assert dataloader in self.__available_dataloader.keys(), "Your selected dataloader is unavailble"
 
-        train_size = round(len(dataset) * train_size)
-
-        train_set, validation_set = random_split(dataset=dataset,
-                                                 generator=torch.Generator().manual_seed(self.__seed),
-                                                 lengths=[train_size, len(dataset) - train_size]
-                                                 )
-
-        if customDataloader is None:
-            train_set = DataLoader(dataset=train_set, **dataloader_args)
-            validation_set = DataLoader(dataset=validation_set, **dataloader_args)
-        else:
-            train_set = customDataloader(dataset=train_set, **dataloader_args)
-            validation_set = customDataloader(dataset=validation_set, **dataloader_args)
-        return train_set, validation_set
-
-    def get_test_loader(self, dataloader_args: Dict[str, Any], customDataloader: DataLoader = None) -> DataLoader:
-        dataset = self.__get_dataset("test")
-        if customDataloader:
-            return customDataloader(dataset=dataset, **dataloader_args)
-        else:
-            return DataLoader(dataset=dataset, **dataloader_args)
+        dataset = self.__get_dataset(dataset=dataset, dataset_args=dataset_args)
+        dataloader = self.__available_dataloader[dataloader](dataset=dataset, **dataloader_args)
+        return dataloader
     ##########################################################################################################
 
 
-    def __get_dataset(self, dataset_type: str) -> Dataset:
-        """
-        Args:
-            root: dataset dir
-            transform: Dict of transformation name and its corresponding kwargs
-            target_transform:                     //                            but for labels
-        """
-        return ImageFolder(os.path.join(self.__root, dataset_type), self.__transform, self.__target_transform)
+    def __get_dataset(self, dataset: str, dataset_args: Dict[str, Any]) -> Dataset:
+        # Default dataset
+        # TODO: Extend to other kinds of datasets
+        assert dataset in self.__available_dataset.keys(), "Your selected dataset is unavailable"
+        return self.__available_dataset[dataset](transform=self.__transform, target_transform=self.__target_transform, **dataset_args)
     ##########################################################################################################
 
 

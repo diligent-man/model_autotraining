@@ -1,7 +1,7 @@
 from typing import Dict, Any, Union, List
 
 import torch
-from src.open_src import available_loss
+from src_dev.open_src import available_loss
 
 __all__ = ['LossManager']
 

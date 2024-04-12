@@ -2,8 +2,8 @@ import json
 
 from box import Box
 from tqdm import tqdm
-from src.utils.Logger import Logger
-from src.utils.utils import init_metrics, init_model
+from src_dev.utils.Logger import Logger
+from src_dev.utils.utils import init_metrics, init_model
 
 import torch
 

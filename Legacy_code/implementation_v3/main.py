@@ -1,23 +1,14 @@
 import os
 import argparse
 
-from src_dev.tools import Trainer
-from src_dev.utils import DataManager, ConfigManager
+from src.tools import Trainer
+from src.utils import DataManager, ConfigManager
 
 
 def train(config: ConfigManager, data_manager: DataManager) -> None:
-    train_loader = data_manager.get_dataloader(
-        dataset=config.DATA_DATASET,
-        dataset_args=config.DATA_TRAIN_DATASET_ARGS,
-        dataloader=config.DATA_DATALOADER,
-        dataloader_args=config.DATA_TRAIN_DATALOADER_ARGS
-    )
-
-    val_loader = data_manager.get_dataloader(
-        dataset=config.DATA_DATASET,
-        dataset_args=config.DATA_VAL_DATASET_ARGS,
-        dataloader=config.DATA_DATALOADER,
-        dataloader_args=config.DATA_TRAIN_DATALOADER_ARGS
+    train_loader, val_loader = data_manager.get_train_val_loader(
+        train_size=config.DATA_TRAIN_SIZE,
+        dataloader_args=config.DATA_TRAIN_LOADER_ARGS
     )
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
@@ -38,12 +29,13 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
 
 def main() -> None:
     args = argparse.ArgumentParser()
-    args.add_argument("--config", default="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_binary_class.json", type=str, help="Path to config file")
+    args.add_argument("--config", default="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/Legacy_code/implementation_v3/configs/alexnet_binary_class.json", type=str, help="Path to config file")
     args = args.parse_args()
 
     config = ConfigManager(path=args.config)
 
     data_manager = DataManager(
+        root=config.DATA_PATH,
         seed=config.SEED,
         device=config.DEVICE,
         transform=config.DATA_TRANSFORM,

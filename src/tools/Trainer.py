@@ -11,7 +11,7 @@ from typing import (
     Generator
 )
 
-from src.utils import (
+from src_dev.utils import (
     Logger,
     LossManager,
     EarlyStopper,
@@ -20,7 +20,7 @@ from src.utils import (
     ConfigManager
 )
 
-from src.open_src import (
+from src_dev.open_src import (
     available_lr_scheduler,
     available_optimizers
 )

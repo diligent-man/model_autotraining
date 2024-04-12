@@ -3,7 +3,7 @@
 
     "DATA":
     {
-        "PATH": "/home/trong/Downloads/small_celeb_A",
+        "PATH": "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/small_celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
         "TRAIN_LOADER_ARGS":

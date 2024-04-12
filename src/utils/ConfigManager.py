@@ -41,7 +41,7 @@ class ConfigManager:
 
     def __post_init(self):
         # Check dataset
-        self.__check_dataset_format()
+        # self.__check_dataset_format()
 
         # Set output path
         self.__set_output_path()

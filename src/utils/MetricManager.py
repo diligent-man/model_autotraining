@@ -9,7 +9,7 @@ from typing import (
 
 from collections.abc import Iterable
 from multipledispatch import dispatch
-from src.open_src import available_metrics
+from src_dev.open_src import available_metrics
 
 __all__ = ['MetricManager']
 
