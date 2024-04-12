@@ -32,4 +32,3 @@ for UBUNTU_VERSION in "${UBUNTU_VERSIONS[@]}"; do
         echo ""
     done
 done
-

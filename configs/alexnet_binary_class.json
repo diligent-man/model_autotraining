@@ -3,10 +3,41 @@
 
     "DATA":
     {
-        "PATH": "/Dataset/small_celeb_A",
         "INPUT_SHAPE": [3, 224, 224],
         "TRAIN_SIZE": 0.9,
-        "TRAIN_LOADER_ARGS":
+
+        "DATASET": "DefaultDataset",
+
+        "TRAIN_DATASET_ARGS":
+        {
+            "root": "lakefs://small-celeb-a/main/",
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
+
+            "annotation": "lakefs://small-celeb-a/main/train.csv",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/train.csv"
+        },
+
+        "VAL_DATASET_ARGS":
+        {
+            "root": "lakefs://small-celeb-a/main/",
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
+
+            "annotation": "lakefs://small-celeb-a/main/val.csv",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/val.csv"
+        },
+
+        "TEST_DATASET_ARGS":
+        {
+            "root": "lakefs://small-celeb-a/main/",
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
+
+            "annotation": "lakefs://small-celeb-a/main/test.csv",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/test.csv"
+        },
+
+        "DATALOADER": "DefaultDataLoader",
+
+        "TRAIN_DATALOADER_ARGS":
         {
             "batch_size": 1024,
             "shuffle": true,

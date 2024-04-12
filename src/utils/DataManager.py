@@ -2,10 +2,10 @@ import os
 
 from typing import Dict, Tuple, Any
 
-from src_dev.Dataset.DefaultDataset import DefaultDataset
-from src_dev.DataLoader.DefaultDataLoader import DefaultDataLoader
+from src.Dataset.DefaultDataset import DefaultDataset
+from src.DataLoader.DefaultDataLoader import DefaultDataLoader
 
-from src_dev.open_src import available_transform, available_interpolation, available_dtype
+from src.open_src import available_transform, available_interpolation, available_dtype
 
 import torch
 
