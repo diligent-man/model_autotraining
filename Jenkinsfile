@@ -2,16 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Build image') { 
+        stage('Build & Push image') { 
             steps {
-                sh "./build_container.sh"
-            }
-        }
-
-        stage('Push image') { 
-            steps {
-                withDockerRegistry([credentialsId: Docker, url: ""])
-                dockerImage.push()
+                withDockerRegistry([credentialsId: Docker, url: ""]){
+                    sh "./build_container.sh"
+                }
             }
         }
     }
