@@ -25,6 +25,7 @@ RUN <<EOF
     # Install dependencies
     pip install --upgrade pip
     pip install -r requirements.txt
+    
     # Remove cache
     apt-get clean
 EOF
