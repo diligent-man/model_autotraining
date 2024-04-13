@@ -1,16 +1,11 @@
-import os
+from typing import Dict, Any
 
-from typing import Dict, Tuple, Any
-
-from src.Dataset.DefaultDataset import DefaultDataset
-from src.DataLoader.DefaultDataLoader import DefaultDataLoader
+from src.Dataset import available_dataset
+from src.DataLoader import available_dataloader
 
 from src.open_src import available_transform, available_interpolation, available_dtype
 
-import torch
-
 from torchvision.transforms import Compose
-from torchvision.datasets import ImageFolder
 from torch.utils.data import Dataset, DataLoader, random_split
 
 __all__ = ['DataManager']
@@ -22,14 +17,6 @@ class DataManager:
 
     __transform: Dict[str, Any] = None
     __target_transform: Dict[str, Any] = None
-
-    __available_dataset: Dict[str, Dataset] = {
-        "DefaultDataset": DefaultDataset
-    }
-
-    __available_dataloader: Dict[str, DataLoader] = {
-        "DefaultDataLoader": DefaultDataLoader
-    }
 
 
     def __init__(self,
@@ -49,10 +36,10 @@ class DataManager:
                        dataloader: str,
                        dataloader_args: Dict[str, Any] = None,
                        ) -> DataLoader:
-        assert dataloader in self.__available_dataloader.keys(), "Your selected dataloader is unavailble"
+        assert dataloader in available_dataloader.keys(), "Your selected dataloader is unavailble"
 
         dataset = self.__get_dataset(dataset=dataset, dataset_args=dataset_args)
-        dataloader = self.__available_dataloader[dataloader](dataset=dataset, **dataloader_args)
+        dataloader = available_dataloader[dataloader](dataset=dataset, **dataloader_args)
         return dataloader
     ##########################################################################################################
 
@@ -60,8 +47,8 @@ class DataManager:
     def __get_dataset(self, dataset: str, dataset_args: Dict[str, Any]) -> Dataset:
         # Default dataset
         # TODO: Extend to other kinds of datasets
-        assert dataset in self.__available_dataset.keys(), "Your selected dataset is unavailable"
-        return self.__available_dataset[dataset](transform=self.__transform, target_transform=self.__target_transform, **dataset_args)
+        assert dataset in available_dataset.keys(), "Your selected dataset is unavailable"
+        return available_dataset[dataset](transform=self.__transform, target_transform=self.__target_transform, **dataset_args)
     ##########################################################################################################
 
 

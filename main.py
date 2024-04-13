@@ -37,7 +37,7 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
 
 def main() -> None:
     args = argparse.ArgumentParser()
-    args.add_argument("--config", default="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_multiclass.json", type=str, help="Path to config file")
+    args.add_argument("--config", default="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_binary_class.json", type=str, help="Path to config file")
     args = args.parse_args()
 
     config = ConfigManager(path=args.config)
