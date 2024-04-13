@@ -1,0 +1,108 @@
+// TODO: Explain fields' meaning
+{
+    "PROJECT_NAME": ,
+
+    "DATA":
+    {
+        "INPUT_SHAPE": ,
+        "TRAIN_SIZE": ,
+
+        "DATASET": ,
+
+        "TRAIN_DATASET_ARGS":
+        {
+            "root": ,
+            "annotation": ,
+        },
+
+        "VAL_DATASET_ARGS":
+        {
+            "root": ,
+            "annotation":
+        },
+
+        "TEST_DATASET_ARGS":
+        {
+            "root": ,
+            "annotation": ,
+        },
+
+        "DATALOADER": ,
+
+        "TRAIN_DATALOADER_ARGS":
+        {
+            "batch_size": ,
+            "shuffle": ,
+            "num_workers": ,
+            "drop_last": ,
+            "pin_memory":
+        },
+
+        "NUM_CLASSES": ,
+
+        "TRANSFORM": {},
+        "TARGET_TRANSFORM": {}
+    },
+
+    "CHECKPOINT":
+    {
+        "SAVE": ,
+        "LOAD": ,
+        "SAVE_ALL": ,
+        "SAVE_WEIGHT_ONLY": ,
+        "INCLUDE_CONFIG": ,
+        "RESUME_NAME":
+    },
+
+    "MODEL":
+    {
+        "BASE": ,
+        "NAME": ,
+        "PRETRAINED_WEIGHT": ,
+        "REMOVE_PRETRAINED_WEIGHT": ,
+        "ARGS": {}
+    },
+
+    "OPTIMIZER":
+    {
+        "NAME": ,
+        "ARGS": {}
+    },
+
+    "LR_SCHEDULER":
+    {
+        "APPLY": ,
+        "NAME": ,
+        "ARGS": {}
+    },
+
+    "METRIC":
+    {
+        "IN_TRAIN": true,
+        "NAME": [],
+
+        "ARGS": {}
+    },
+
+    "LOSS":
+    {
+        "NAME": ,
+        "ARGS": {}
+    },
+
+    "EARLY_STOPPING":
+    {
+        "APPLY": ,
+        "ARGS": {}
+    },
+
+    "LOGGING":
+    {
+        "STRATEGY":
+    },
+
+    "SEED": ,
+    "DEVICE": ,
+    "TRAINING_EPOCHS":
+//    "EVALUATION_STRATEGY": "no"
+}
