@@ -6,7 +6,7 @@ from src.DataLoader import available_dataloader
 from src.open_src import available_transform, available_interpolation, available_dtype
 
 from torchvision.transforms import Compose
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader
 
 __all__ = ['DataManager']
 

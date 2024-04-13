@@ -43,8 +43,8 @@ class ConfigManager:
         # Check dataset
         # self.__check_dataset_format()
 
-        # Set output path
         self.__set_output_path()
+
         # check paths existence
         # self.__check_output_path()
 
@@ -78,12 +78,19 @@ class ConfigManager:
         """
         Check existence of checkpoint and log path
         If not exists, create dir as the following pattern:
-            output/checkpoint/<MODEL_BASE>/<MODEL_NAME>
-                 /log/<MODEL_BASE>/<MODEL_NAME>
+            output/project_name/<model_base>/<model_name>/checkpoint
+                                                         /log
         """
-        output_path = self.__dict__.get("OUTPUT_PATH", os.path.join(os.getcwd(), "output"))
+        output_path = self.__dict__.get("OUTPUT_PATH",
+                                        os.path.join(os.getcwd(), "output", self.PROJECT_NAME)
+                                        )
 
-        for path in ("checkpoint", "log"):
+        path_to_check = ("checkpoint", "log")
+
+        if self.TENSORBOARD_APPLY:
+            path_to_check = (*path_to_check, "tensorboard")
+
+        for path in path_to_check:
             # Add path to class attr
             k = f"{path.upper()}_PATH"
             v = os.path.join(os.getcwd(), output_path, self.MODEL_BASE, self.MODEL_NAME, path)
@@ -92,6 +99,6 @@ class ConfigManager:
             # Create dir if not exists
             if not os.path.isdir(v):
                 os.makedirs(v, 0o777, True)
-                print(f"Dir for {k.lower()} {self.MODEL_NAME} is created.")
+                print(f"Dir for {path} {self.MODEL_NAME} is created.")
+            print()
         return None
-

@@ -10,28 +10,28 @@
 
         "TRAIN_DATASET_ARGS":
         {
-            "root": "lakefs://small-celeb-a/main/",
+//            "root": "lakefs://small-celeb-a/main/",
             "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
 
-            "annotation": "lakefs://small-celeb-a/main/train.csv",
+//            "annotation": "lakefs://small-celeb-a/main/train.csv",
             "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/train.csv"
         },
 
         "VAL_DATASET_ARGS":
         {
-            "root": "lakefs://small-celeb-a/main/",
+//            "root": "lakefs://small-celeb-a/main/",
             "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
 
-            "annotation": "lakefs://small-celeb-a/main/val.csv",
+//            "annotation": "lakefs://small-celeb-a/main/val.csv",
             "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/val.csv"
         },
 
         "TEST_DATASET_ARGS":
         {
-            "root": "lakefs://small-celeb-a/main/",
+//            "root": "lakefs://small-celeb-a/main/",
             "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
 
-            "annotation": "lakefs://small-celeb-a/main/test.csv",
+//            "annotation": "lakefs://small-celeb-a/main/test.csv",
             "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/test.csv"
         },
 
@@ -104,7 +104,7 @@
         {
             "lr": 1e-6,
             "amsgrad": true,
-            "weight_decay": 1e-7
+//            "weight_decay": 1e-7
         }
     },
 
@@ -124,35 +124,35 @@
         "IN_TRAIN": true,
         "NAME": [
             "BinaryAccuracy",
-            "BinaryAUPRC",
-            "BinaryAUROC",
-            "BinaryBinnedAUPRC",
-            "BinaryBinnedAUROC",
-            "BinaryBinnedPrecisionRecallCurve",
-            "BinaryConfusionMatrix",
-            "BinaryF1Score",
-            "BinaryNormalizedEntropy",
-            "BinaryPrecision",
-            "BinaryPrecisionRecallCurve",
-            "BinaryRecall",
-            "BinaryRecallAtFixedPrecision"
+//            "BinaryAUPRC",
+//            "BinaryAUROC",
+//            "BinaryBinnedAUPRC",
+//            "BinaryBinnedAUROC",
+//            "BinaryBinnedPrecisionRecallCurve",
+//            "BinaryConfusionMatrix",
+//            "BinaryF1Score",
+//            "BinaryNormalizedEntropy",
+//            "BinaryPrecision",
+//            "BinaryPrecisionRecallCurve",
+//            "BinaryRecall",
+//            "BinaryRecallAtFixedPrecision"
         ],
 
         "ARGS":
         {
             "0": {},
-            "1": {},
-            "2": {},
-            "3": {},
-            "4": {},
-            "5": {},
-            "6": {},
-            "7": {},
-            "8": {},
-            "9": {},
-            "10": {},
-            "11": {},
-            "12": {"min_precision":  0.5}
+//            "1": {},
+//            "2": {},
+//            "3": {},
+//            "4": {},
+//            "5": {},
+//            "6": {},
+//            "7": {},
+//            "8": {},
+//            "9": {},
+//            "10": {},
+//            "11": {},
+//            "12": {"min_precision":  0.5}
         }
     },
 
@@ -178,6 +178,10 @@
     "LOGGING":
     {
         "STRATEGY": "epoch"
+    },
+
+    "TENSORBOARD": {
+        "APPLY": true
     },
 
     "SEED": 12345,

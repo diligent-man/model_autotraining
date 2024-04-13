@@ -25,10 +25,10 @@ from src.open_src import (
     available_optimizers
 )
 
-
 import torch, torchinfo
 
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 __all__ = ["Trainer"]
 
@@ -46,6 +46,8 @@ class Trainer:
 
     __early_stopper: EarlyStopper = None
     __best_val_loss: float = None
+    __tensorboard: SummaryWriter = None
+
 
     def __init__(self,
                  config: ConfigManager,
@@ -82,7 +84,7 @@ class Trainer:
             del checkpoint
 
         if self.__config.LR_SCHEDULER_APPLY:
-            self.__lr_schedulers = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME,
+            self.__lr_scheduler = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME,
                                                             self.__config.LR_SCHEDULER_ARGS,
                                                             self.__optimizer
                                                             )
@@ -179,7 +181,10 @@ class Trainer:
 
     # Private methods
     def __train(self, epoch, data_loader, metrics):
-        return self.__run_epoch("train", epoch, data_loader, metrics)
+        run_epoch_result = {**{"lr": self.__lr_scheduler.get_lr().pop()},
+                            **self.__run_epoch("train", epoch, data_loader, metrics)
+                            }
+        return run_epoch_result
 
 
     def __eval(self, epoch, data_loader, metrics):
@@ -261,7 +266,7 @@ class Trainer:
             if phase == 'train':
                 batch_loss.backward()
                 self.__optimizer.step()
-                self.__lr_schedulers.step(epoch=epoch + index / len(data_loader)) ## Review lr scheduler mechanism
+                self.__lr_scheduler.step(epoch=epoch + index / len(data_loader)) ## Review lr scheduler mechanism
 
         if metrics is not None:
             metrics.compute()

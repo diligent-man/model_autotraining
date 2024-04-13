@@ -21,7 +21,7 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
     trainer = Trainer(config, train_loader, val_loader)
-    trainer.get_model_summary()
+    # trainer.get_model_summary()
     trainer.train()
     return None
 
@@ -35,11 +35,7 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
     return None
 
 
-def main() -> None:
-    args = argparse.ArgumentParser()
-    args.add_argument("--config", default="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_binary_class.json", type=str, help="Path to config file")
-    args = args.parse_args()
-
+def main(args: argparse.ArgumentParser) -> None:
     config = ConfigManager(path=args.config)
 
     data_manager = DataManager(
@@ -54,6 +50,12 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    default_config_path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_binary_class.json"
+
+    args = argparse.ArgumentParser()
+    args.add_argument("--config", default=default_config_path, type=str, help="Path to config file")
+
+    args = args.parse_args()
+    main(args)
 
 
