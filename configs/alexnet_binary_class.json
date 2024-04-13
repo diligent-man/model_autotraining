@@ -130,20 +130,20 @@
 //            "BinaryBinnedAUROC",
 //            "BinaryBinnedPrecisionRecallCurve",
 //            "BinaryConfusionMatrix",
-//            "BinaryF1Score",
+            "BinaryF1Score",
 //            "BinaryNormalizedEntropy",
-//            "BinaryPrecision",
+            "BinaryPrecision",
 //            "BinaryPrecisionRecallCurve",
-//            "BinaryRecall",
+            "BinaryRecall",
 //            "BinaryRecallAtFixedPrecision"
         ],
 
         "ARGS":
         {
             "0": {},
-//            "1": {},
-//            "2": {},
-//            "3": {},
+            "1": {},
+            "2": {},
+            "3": {},
 //            "4": {},
 //            "5": {},
 //            "6": {},
@@ -181,11 +181,13 @@
     },
 
     "TENSORBOARD": {
-        "APPLY": true
+        "APPLY": true,
+        "INSPECT_MODEL": true,
+        "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"]
     },
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "TRAINING_EPOCHS": 1
+    "TRAINING_EPOCHS": 10
 //    "EVALUATION_STRATEGY": "no"
 }

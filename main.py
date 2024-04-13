@@ -1,3 +1,5 @@
+# TODO: Model graph: https://stackoverflow.com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
+
 import argparse
 
 from src.tools import Trainer

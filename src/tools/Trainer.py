@@ -48,7 +48,6 @@ class Trainer:
     __best_val_loss: float = None
     __tensorboard: SummaryWriter = None
 
-
     def __init__(self,
                  config: ConfigManager,
                  train_loader: DataLoader,
@@ -92,6 +91,9 @@ class Trainer:
         if self.__config.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
             self.__early_stopper = EarlyStopper(self.__best_val_loss, **self.__config.EARLY_STOPPING_ARGS)
+
+        if self.__config.TENSORBOARD_APPLY:
+            self.__tensorboard = SummaryWriter(log_dir=self.__config.TENSORBOARD_PATH)
 
     # Class methods
     @classmethod
@@ -180,15 +182,32 @@ class Trainer:
 
 
     # Private methods
-    def __train(self, epoch, data_loader, metrics):
-        run_epoch_result = {**{"lr": self.__lr_scheduler.get_lr().pop()},
-                            **self.__run_epoch("train", epoch, data_loader, metrics)
+    def __train(self, epoch, data_loader, metrics, phase = "train"):
+        run_epoch_result = {**{"Lr": self.__lr_scheduler.get_lr().pop()},
+                            **self.__run_epoch(phase, epoch, data_loader, metrics)
                             }
+
+        # Add to tensorboad writer
+        if self.__tensorboard:
+            self.__tensorboard.add_scalar(tag="Learning rate", scalar_value=run_epoch_result["Lr"], global_step=epoch)
+            self.__tensorboard.add_scalars(main_tag="Loss", tag_scalar_dict={phase: run_epoch_result["loss"]}, global_step=epoch)
+
+            if self.__config.METRIC_IN_TRAIN:
+                tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
+                self.__tensorboard.add_scalars(main_tag="Metric", tag_scalar_dict=tag_scalar_dict, global_step=epoch)
         return run_epoch_result
 
 
-    def __eval(self, epoch, data_loader, metrics):
-        run_epoch_result = self.__run_epoch("eval", epoch, data_loader, metrics)
+    def __eval(self, epoch, data_loader, metrics, phase = "eval"):
+        run_epoch_result = self.__run_epoch(phase, epoch, data_loader, metrics)
+
+        # Add to tensorboad writer
+        if self.__tensorboard:
+            self.__tensorboard.add_scalars(main_tag="Loss", tag_scalar_dict={phase: run_epoch_result["loss"]}, global_step=epoch)
+
+            if self.__config.METRIC_IN_TRAIN:
+                tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
+                self.__tensorboard.add_scalars(main_tag="Metric", tag_scalar_dict=tag_scalar_dict, global_step=epoch)
 
         # Save checkpoint
         if self.__config.CHECKPOINT_SAVE:
@@ -240,6 +259,9 @@ class Trainer:
             labels = batch[1].type(torch.FloatTensor) if num_class == 1 else batch[1].type(torch.LongTensor)
             labels = labels.to(self.__config.DEVICE)
 
+            if self.__config.TENSORBOARD_INSPECT_MODEL:
+                self.__tensorboard.add_graph(self.__model, imgs)
+
             # reset gradients prior to forward pass
             self.__optimizer.zero_grad()
 
@@ -277,11 +299,13 @@ class Trainer:
             run_epoch_result = {"loss": total_loss / len(data_loader)}
         return run_epoch_result
 
+
     def __get_best_val_loss(self) -> float:
         if "best_checkpoint.pt" in os.listdir(self.__config.CHECKPOINT_PATH):
             return torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, "best_checkpoint.pt"))["val_loss"]
         else:
             return float("inf")
+
 
     def __save_checkpoint(self, epoch: int, val_loss: float, obj: dict, save_all: bool = False) -> None:
         """
