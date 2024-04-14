@@ -4,39 +4,24 @@
     "DATA":
     {
         "INPUT_SHAPE": [3, 224, 224],
-        "DATASET": "DefaultDataset",
+        "DATASET": "ImageFolderDataset",
 
         "TRAIN_DATASET_ARGS":
         {
-//            "root": "lakefs://small-celeb-a/main/",
-            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
-
-//            "annotation": "lakefs://small-celeb-a/main/train.csv",
-            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/train.csv",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/train.csv"
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A_annotation/",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A_annotation/train.csv"
         },
 
         "VAL_DATASET_ARGS":
         {
-//            "root": "lakefs://small-celeb-a/main/",
-            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
-
-//            "annotation": "lakefs://small-celeb-a/main/val.csv",
-            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/val.csv",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/val.csv"
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A_annotation/",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A_annotation/val.csv"
         },
 
         "TEST_DATASET_ARGS":
         {
-//            "root": "lakefs://small-celeb-a/main/",
-            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
-
-//            "annotation": "lakefs://small-celeb-a/main/test.csv",
-            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/test.csv",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/test.csv"
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A_annotation/",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A_annotation/test.csv"
         },
 
         "DATALOADER": "DefaultDataLoader",
@@ -93,7 +78,7 @@
     {
         "BASE": "alexnet",
         "NAME": "alexnet",
-        "GET_SUMMARY": true,
+        "GET_SUMMARY": false,
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
@@ -193,6 +178,6 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "TRAINING_EPOCHS": 200
+    "TRAINING_EPOCHS": 3
 //    "EVALUATION_STRATEGY": "no"
 }
