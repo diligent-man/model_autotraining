@@ -1,15 +1,11 @@
 import torch
 import torcheval
 
-from typing import (
-    List,
-    Dict,
-    Union
-)
-
+from typing import List, Dict, Union
 from collections.abc import Iterable
 from multipledispatch import dispatch
 from src.open_src import available_metrics
+
 
 __all__ = ['MetricManager']
 

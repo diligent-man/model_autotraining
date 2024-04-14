@@ -1,7 +1,7 @@
-from typing import Dict, Any, Union, List
-
 import torch
 from src.open_src import available_loss
+from typing import Dict, Any, Union, List
+
 
 __all__ = ['LossManager']
 
@@ -22,7 +22,8 @@ class LossManager:
     def compute_batch_loss(self,
                            inputs: Union[torch.Tensor, List[torch.Tensor]],
                            targets: torch.Tensor,
-                           aux_logits_weight: float=0.3) -> torch.Tensor:
+                           aux_logits_weight: float=0.3
+                           ) -> torch.Tensor:
         # len > 1: inputs includes aux logits (GoogleLeNet, InceptionV3)
         if isinstance(inputs, List):
             batch_loss = [self.__loss(inputs[i], targets) for i in range(len(inputs))]

@@ -1,6 +1,7 @@
 import torch
-from src.open_src import available_optimizers
 from typing import Dict, Any, Generator
+from src.open_src import available_optimizers
+
 
 
 class OptimizerManager:

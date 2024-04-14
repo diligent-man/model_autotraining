@@ -1,20 +1,9 @@
-from src.open_src import (
-    available_model,
-    available_weight,
-    available_layer
-)
-
-from typing import (
-    Dict,
-    List,
-    Any,
-    Generator
-)
-
-from src.utils.ConfigManager import ConfigManager
-
 import torch
 import torchinfo
+
+from typing import Dict, List, Any, Generator
+from src.utils.ConfigManager import ConfigManager
+from src.open_src import available_model, available_weight, available_layer
 
 
 __all__ = ["ModelManager"]
