@@ -1,12 +1,8 @@
 # TODO: Model graph: https://stackoverflow.com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
-
-import argparse
-
-import torch.nn
-
+import torch, argparse
 from src.tools import Trainer
-from src.utils import DataManager, ConfigManager
-from src.utils import ModelManager, OptimizerManager
+from src.utils import DataManager, ConfigManager, ModelManager, OptimizerManager
+
 
 def train(config: ConfigManager,
           model: torch.nn.Module,
@@ -14,17 +10,17 @@ def train(config: ConfigManager,
           data_manager: DataManager
           ) -> None:
     train_loader = data_manager.get_dataloader(
-        dataset=config.DATA_DATASET,
-        dataset_args=config.DATA_TRAIN_DATASET_ARGS,
-        dataloader=config.DATA_DATALOADER,
-        dataloader_args=config.DATA_TRAIN_DATALOADER_ARGS
+        config.DATA_DATASET,
+        config.DATA_TRAIN_DATASET_ARGS,
+        config.DATA_DATALOADER,
+        config.DATA_TRAIN_DATALOADER_ARGS
     )
 
     val_loader = data_manager.get_dataloader(
-        dataset=config.DATA_DATASET,
-        dataset_args=config.DATA_VAL_DATASET_ARGS,
-        dataloader=config.DATA_DATALOADER,
-        dataloader_args=config.DATA_TRAIN_DATALOADER_ARGS
+        config.DATA_DATASET,
+        config.DATA_VAL_DATASET_ARGS,
+        config.DATA_DATALOADER,
+        config.DATA_TRAIN_DATALOADER_ARGS
     )
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
@@ -45,27 +41,15 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
 def main(args: argparse.ArgumentParser) -> None:
     config = ConfigManager(path=args.config)
 
-    model_manager = ModelManager(config.MODEL_NAME,
-                                 config.MODEL_ARGS,
+    model_manager = ModelManager(config.MODEL_NAME, config.MODEL_ARGS,
                                  config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
                                  config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
-                                 config.DEVICE,
-                                 config.MODEL_PRETRAINED_WEIGHT
+                                 config.DEVICE, config.MODEL_PRETRAINED_WEIGHT
                                  )
     if config.MODEL_GET_SUMMARY: model_manager.get_summary(input_size=config.DATA_INPUT_SHAPE, device=config.DEVICE)
 
-    optimizer_manager = OptimizerManager(
-        name=config.OPTIMIZER_NAME,
-        args=config.OPTIMIZER_ARGS,
-        model_paras=model_manager.model.parameters()
-    )
-
-    data_manager = DataManager(
-        seed=config.SEED,
-        device=config.DEVICE,
-        transform=config.DATA_TRANSFORM,
-        target_transform=config.DATA_TARGET_TRANSFORM
-    )
+    optimizer_manager = OptimizerManager(config.OPTIMIZER_NAME, config.OPTIMIZER_ARGS, model_manager.model.parameters())
+    data_manager = DataManager(config.SEED, config.DEVICE, config.DATA_TRANSFORM, config.DATA_TARGET_TRANSFORM)
 
     train(config,
           model_manager.model,
@@ -83,5 +67,3 @@ if __name__ == '__main__':
 
     args = args.parse_args()
     main(args)
-
-

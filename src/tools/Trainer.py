@@ -2,29 +2,10 @@ import os, shutil
 
 from tqdm import tqdm
 from time import sleep
-
-from typing import (
-    List,
-    Dict,
-    Tuple,
-    Any,
-    Generator
-)
-
-from src.utils import (
-    Logger,
-    LossManager,
-    EarlyStopper,
-    MetricManager,
-    ConfigManager
-)
-
-from src.open_src import (
-    available_lr_scheduler
-)
+from typing import List, Dict, Tuple, Any
+from src.utils import Logger, LossManager, EarlyStopper, MetricManager, ConfigManager, LrSchedulerManager
 
 import torch
-
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
@@ -36,15 +17,16 @@ class Trainer:
     __start_epoch: int = 1
     __logger: Logger = Logger()
 
+    __loss: torch.nn.Module
+    __model: torch.nn.Module
+    __optimizer: torch.optim.Optimizer
     __train_loader: DataLoader
     __validation_loader: DataLoader
-
-    __loss: torch.nn.Module
     __lr_scheduler: torch.optim.lr_scheduler.LRScheduler = None
-
     __early_stopper: EarlyStopper = None
     __best_val_loss: float = None
     __tensorboard: SummaryWriter = None
+
 
     def __init__(self,
                  config: ConfigManager,
@@ -56,13 +38,11 @@ class Trainer:
         # Compulsory fields
         self.__config = config
 
-        self.__train_loader = train_loader
-        self.__validation_loader = validation_loader
-
         self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
-
         self.__model = model
         self.__optimizer = optimizer
+        self.__train_loader = train_loader
+        self.__validation_loader = validation_loader
 
         # Load checkpoint from local
         if self.__config.CHECKPOINT_LOAD:
@@ -73,10 +53,10 @@ class Trainer:
             del checkpoint
 
         if self.__config.LR_SCHEDULER_APPLY:
-            self.__lr_scheduler = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME,
-                                                           self.__config.LR_SCHEDULER_ARGS,
-                                                           self.__optimizer
-                                                           )
+            self.__lr_scheduler = LrSchedulerManager(self.__config.LR_SCHEDULER_NAME,
+                                                     self.__config.LR_SCHEDULER_ARGS,
+                                                     self.__optimizer
+                                                     ).lr_scheduler
 
         if self.__config.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
@@ -85,6 +65,7 @@ class Trainer:
         if self.__config.TENSORBOARD_APPLY:
             self.__tensorboard = SummaryWriter(log_dir=self.__config.TENSORBOARD_PATH)
 
+    ##############################3###################################################################################3
 
     # Class methods
     @classmethod
@@ -99,6 +80,8 @@ class Trainer:
                     f'Class {cls} lacks required `{var}` class attribute'
                 )
 
+
+    ##################################################################################################################
 
     # Public methods
     def train(self, sleep_time: int = None) -> None:
@@ -319,15 +302,6 @@ class Trainer:
             os.remove(os.path.join(self.__config.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt"))
         return None
     #################################################################################################################################
-
-    @staticmethod
-    def __init_lr_scheduler(name: str,
-                            args: Dict[str, Any],
-                            optimizer: torch.optim.Optimizer
-                            ) -> torch.optim.lr_scheduler.LRScheduler:
-        assert name in available_lr_scheduler.keys(), "Your selected lr scheduler is unavailable"
-        return available_lr_scheduler[name](optimizer, **args)
-
 
     @staticmethod
     def __activate(pred_labels: torch.Tensor) -> None:

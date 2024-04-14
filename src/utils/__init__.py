@@ -6,7 +6,7 @@ from .EarlyStopper import EarlyStopper
 from .ConfigManager import ConfigManager
 from .MetricManager import MetricManager
 from .OptimizerManager import OptimizerManager
-
+from .LrSchedulerManager import LrSchedulerManager
 
 __all__ = [
     "Logger",
@@ -16,5 +16,6 @@ __all__ = [
     "EarlyStopper",
     "ConfigManager",
     "MetricManager",
-    "OptimizerManager"
+    "OptimizerManager",
+    "LrSchedulerManager"
 ]

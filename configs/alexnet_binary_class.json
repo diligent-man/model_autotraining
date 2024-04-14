@@ -104,7 +104,7 @@
 
     "OPTIMIZER":
     {
-        "NAME": "AdamW",
+        "NAME": "Adam",
         "ARGS":
         {
             "lr": 1e-6,
