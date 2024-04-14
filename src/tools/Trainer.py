@@ -39,7 +39,7 @@ class Trainer:
         self.__config = config
 
         self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
-        self.__model = model
+        self.__model = torch.compile(self.__model) if self.__config.MODEL_COMPILE else model
         self.__optimizer = optimizer
         self.__train_loader = train_loader
         self.__validation_loader = validation_loader
@@ -64,7 +64,6 @@ class Trainer:
 
         if self.__config.TENSORBOARD_APPLY:
             self.__tensorboard = SummaryWriter(log_dir=self.__config.TENSORBOARD_PATH)
-
     ##############################3###################################################################################3
 
     # Class methods
@@ -224,7 +223,8 @@ class Trainer:
             labels = batch[1].type(torch.FloatTensor) if num_class == 1 else batch[1].type(torch.LongTensor)
             labels = labels.to(self.__config.DEVICE)
 
-            if self.__config.TENSORBOARD_INSPECT_MODEL:
+            if self.__config.TENSORBOARD_INSPECT_MODEL and not self.__config.MODEL.COMPILE:
+                # Tensorboard not support compiled pytorch model
                 self.__tensorboard.add_graph(self.__model, imgs)
 
             # reset gradients prior to forward pass

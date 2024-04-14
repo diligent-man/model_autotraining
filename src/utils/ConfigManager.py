@@ -99,5 +99,5 @@ class ConfigManager:
             if not os.path.isdir(v):
                 os.makedirs(v, 0o777, True)
                 print(f"Dir for {path} {self.MODEL_NAME} is created.")
-            print()
+        print()
         return None
