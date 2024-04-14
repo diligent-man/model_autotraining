@@ -54,7 +54,7 @@ class Trainer:
                  validation_loader: DataLoader
                  ):
         # Compulsory fields
-        self.__config: ConfigManager = config
+        self.__config = config
 
         self.__train_loader = train_loader
         self.__validation_loader = validation_loader
@@ -84,9 +84,9 @@ class Trainer:
 
         if self.__config.LR_SCHEDULER_APPLY:
             self.__lr_scheduler = self.__init_lr_scheduler(self.__config.LR_SCHEDULER_NAME,
-                                                            self.__config.LR_SCHEDULER_ARGS,
-                                                            self.__optimizer
-                                                            )
+                                                           self.__config.LR_SCHEDULER_ARGS,
+                                                           self.__optimizer
+                                                           )
 
         if self.__config.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
@@ -94,6 +94,7 @@ class Trainer:
 
         if self.__config.TENSORBOARD_APPLY:
             self.__tensorboard = SummaryWriter(log_dir=self.__config.TENSORBOARD_PATH)
+
 
     # Class methods
     @classmethod
@@ -108,33 +109,6 @@ class Trainer:
                     f'Class {cls} lacks required `{var}` class attribute'
                 )
 
-    # Setter & Getter
-    @property
-    def model(self):
-        return self.__model
-
-    def get_model_summary(self, depth=3, col_width=20, batch_size=1) -> torchinfo.summary:
-        """
-        if batch_dim is used, you only need to specify only input shape of img
-        """
-        input_size = self.__config.__dict__.get("DATA_INPUT_SHAPE", None)
-
-        # Input shape must be [B, C, H, W]
-        if len(input_size) != 3:
-            input_size = None
-
-        if input_size is not None:
-            input_size = (batch_size, *input_size)
-            col_names = ("input_size", "output_size", "num_params", "mult_adds", "params_percent", "trainable")
-        else:
-            col_names = ("num_params", "params_percent", "trainable")
-        return torchinfo.summary(model=self.__model,
-                                 input_size=input_size,
-                                 col_names=col_names,
-                                 col_width=col_width,
-                                 depth=depth,
-                                 device=self.__config.DEVICE
-                                 )
 
     # Public methods
     def train(self, sleep_time: int = None) -> None:
@@ -166,6 +140,9 @@ class Trainer:
                                                            )
                     run_epoch_result: Dict[str, Any] = self.__eval(epoch, data_loader, metrics)
 
+
+
+
                 # Logging
                 self.__logger.write(f"{self.__config.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
 
@@ -189,12 +166,21 @@ class Trainer:
 
         # Add to tensorboad writer
         if self.__tensorboard:
-            self.__tensorboard.add_scalar(tag="Learning rate", scalar_value=run_epoch_result["Lr"], global_step=epoch)
-            self.__tensorboard.add_scalars(main_tag="Loss", tag_scalar_dict={phase: run_epoch_result["loss"]}, global_step=epoch)
+            self.__tensorboard.add_scalar(tag="Learning rate",
+                                          scalar_value=run_epoch_result["Lr"],
+                                          global_step=epoch
+                                          )
+            self.__tensorboard.add_scalars(main_tag="Loss",
+                                           tag_scalar_dict={phase: run_epoch_result["loss"]},
+                                           global_step=epoch
+                                           )
 
             if self.__config.METRIC_IN_TRAIN:
                 tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
-                self.__tensorboard.add_scalars(main_tag="Metric", tag_scalar_dict=tag_scalar_dict, global_step=epoch)
+                self.__tensorboard.add_scalars(main_tag="Metric",
+                                               tag_scalar_dict=tag_scalar_dict,
+                                               global_step=epoch
+                                               )
         return run_epoch_result
 
 
@@ -203,11 +189,17 @@ class Trainer:
 
         # Add to tensorboad writer
         if self.__tensorboard:
-            self.__tensorboard.add_scalars(main_tag="Loss", tag_scalar_dict={phase: run_epoch_result["loss"]}, global_step=epoch)
+            self.__tensorboard.add_scalars(main_tag="Loss",
+                                           tag_scalar_dict={phase: run_epoch_result["loss"]},
+                                           global_step=epoch
+                                           )
 
             if self.__config.METRIC_IN_TRAIN:
                 tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
-                self.__tensorboard.add_scalars(main_tag="Metric", tag_scalar_dict=tag_scalar_dict, global_step=epoch)
+                self.__tensorboard.add_scalars(main_tag="Metric",
+                                               tag_scalar_dict=tag_scalar_dict,
+                                               global_step=epoch
+                                               )
 
         # Save checkpoint
         if self.__config.CHECKPOINT_SAVE:

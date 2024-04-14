@@ -1,12 +1,6 @@
 from .nn import (
     available_loss,
-    available_conv,
-    available_linear,
-    available_flatten,
-    available_dropout,
-    available_pooling,
-    available_activation,
-    available_normalization
+    available_layer
 )
 
 from .optim import (
@@ -20,13 +14,7 @@ from .Tensor import (
 
 __all__ = [
     "available_loss",
-    "available_conv",
-    "available_linear",
-    "available_flatten",
-    "available_dropout",
-    "available_pooling",
-    "available_activation",
-    "available_normalization",
+    "available_layer",
     "available_optimizers",
     "available_lr_scheduler",
     "available_dtype"

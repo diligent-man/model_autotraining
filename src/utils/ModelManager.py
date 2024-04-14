@@ -1,35 +1,24 @@
 from src.open_src import (
     available_model,
     available_weight,
-
-    available_conv,
-    available_linear,
-    available_dropout,
-    available_flatten,
-    available_pooling,
-    available_activation,
-    available_normalization,
+    available_layer
 )
 
-from typing import Dict, List, Any, Generator
-
-
-import torch
+from typing import (
+    Dict,
+    List,
+    Any,
+    Generator
+)
 
 from src.utils.ConfigManager import ConfigManager
 
+import torch
+import torchinfo
+
+
 __all__ = ["ModelManager"]
 
-
-available_layer = {
-    **available_conv,
-    **available_linear,
-    **available_dropout,
-    **available_flatten,
-    **available_pooling,
-    **available_activation,
-    **available_normalization
-}
 
 class ModelManager:
     __num_classes: int
@@ -45,7 +34,10 @@ class ModelManager:
                  ):
         self.__num_classes = model_args.pop("num_classes", 1000)
         self.__model = self.__init_model(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight).to(device)
+    ##################################################################################################################
 
+
+    # Setter & Getter
     @property
     def model(self):
         return self.__model
@@ -53,7 +45,41 @@ class ModelManager:
     @property
     def num_classes(self):
         return self.__num_classes
+    ###################################################################################################################
 
+
+    # Public methods
+    def get_summary(self,
+                          input_size,
+                          depth=3,
+                          col_width=20,
+                          batch_size=1,
+                          device="cpu",
+                          verbose=True
+                          ) -> torchinfo.model_statistics.ModelStatistics:
+        """
+        if batch_dim is used, you only need to specify only input shape of img
+        """
+        # Input shape must be [B, C, H, W]
+        if len(input_size) == 3:
+            input_size = [batch_size, *input_size]
+
+        if verbose:
+            col_names = ("input_size", "output_size", "num_params", "mult_adds", "params_percent", "trainable")
+        else:
+            col_names = ("num_params", "params_percent", "trainable")
+
+        return torchinfo.summary(model=self.__model,
+                                 input_size=input_size,
+                                 col_names=col_names,
+                                 col_width=col_width,
+                                 depth=depth,
+                                 device=device
+                                 )
+    ###################################################################################################################
+
+
+    # Private methods
     def __init_model(self,
                      model_name: str,
                      model_args: Dict[str, Dict],
@@ -131,6 +157,7 @@ class ModelManager:
         return new_classifier
 
 
+# Test case: implement later
 def main() -> None:
     # Your code
     config = ConfigManager(path="/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/vgg.json")

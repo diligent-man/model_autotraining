@@ -4,46 +4,48 @@
     "DATA":
     {
         "INPUT_SHAPE": [3, 224, 224],
+        "TRAIN_SIZE": 0.9,
+
         "DATASET": "DefaultDataset",
 
         "TRAIN_DATASET_ARGS":
         {
 //            "root": "lakefs://small-celeb-a/main/",
             "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
+//            "root": "/home/trong/Downloads/Dataset/celeb_A/",
 
 //            "annotation": "lakefs://small-celeb-a/main/train.csv",
             "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/train.csv",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/train.csv"
+//            "annotation": "/home/trong/Downloads/Dataset/celeb_A/train.csv"
         },
 
         "VAL_DATASET_ARGS":
         {
 //            "root": "lakefs://small-celeb-a/main/",
             "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
+//            "root": "/home/trong/Downloads/Dataset/celeb_A/",
 
 //            "annotation": "lakefs://small-celeb-a/main/val.csv",
             "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/val.csv",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/val.csv"
+//            "annotation": "/home/trong/Downloads/Dataset/celeb_A/val.csv"
         },
 
         "TEST_DATASET_ARGS":
         {
 //            "root": "lakefs://small-celeb-a/main/",
             "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
+//            "root": "/home/trong/Downloads/Dataset/celeb_A/",
 
 //            "annotation": "lakefs://small-celeb-a/main/test.csv",
             "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/test.csv",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/test.csv"
+//            "annotation": "/home/trong/Downloads/Dataset/celeb_A/test.csv"
         },
 
         "DATALOADER": "DefaultDataLoader",
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 512,
+            "batch_size": 256,
             "shuffle": true,
             "num_workers": 2,
             "drop_last": false,
@@ -91,9 +93,8 @@
 
     "MODEL":
     {
-        "BASE": "alexnet",
-        "NAME": "alexnet",
-        "GET_SUMMARY": true,
+        "BASE": "resnet",
+        "NAME": "resnet18",
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
@@ -104,12 +105,12 @@
 
     "OPTIMIZER":
     {
-        "NAME": "AdamW",
+        "NAME": "Adam",
         "ARGS":
         {
             "lr": 1e-6,
             "amsgrad": true,
-            "weight_decay": 1e-7
+//            "weight_decay": 1e-7
         }
     },
 
@@ -137,9 +138,9 @@
 //            "BinaryConfusionMatrix",
             "BinaryF1Score",
 //            "BinaryNormalizedEntropy",
-//            "BinaryPrecision",
+            "BinaryPrecision",
 //            "BinaryPrecisionRecallCurve",
-//            "BinaryRecall",
+            "BinaryRecall",
 //            "BinaryRecallAtFixedPrecision"
         ],
 
@@ -147,8 +148,8 @@
         {
             "0": {},
             "1": {},
-//            "2": {},
-//            "3": {},
+            "2": {},
+            "3": {},
 //            "4": {},
 //            "5": {},
 //            "6": {},
@@ -193,6 +194,6 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "TRAINING_EPOCHS": 200
+    "TRAINING_EPOCHS": 10
 //    "EVALUATION_STRATEGY": "no"
 }

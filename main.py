@@ -4,7 +4,7 @@ import argparse
 
 from src.tools import Trainer
 from src.utils import DataManager, ConfigManager
-
+from src.utils import ModelManager
 
 def train(config: ConfigManager, data_manager: DataManager) -> None:
     train_loader = data_manager.get_dataloader(
@@ -22,9 +22,12 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
     )
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
-    trainer = Trainer(config, train_loader, val_loader)
+
+
+    print(model)
+    # trainer = Trainer(config, train_loader, val_loader)
     # trainer.get_model_summary()
-    trainer.train()
+    # trainer.train()
     return None
 
 
@@ -47,7 +50,19 @@ def main(args: argparse.ArgumentParser) -> None:
         target_transform=config.DATA_TARGET_TRANSFORM
     )
 
-    train(config, data_manager)
+    model_manager = ModelManager(config.MODEL_NAME,
+                                 config.MODEL_ARGS,
+                                 config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
+                                 config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
+                                 config.DEVICE,
+                                 config.MODEL_PRETRAINED_WEIGHT
+                                 )
+
+    if config.MODEL_GET_SUMMARY:
+        model_manager.get_summary(input_size=config.DATA_INPUT_SHAPE, device=config.DEVICE)
+
+
+    # train(config, data_manager, model_manager.model)
     return None
 
 
