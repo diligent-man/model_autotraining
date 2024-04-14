@@ -15,17 +15,15 @@ from src.utils import (
     Logger,
     LossManager,
     EarlyStopper,
-    ModelManager,
     MetricManager,
     ConfigManager
 )
 
 from src.open_src import (
-    available_lr_scheduler,
-    available_optimizers
+    available_lr_scheduler
 )
 
-import torch, torchinfo
+import torch
 
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
@@ -50,6 +48,8 @@ class Trainer:
 
     def __init__(self,
                  config: ConfigManager,
+                 model: torch.nn.Module,
+                 optimizer: torch.optim.Optimizer,
                  train_loader: DataLoader,
                  validation_loader: DataLoader
                  ):
@@ -61,18 +61,8 @@ class Trainer:
 
         self.__loss = LossManager(self.__config.LOSS_NAME, self.__config.LOSS_ARGS)
 
-        self.__model = ModelManager(self.__config.MODEL_NAME,
-                                    self.__config.MODEL_ARGS,
-                                    self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
-                                    self.__config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
-                                    self.__config.DEVICE,
-                                    self.__config.MODEL_PRETRAINED_WEIGHT
-                                    ).model
-
-        self.__optimizer = self.__init_optimizer(self.__config.OPTIMIZER_NAME,
-                                                 self.__config.OPTIMIZER_ARGS,
-                                                 self.__model.parameters()
-                                                 )
+        self.__model = model
+        self.__optimizer = optimizer
 
         # Load checkpoint from local
         if self.__config.CHECKPOINT_LOAD:
@@ -329,16 +319,6 @@ class Trainer:
             os.remove(os.path.join(self.__config.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt"))
         return None
     #################################################################################################################################
-
-
-    @staticmethod
-    def __init_optimizer(name: str,
-                         args: Dict[str, Any],
-                         model_paras: Generator
-                         ) -> torch.optim.Optimizer:
-        assert name in available_optimizers.keys(), "Your selected optimizer is unavailable."
-        optimizer: torch.optim.Optimizer = available_optimizers[name](model_paras, **args)
-        return optimizer
 
     @staticmethod
     def __init_lr_scheduler(name: str,

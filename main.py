@@ -2,11 +2,17 @@
 
 import argparse
 
+import torch.nn
+
 from src.tools import Trainer
 from src.utils import DataManager, ConfigManager
-from src.utils import ModelManager
+from src.utils import ModelManager, OptimizerManager
 
-def train(config: ConfigManager, data_manager: DataManager) -> None:
+def train(config: ConfigManager,
+          model: torch.nn.Module,
+          optimizer:torch.optim.Optimizer,
+          data_manager: DataManager
+          ) -> None:
     train_loader = data_manager.get_dataloader(
         dataset=config.DATA_DATASET,
         dataset_args=config.DATA_TRAIN_DATASET_ARGS,
@@ -22,12 +28,8 @@ def train(config: ConfigManager, data_manager: DataManager) -> None:
     )
     print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
-
-
-    print(model)
-    # trainer = Trainer(config, train_loader, val_loader)
-    # trainer.get_model_summary()
-    # trainer.train()
+    trainer = Trainer(config, model, optimizer, train_loader, val_loader)
+    trainer.train()
     return None
 
 
@@ -43,13 +45,6 @@ def test(config: ConfigManager, data_manager: DataManager) -> None:
 def main(args: argparse.ArgumentParser) -> None:
     config = ConfigManager(path=args.config)
 
-    data_manager = DataManager(
-        seed=config.SEED,
-        device=config.DEVICE,
-        transform=config.DATA_TRANSFORM,
-        target_transform=config.DATA_TARGET_TRANSFORM
-    )
-
     model_manager = ModelManager(config.MODEL_NAME,
                                  config.MODEL_ARGS,
                                  config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
@@ -57,12 +52,26 @@ def main(args: argparse.ArgumentParser) -> None:
                                  config.DEVICE,
                                  config.MODEL_PRETRAINED_WEIGHT
                                  )
+    if config.MODEL_GET_SUMMARY: model_manager.get_summary(input_size=config.DATA_INPUT_SHAPE, device=config.DEVICE)
 
-    if config.MODEL_GET_SUMMARY:
-        model_manager.get_summary(input_size=config.DATA_INPUT_SHAPE, device=config.DEVICE)
+    optimizer_manager = OptimizerManager(
+        name=config.OPTIMIZER_NAME,
+        args=config.OPTIMIZER_ARGS,
+        model_paras=model_manager.model.parameters()
+    )
 
+    data_manager = DataManager(
+        seed=config.SEED,
+        device=config.DEVICE,
+        transform=config.DATA_TRANSFORM,
+        target_transform=config.DATA_TARGET_TRANSFORM
+    )
 
-    # train(config, data_manager, model_manager.model)
+    train(config,
+          model_manager.model,
+          optimizer_manager.optimizer,
+          data_manager
+          )
     return None
 
 

@@ -5,6 +5,7 @@ from .ModelManager import ModelManager
 from .EarlyStopper import EarlyStopper
 from .ConfigManager import ConfigManager
 from .MetricManager import MetricManager
+from .OptimizerManager import OptimizerManager
 
 
 __all__ = [
@@ -14,5 +15,6 @@ __all__ = [
     "ModelManager",
     "EarlyStopper",
     "ConfigManager",
-    "MetricManager"
+    "MetricManager",
+    "OptimizerManager"
 ]
