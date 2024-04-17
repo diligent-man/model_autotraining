@@ -26,9 +26,10 @@ def main(args: argparse.ArgumentParser) -> None:
           )
     return None
 
-import os
+
 if __name__ == '__main__':
     path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/LrScheduler/CosineAnnealingWarmRestarts.json"
+    # path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/LrScheduler/ConstantLR.json"
 
     default_config_path = path
 

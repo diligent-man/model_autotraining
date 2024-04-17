@@ -30,12 +30,12 @@
         {
             "batch_size": 1600,
             "shuffle": true,
-            "num_workers": 4,
-            "prefetch_factor": 2,
+            "num_workers": 2,
+//            "prefetch_factor": null,
             "drop_last": false,
             "pin_memory": true,
-            "pin_memory_device": "cuda",
-            "multiprocessing_context": "fork"
+//            "pin_memory_device": "cuda",
+//            "multiprocessing_context": "fork"
         },
 
         "NUM_CLASSES": 1,
@@ -96,7 +96,7 @@
         "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-6,
+            "lr": 1,
             "amsgrad": true,
 //            "weight_decay": 1e-7
         }
@@ -106,44 +106,14 @@
     {
         "APPLY": true,
         "NAME": ["ConstantLR"],
-        "ARGS": [{"factor": 0.1, "total_iters": 1}]
+        "ARGS": [{"factor": 0.1, "total_iters": 3}]
     },
 
-    "METRIC":
+   "METRIC":
     {
         "IN_TRAIN": true,
-        "NAME": [
-            "BinaryAccuracy",
-//            "BinaryAUPRC",
-//            "BinaryAUROC",
-//            "BinaryBinnedAUPRC",
-//            "BinaryBinnedAUROC",
-//            "BinaryBinnedPrecisionRecallCurve",
-//            "BinaryConfusionMatrix",
-            "BinaryF1Score",
-//            "BinaryNormalizedEntropy",
-//            "BinaryPrecision",
-//            "BinaryPrecisionRecallCurve",
-//            "BinaryRecall",
-//            "BinaryRecallAtFixedPrecision"
-        ],
-
-        "ARGS":
-        {
-            "0": {},
-            "1": {},
-//            "2": {},
-//            "3": {},
-//            "4": {},
-//            "5": {},
-//            "6": {},
-//            "7": {},
-//            "8": {},
-//            "9": {},
-//            "10": {},
-//            "11": {},
-//            "12": {"min_precision":  0.5}
-        }
+        "NAME": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"],
+        "ARGS": [{}, {}, {}, {}]
     },
 
     "LOSS":
@@ -178,6 +148,6 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "TRAINING_EPOCHS": 1
+    "TRAINING_EPOCHS": 12
 //    "EVALUATION_STRATEGY": "no"
 }

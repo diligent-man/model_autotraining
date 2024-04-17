@@ -1,6 +1,6 @@
-import os, shutil
-
+import os, copy, shutil
 from tqdm import tqdm
+
 from time import sleep
 from typing import List, Dict, Tuple, Any
 from src.utils import Logger, LossManager, EarlyStopper, MetricManager, ConfigManager, LrSchedulerManager, TensorboardManager
@@ -17,7 +17,7 @@ class Trainer:
     __start_epoch: int = 1
     __logger: Logger = Logger()
 
-    __loss: torch.nn.Module
+    __loss: LossManager
     __model: torch.nn.Module
     __optimizer: torch.optim.Optimizer
     __train_loader: DataLoader
@@ -102,7 +102,7 @@ class Trainer:
             print("Epoch:", epoch)
 
             for phase, data_loader in zip(("train", "eval"), (self.__train_loader, self.__validation_loader)):
-                # Preliminary setups
+                # Preliminary setup
                 if phase == "train":
                     self.__model.train()
                     metrics: MetricManager = MetricManager(self.__config.METRIC_NAME,
@@ -194,7 +194,7 @@ class Trainer:
                     phase: str,
                     epoch: int,
                     data_loader: DataLoader,
-                    metrics: MetricManager = None
+                    metrics: MetricManager,
                     ) -> Dict:
         """
         phase: "train" || "eval"
@@ -203,44 +203,7 @@ class Trainer:
 
         Notes: loss of last iter is taken as loss of that epoch
         """
-        # print(phase, epoch, data_loader, metrics)
-        num_class = self.__config.DATA_NUM_CLASSES
-        total_loss = 0
-
-        # Epoch training
-        for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
-            imgs = batch[0].to(self.__config.DEVICE)
-
-            labels = batch[1].type(torch.FloatTensor) if num_class == 1 else batch[1].type(torch.LongTensor)
-            labels = labels.to(self.__config.DEVICE)
-
-            # reset gradients prior to forward pass
-            self.__optimizer.zero_grad()
-
-            with torch.set_grad_enabled(phase == "train"):
-                # forward pass
-                pred_labels = self.__model(imgs)
-                pred_labels = list(map(self.__activate, pred_labels)) if isinstance(pred_labels, Tuple) else self.__activate(pred_labels)
-
-                # Compute loss
-                batch_loss = self.__loss.compute_batch_loss(pred_labels, labels)
-
-                # Get pred_labels from main output
-                if isinstance(pred_labels, List):
-                    pred_labels = pred_labels[0]
-
-                # Update metrics only if eval phase
-                if metrics is not None:
-                    metrics.update(pred_labels, labels)
-
-            # Accumulate minibatch into total loss
-            total_loss += batch_loss.item()
-
-            # backprop + optimize only if in training phase
-            if phase == 'train':
-                batch_loss.backward()
-                self.__optimizer.step()
-                self.__lr_scheduler.step(epoch=epoch + index / len(data_loader)) ## Review lr scheduler mechanism
+        total_loss, metrics = self.__running_epoch_dispatcher(phase, epoch, data_loader, metrics)
 
         if metrics is not None:
             metrics.compute()
@@ -250,6 +213,113 @@ class Trainer:
         else:
             run_epoch_result = {"loss": total_loss / len(data_loader)}
         return run_epoch_result
+
+
+    def __running_epoch_dispatcher(self, phase, epoch, data_loader, metrics):
+        # Ref: https://wandb.ai/wandb_fc/tips/reports/How-to-Properly-Use-PyTorch-s-CosineAnnealingWarmRestarts-Scheduler--VmlldzoyMTA3MjM2
+        if isinstance(self.__lr_scheduler, (torch.optim.lr_scheduler.CosineAnnealingWarmRestarts)):
+            """
+            Template: Update lr after each step, batch
+            scheduler = ...
+
+                for epoch in range(...):
+                    for phase in ("train", "val"):
+                        for i, sample in enumerate(dataloader):
+                            # Forward Pass
+
+                            if phase == "train":
+                                # Compute Loss and Backprop
+                                # Update Optimizer
+                                # Update SCheduler
+                                scheduler.step() # < ----- Update Learning Rate after train each batch
+
+            In brevity:
+                for epoch in range():
+                    train(batch_running(... + scheduler.step()))
+                    val(batch_running(...))
+            """
+            total_loss, metrics = self.__run_epoch_strategy_2(phase, epoch, data_loader, metrics)
+        else:
+            """
+            Template: update lr after each epoch
+                scheduler = ...
+
+                for epoch in range(...):
+                    for phase in ("train", "val"):
+                        for i, sample in enumerate(dataloader):
+                            # Forward Pass
+
+                            if phase == "train":
+                                # Compute Loss and Backprop
+                                # Update Optimizer
+
+                        if phase == "val":
+                            scheduler.step() # < ----- Update Learning Rate after run validation
+
+            In brevity:
+                for epoch in range():
+                    train(batch_running(...))
+                    val(batch_running(...))
+                    scheduler.step()
+            """
+            total_loss, metrics = self.__run_epoch_strategy_1(phase, epoch, data_loader, metrics)
+        return total_loss, metrics
+
+
+    def __run_epoch_strategy_1(self, phase, epoch, data_loader, metrics):
+        num_classes = self.__config.DATA_NUM_CLASSES
+        total_loss = 0
+
+        # Epoch training
+        for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
+            # img: (batch_size, input_shape)
+            # labels: (batch_size, )
+            imgs, labels = batch[0], batch[1]
+            batch_loss = _forward_pass(imgs, labels, num_classes,
+                                       self.__model, self.__optimizer, metrics, self.__loss,
+                                       phase, self.__config.DEVICE
+                                       )
+
+            # Accumulate minibatch into total loss
+            total_loss += batch_loss.item()
+
+            # backprop + optimize only if in training phase
+            if phase == 'train':
+                batch_loss.backward()
+                self.__optimizer.step()
+
+        # Step after each epoch
+        if self.__lr_scheduler and phase=="eval":
+            self.__lr_scheduler.step()  ## Review lr scheduler mechanism
+        return total_loss, metrics
+
+
+    def __run_epoch_strategy_2(self, phase, epoch, data_loader, metrics):
+        num_classes = self.__config.DATA_NUM_CLASSES
+        total_loss = 0
+
+        # Epoch training
+        for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
+            # img: (batch_size, input_shape)
+            # labels: (batch_size, )
+            imgs, labels = batch[0], batch[1]
+            batch_loss = _forward_pass(imgs, labels, num_classes,
+                                       self.__model, self.__optimizer, metrics, self.__loss,
+                                       phase, self.__config.DEVICE
+                                       )
+
+            # Accumulate minibatch into total loss
+            total_loss += batch_loss.item()
+
+            # backprop + optimize only if in training phase
+            if phase == 'train':
+                batch_loss.backward()
+                self.__optimizer.step()
+
+                # Update scheduler after each batch
+                if self.__lr_scheduler:
+                    self.__lr_scheduler.step()
+        return total_loss, metrics
 
 
     def __get_best_val_loss(self) -> float:
@@ -290,11 +360,61 @@ class Trainer:
         return None
     #################################################################################################################################
 
-    @staticmethod
-    def __activate(pred_labels: torch.Tensor) -> None:
+
+
+
+def _forward_pass(imgs: torch.Tensor,
+                  labels: torch.Tensor,
+                  num_classes: int,
+
+                  model: torch.nn.Module,
+                  optimizer: torch.optim.Optimizer,
+                  metrics: MetricManager,
+                  loss: LossManager,
+
+                  phase: str,
+                  device: str
+                  ) -> torch.FloatTensor:
+    """
+    Computation task in forward pass:
+    1. Pass through model
+    2. Compute batch loss
+    3. Update metrics
+
+    Return:
+        batch_loss
+    """
+    def _activate(pred_labels: torch.Tensor) -> None:
         if pred_labels.shape[1] == 1:
             # Binary class
             return torch.nn.functional.sigmoid(pred_labels).squeeze(dim=1)
         else:
             # Multiclass
             return torch.nn.functional.softmax(pred_labels, dim=1)
+
+    imgs = imgs.to(device)
+
+    labels = labels.type(torch.FloatTensor) if num_classes == 1 else labels.type(torch.LongTensor)
+    labels = labels.to(device)
+
+    # reset gradients prior to forward pass
+    optimizer.zero_grad()
+
+    with torch.set_grad_enabled(phase == "train"):
+        # forward pass
+        pred_labels = model(imgs)
+        pred_labels = list(map(_activate, pred_labels)) if isinstance(pred_labels, Tuple) else _activate(pred_labels)
+
+        # Compute loss
+        batch_loss = loss.compute_batch_loss(pred_labels, labels)
+
+        # Get pred_labels from main output
+        if isinstance(pred_labels, List):
+            pred_labels = pred_labels[0]
+
+        # Update metrics only if eval phase
+        if metrics is not None:
+            metrics.update(pred_labels, labels)
+    return batch_loss
+
+
