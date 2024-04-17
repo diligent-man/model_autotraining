@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 
 __all__ = ["Trainer"]
 
+
 torch.set_float32_matmul_precision('high')
 
 
@@ -131,8 +132,13 @@ class Trainer:
     #################################################################################################################3
 
     # Private methods
-    def __train(self, epoch, data_loader, metrics, phase="train"):
-        run_epoch_result = {**{"Lr": self.__lr_scheduler.get_last_lr().pop()},
+    def __train(self,
+                epoch: int,
+                data_loader: torch.utils.data.DataLoader,
+                metrics: MetricManager,
+                phase="train"
+                ) -> Dict[str, Any]:
+        run_epoch_result: Dict[str, Any] = {**{"Lr": self.__lr_scheduler.get_last_lr().pop()},
                             **self.__run_epoch(phase, epoch, data_loader, metrics)
                             }
 
@@ -147,8 +153,13 @@ class Trainer:
         return run_epoch_result
 
 
-    def __eval(self, epoch, data_loader, metrics, phase="eval"):
-        run_epoch_result = self.__run_epoch(phase, epoch, data_loader, metrics)
+    def __eval(self,
+               epoch: int,
+               data_loader: torch.utils.data.DataLoader,
+               metrics: MetricManager,
+               phase="eval"
+               ) -> Dict[str, Any]:
+        run_epoch_result: Dict[str, Any] = self.__run_epoch(phase, epoch, data_loader, metrics)
 
         # Add to tensorboad writer
         if self.__tensorboard:
@@ -338,7 +349,7 @@ def _forward_pass(imgs: torch.Tensor, labels: torch.Tensor, num_classes: int,
         pred_labels = list(map(_activate, pred_labels)) if isinstance(pred_labels, Tuple) else _activate(pred_labels)
 
         # Compute loss
-        batch_loss = loss.compute_batch_loss(pred_labels, labels)
+        batch_loss: torch.FloatTensor = loss.compute_batch_loss(pred_labels, labels)
 
         # Get pred_labels from main output
         if isinstance(pred_labels, List): pred_labels = pred_labels[0]
@@ -397,5 +408,5 @@ def _run_epoch_strategy_2(loss: LossManager, model: torch.nn.Module,
 
             # Update scheduler after each batch
             if lr_scheduler:
-                lr_scheduler.step()
+                lr_scheduler.step(epoch=epoch + index / len(data_loader))
     return total_loss
