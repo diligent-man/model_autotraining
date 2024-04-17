@@ -3,7 +3,8 @@ from tqdm import tqdm
 
 from time import sleep
 from typing import List, Dict, Tuple, Any
-from src.utils import Logger, LossManager, EarlyStopper, MetricManager, ConfigManager, LrSchedulerManager, TensorboardManager
+from src.utils import Logger, EarlyStopper
+from src.Manager import LossManager, MetricManager, ConfigManager, LrSchedulerManager, TensorboardManager
 
 import torch
 from torch.utils.data import DataLoader
@@ -11,6 +12,7 @@ from torch.utils.data import DataLoader
 
 __all__ = ["Trainer"]
 
+torch.set_float32_matmul_precision('high')
 
 class Trainer:
     __config: ConfigManager
@@ -195,7 +197,7 @@ class Trainer:
                     epoch: int,
                     data_loader: DataLoader,
                     metrics: MetricManager,
-                    ) -> Dict:
+                    ) -> Dict[str, Any]:
         """
         phase: "train" || "eval"
         data_loader: train_loader || val_loader
@@ -203,9 +205,9 @@ class Trainer:
 
         Notes: loss of last iter is taken as loss of that epoch
         """
-        total_loss, metrics = self.__running_epoch_dispatcher(phase, epoch, data_loader, metrics)
+        total_loss = self.__run_epoch_dispatcher(phase, epoch, data_loader, metrics)
 
-        if metrics is not None:
+        if metrics:
             metrics.compute()
             run_epoch_result = {**{"loss": total_loss / len(data_loader)},
                                 **{metric_name: value for metric_name, value in zip(metrics.name, metrics.get_result())}
@@ -215,7 +217,7 @@ class Trainer:
         return run_epoch_result
 
 
-    def __running_epoch_dispatcher(self, phase, epoch, data_loader, metrics):
+    def __run_epoch_dispatcher(self, phase, epoch, data_loader, metrics):
         # Ref: https://wandb.ai/wandb_fc/tips/reports/How-to-Properly-Use-PyTorch-s-CosineAnnealingWarmRestarts-Scheduler--VmlldzoyMTA3MjM2
         if isinstance(self.__lr_scheduler, (torch.optim.lr_scheduler.CosineAnnealingWarmRestarts)):
             """
@@ -238,7 +240,17 @@ class Trainer:
                     train(batch_running(... + scheduler.step()))
                     val(batch_running(...))
             """
-            total_loss, metrics = self.__run_epoch_strategy_2(phase, epoch, data_loader, metrics)
+            total_loss = _run_epoch_strategy_2(self.__loss,
+                                               self.__model,
+                                               metrics,
+                                               self.__optimizer,
+                                               self.__lr_scheduler,
+                                               phase,
+                                               epoch,
+                                               self.__config.DEVICE,
+                                               self.__config.DATA_NUM_CLASSES,
+                                               data_loader
+                                               )
         else:
             """
             Template: update lr after each epoch
@@ -262,64 +274,20 @@ class Trainer:
                     val(batch_running(...))
                     scheduler.step()
             """
-            total_loss, metrics = self.__run_epoch_strategy_1(phase, epoch, data_loader, metrics)
-        return total_loss, metrics
+            total_loss = _run_epoch_strategy_1(self.__loss,
+                                               self.__model,
+                                               metrics,
+                                               self.__optimizer,
+                                               self.__lr_scheduler,
+                                               phase,
+                                               epoch,
+                                               self.__config.DEVICE,
+                                               self.__config.DATA_NUM_CLASSES,
+                                               data_loader
+                                               )
+        return total_loss
 
 
-    def __run_epoch_strategy_1(self, phase, epoch, data_loader, metrics):
-        num_classes = self.__config.DATA_NUM_CLASSES
-        total_loss = 0
-
-        # Epoch training
-        for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
-            # img: (batch_size, input_shape)
-            # labels: (batch_size, )
-            imgs, labels = batch[0], batch[1]
-            batch_loss = _forward_pass(imgs, labels, num_classes,
-                                       self.__model, self.__optimizer, metrics, self.__loss,
-                                       phase, self.__config.DEVICE
-                                       )
-
-            # Accumulate minibatch into total loss
-            total_loss += batch_loss.item()
-
-            # backprop + optimize only if in training phase
-            if phase == 'train':
-                batch_loss.backward()
-                self.__optimizer.step()
-
-        # Step after each epoch
-        if self.__lr_scheduler and phase=="eval":
-            self.__lr_scheduler.step()  ## Review lr scheduler mechanism
-        return total_loss, metrics
-
-
-    def __run_epoch_strategy_2(self, phase, epoch, data_loader, metrics):
-        num_classes = self.__config.DATA_NUM_CLASSES
-        total_loss = 0
-
-        # Epoch training
-        for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
-            # img: (batch_size, input_shape)
-            # labels: (batch_size, )
-            imgs, labels = batch[0], batch[1]
-            batch_loss = _forward_pass(imgs, labels, num_classes,
-                                       self.__model, self.__optimizer, metrics, self.__loss,
-                                       phase, self.__config.DEVICE
-                                       )
-
-            # Accumulate minibatch into total loss
-            total_loss += batch_loss.item()
-
-            # backprop + optimize only if in training phase
-            if phase == 'train':
-                batch_loss.backward()
-                self.__optimizer.step()
-
-                # Update scheduler after each batch
-                if self.__lr_scheduler:
-                    self.__lr_scheduler.step()
-        return total_loss, metrics
 
 
     def __get_best_val_loss(self) -> float:
@@ -418,3 +386,85 @@ def _forward_pass(imgs: torch.Tensor,
     return batch_loss
 
 
+def _run_epoch_strategy_1(loss: LossManager,
+                          model: torch.nn.Module,
+                          metrics: MetricManager,
+                          optimizer: torch.optim.Optimizer,
+                          lr_scheduler: torch.optim.lr_scheduler.LRScheduler,
+                          phase: str,
+                          epoch: int,
+                          device: str,
+                          num_classes: int,
+                          data_loader: torch.utils.data.DataLoader,
+                          ):
+    total_loss = 0
+
+    # Epoch training
+    for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
+        # img: (batch_size, input_shape)
+        # labels: (batch_size, )
+        imgs, labels = batch[0], batch[1]
+        batch_loss = _forward_pass(imgs,
+                                   labels,
+                                   num_classes,
+                                   model,
+                                   optimizer,
+                                   metrics,
+                                   loss,
+                                   phase,
+                                   device
+                                   )
+        total_loss += batch_loss.item()  # Accumulate minibatch into total loss
+
+        # backprop + update optimizer
+        if phase == 'train':
+            batch_loss.backward()
+            optimizer.step()
+
+    # Step after each epoch
+    if lr_scheduler and phase=="eval":
+        lr_scheduler.step()
+    return total_loss
+
+
+def _run_epoch_strategy_2(loss: LossManager,
+                          model: torch.nn.Module,
+                          metrics: MetricManager,
+                          optimizer: torch.optim.Optimizer,
+                          lr_scheduler: torch.optim.lr_scheduler.LRScheduler,
+                          phase: str,
+                          epoch: int,
+                          device: str,
+                          num_classes: int,
+                          data_loader: torch.utils.data.DataLoader,
+                          ):
+    total_loss = 0
+
+    # Epoch training
+    for index, batch in tqdm(enumerate(data_loader), total=len(data_loader), colour="cyan", desc=phase.capitalize()):
+        # img: (batch_size, input_shape)
+        # labels: (batch_size, )
+        imgs, labels = batch[0], batch[1]
+        batch_loss = _forward_pass(imgs,
+                                   labels,
+                                   num_classes,
+                                   model,
+                                   optimizer,
+                                   metrics,
+                                   loss,
+                                   phase,
+                                   device
+                                   )
+
+        # Accumulate minibatch into total loss
+        total_loss += batch_loss.item()
+
+        # backprop + optimize only if in training phase
+        if phase == 'train':
+            batch_loss.backward()
+            optimizer.step()
+
+            # Update scheduler after each batch
+            if lr_scheduler:
+                lr_scheduler.step()
+    return total_loss

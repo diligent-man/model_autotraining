@@ -7,7 +7,7 @@ from multipledispatch import dispatch
 from src.open_src import available_metrics
 
 
-__all__ = ['MetricManager']
+__all__ = ["MetricManager"]
 
 
 @dispatch(torch.Tensor)

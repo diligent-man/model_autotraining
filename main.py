@@ -1,7 +1,7 @@
 # TODO: Model graph: https://stackoverflow.2com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
 import argparse
 from src.utils.utils import train
-from src.utils import ModelManager, ConfigManager, OptimizerManager, DataManager
+from src.Manager import ModelManager, ConfigManager, OptimizerManager, DataManager
 
 
 def main(args: argparse.ArgumentParser) -> None:

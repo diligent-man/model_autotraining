@@ -2,7 +2,7 @@ import os
 import commentjson
 from typing import Dict, Any
 
-__all__ = ['ConfigManager']
+__all__ = ["ConfigManager"]
 
 
 class ConfigManager:

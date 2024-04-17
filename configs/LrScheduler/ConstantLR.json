@@ -30,12 +30,12 @@
         {
             "batch_size": 1600,
             "shuffle": true,
-            "num_workers": 2,
-//            "prefetch_factor": null,
+            "num_workers": 4,
+            "prefetch_factor": null,
             "drop_last": false,
             "pin_memory": true,
-//            "pin_memory_device": "cuda",
-//            "multiprocessing_context": "fork"
+            "pin_memory_device": "cuda",
+            "multiprocessing_context": "fork"
         },
 
         "NUM_CLASSES": 1,

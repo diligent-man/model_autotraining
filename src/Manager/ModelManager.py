@@ -1,8 +1,8 @@
 import torch
 import torchinfo
 
+from .ConfigManager import ConfigManager
 from typing import Dict, List, Any, Generator
-from src.utils.ConfigManager import ConfigManager
 from src.open_src import available_model, available_weight, available_layer
 
 

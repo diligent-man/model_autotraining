@@ -6,7 +6,7 @@ from src.open_src import available_transform, available_interpolation, available
 from torchvision.transforms import Compose
 from torch.utils.data import Dataset, DataLoader
 
-__all__ = ['DataManager']
+__all__ = ["DataManager"]
 
 
 class DataManager:

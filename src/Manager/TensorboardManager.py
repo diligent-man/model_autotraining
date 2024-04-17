@@ -3,7 +3,7 @@ from typing import List, Dict, Union, Any
 from torch.utils.tensorboard import SummaryWriter
 
 
-__all__ = ['TensorboardManager']
+__all__ = ["TensorboardManager"]
 
 
 class TensorboardManager:

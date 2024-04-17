@@ -1,6 +1,6 @@
 import torch
 from src.tools import Trainer
-from src.utils import DataManager, ConfigManager
+from src.Manager import DataManager, ConfigManager
 
 
 def train(config: ConfigManager,

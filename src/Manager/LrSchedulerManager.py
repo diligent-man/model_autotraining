@@ -3,8 +3,10 @@ from typing import Dict, Any, Union, List
 from src.open_src import available_lr_scheduler
 
 
-# TODO: cannot run with ChainedScheduler, LambdaLR, MultiplicativeLR, SequentialLR, ReduceLROnPlateau,
+__all__ = ["LrSchedulerManager"]
 
+
+# TODO: cannot run with ChainedScheduler, LambdaLR, MultiplicativeLR, SequentialLR, ReduceLROnPlateau,
 class LrSchedulerManager:
     __lr_scheduler: torch.optim.lr_scheduler.LRScheduler
 

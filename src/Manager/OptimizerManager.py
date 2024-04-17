@@ -3,6 +3,8 @@ from typing import Dict, Any, Generator
 from src.open_src import available_optimizers
 
 
+__all__ = ["OptimizerManager"]
+
 
 class OptimizerManager:
     def __init__(self,

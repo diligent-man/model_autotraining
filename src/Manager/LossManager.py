@@ -3,7 +3,7 @@ from src.open_src import available_loss
 from typing import Dict, Any, Union, List
 
 
-__all__ = ['LossManager']
+__all__ = ["LossManager"]
 
 
 class LossManager:
