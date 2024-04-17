@@ -1,18 +1,18 @@
 from torch.optim.lr_scheduler import (
-    LambdaLR,
-    MultiplicativeLR,
-    StepLR,
-    MultiStepLR,
+    ChainedScheduler,
     ConstantLR,
-    LinearLR,
-    ExponentialLR,
-    PolynomialLR,
     CosineAnnealingLR,
     CosineAnnealingWarmRestarts,
-    ChainedScheduler,
-    SequentialLR,
+    ExponentialLR,
+    LambdaLR,
+    LinearLR,
+    MultiplicativeLR,
+    MultiStepLR,
+    OneCycleLR,
+    PolynomialLR,
     ReduceLROnPlateau,
-    OneCycleLR
+    SequentialLR,
+    StepLR
 )
 
 available_lr_scheduler = {

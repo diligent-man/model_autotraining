@@ -1,0 +1,186 @@
+{
+    "PROJECT_NAME": "CosineAnnealingLR",
+
+    "DATA":
+    {
+        "INPUT_SHAPE": [3, 224, 224],
+        "DATASET": "DefaultDataset",
+
+        "TRAIN_DATASET_ARGS":
+        {
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/train.csv"
+        },
+
+        "VAL_DATASET_ARGS":
+        {
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/val.csv"
+        },
+
+        "TEST_DATASET_ARGS":
+        {
+            "root": "/home/trong/Downloads/Dataset/small_celeb_A/",
+            "annotation": "/home/trong/Downloads/Dataset/small_celeb_A/test.csv"
+        },
+
+        "DATALOADER": "DefaultDataLoader",
+
+        "TRAIN_DATALOADER_ARGS":
+        {
+            "batch_size": 1600,
+            "shuffle": true,
+            "num_workers": 4,
+            "prefetch_factor": 2,
+            "drop_last": false,
+            "pin_memory": true,
+            "pin_memory_device": "cuda",
+            "multiprocessing_context": "fork"
+        },
+
+        "NUM_CLASSES": 1,
+
+        "TRANSFORM":
+        {
+            "Resize":
+            {
+                "size": [224, 224],
+                "interpolation": "BICUBIC",
+                "antialias": true
+            },
+
+            "PILToTensor": {},
+
+            "ToDtype":
+            {
+                "dtype": "float32",
+                "scale": true
+            },
+
+            "RandomRotation":
+            {
+                "degrees": [-10, 10],
+                "interpolation": "NEAREST"
+            }
+        },
+
+        "TARGET_TRANSFORM": {}
+    },
+
+    "CHECKPOINT":
+    {
+        "SAVE": false,
+        "LOAD": false,
+        "SAVE_ALL": true,
+        "SAVE_WEIGHT_ONLY": false,
+        "INCLUDE_CONFIG": false,
+        "RESUME_NAME": "epoch_1.pt"
+    },
+
+    "MODEL":
+    {
+        "BASE": "alexnet",
+        "NAME": "alexnet",
+        "GET_SUMMARY": false,
+        "COMPILE": true,
+        "PRETRAINED_WEIGHT": false,
+        "REMOVE_PRETRAINED_WEIGHT": false,
+        "ARGS":
+        {
+            "num_classes": 1
+        }
+    },
+
+    "OPTIMIZER":
+    {
+        "NAME": "Adam",
+        "ARGS":
+        {
+            "lr": 1e-6,
+            "amsgrad": true,
+//            "weight_decay": 1e-7
+        }
+    },
+
+    "LR_SCHEDULER":
+    {
+        "APPLY": true,
+        "NAME": "CosineAnnealingLR",
+        "ARGS":
+        {
+            "T_max": 1e-6
+        }
+    },
+
+    "METRIC":
+    {
+        "IN_TRAIN": true,
+        "NAME": [
+            "BinaryAccuracy",
+//            "BinaryAUPRC",
+//            "BinaryAUROC",
+//            "BinaryBinnedAUPRC",
+//            "BinaryBinnedAUROC",
+//            "BinaryBinnedPrecisionRecallCurve",
+//            "BinaryConfusionMatrix",
+            "BinaryF1Score",
+//            "BinaryNormalizedEntropy",
+//            "BinaryPrecision",
+//            "BinaryPrecisionRecallCurve",
+//            "BinaryRecall",
+//            "BinaryRecallAtFixedPrecision"
+        ],
+
+        "ARGS":
+        {
+            "0": {},
+            "1": {},
+//            "2": {},
+//            "3": {},
+//            "4": {},
+//            "5": {},
+//            "6": {},
+//            "7": {},
+//            "8": {},
+//            "9": {},
+//            "10": {},
+//            "11": {},
+//            "12": {"min_precision":  0.5}
+        }
+    },
+
+    "LOSS":
+    {
+        "NAME": "BCELoss",
+        "ARGS":
+        {
+            "reduction": "mean"
+        }
+    },
+
+    "EARLY_STOPPING":
+    {
+        "APPLY": false,
+        "ARGS":
+        {
+            "patience": 10,
+            "min_delta": 0
+        }
+    },
+
+    "LOGGING":
+    {
+        "STRATEGY": "epoch"
+    },
+
+    "TENSORBOARD": {
+        "APPLY": true,
+        "INSPECT_MODEL": true,
+        "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score"]
+    },
+
+    "SEED": 12345,
+    "DEVICE": "cuda",
+    "TRAINING_EPOCHS": 30
+//    "EVALUATION_STRATEGY": "no"
+}

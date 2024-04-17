@@ -1,7 +1,7 @@
 import torch
 import torcheval
 
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 from collections.abc import Iterable
 from multipledispatch import dispatch
 from src.open_src import available_metrics
@@ -42,11 +42,10 @@ class MetricManager:
     __metrics: List[torcheval.metrics.Metric]
     __name: List[str]
 
-    def __init__(self, metrics: List[str], args: Dict[str, Dict], device: str = "cpu"):
+    def __init__(self, metrics: List[str], args: List[Dict[str, Any]], device: str = "cpu"):
         for metric in metrics:
             assert metric in available_metrics.keys(), "Your selected metric is unavailable"
-
-        self.__metrics = [available_metrics[metrics[i]](**args[str(i)]) for i in range(len(metrics))]
+        self.__metrics = [available_metrics[metrics[i]](**args[i]) for i in range(len(metrics))]
         self.__name = metrics
 
     @property

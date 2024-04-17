@@ -1,4 +1,4 @@
-# TODO: Model graph: https://stackoverflow.com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
+# TODO: Model graph: https://stackoverflow.2com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
 import argparse
 from src.utils.utils import train
 from src.utils import ModelManager, ConfigManager, OptimizerManager, DataManager
@@ -26,9 +26,11 @@ def main(args: argparse.ArgumentParser) -> None:
           )
     return None
 
-
+import os
 if __name__ == '__main__':
-    default_config_path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/alexnet_binary_class.json"
+    path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/LrScheduler/CosineAnnealingWarmRestarts.json"
+
+    default_config_path = path
 
     args = argparse.ArgumentParser()
     args.add_argument("--config", default=default_config_path, type=str, help="Path to config file")
