@@ -7,6 +7,8 @@ from .ConfigManager import ConfigManager
 from .MetricManager import MetricManager
 from .OptimizerManager import OptimizerManager
 from .LrSchedulerManager import LrSchedulerManager
+from .TensorboardManager import TensorboardManager
+
 
 __all__ = [
     "Logger",
@@ -17,5 +19,6 @@ __all__ = [
     "ConfigManager",
     "MetricManager",
     "OptimizerManager",
-    "LrSchedulerManager"
+    "LrSchedulerManager",
+    "TensorboardManager"
 ]

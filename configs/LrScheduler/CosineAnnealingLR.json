@@ -115,20 +115,12 @@
     "METRIC":
     {
         "IN_TRAIN": true,
-        "NAME": [
+        "NAME":
+        [
             "BinaryAccuracy",
-//            "BinaryAUPRC",
-//            "BinaryAUROC",
-//            "BinaryBinnedAUPRC",
-//            "BinaryBinnedAUROC",
-//            "BinaryBinnedPrecisionRecallCurve",
-//            "BinaryConfusionMatrix",
             "BinaryF1Score",
-//            "BinaryNormalizedEntropy",
-//            "BinaryPrecision",
-//            "BinaryPrecisionRecallCurve",
-//            "BinaryRecall",
-//            "BinaryRecallAtFixedPrecision"
+            "BinaryPrecision",
+            "BinaryRecall",
         ],
 
         "ARGS":

@@ -39,14 +39,14 @@ class ModelManager:
 
     # Public methods
     def get_summary(self,
-                          input_size,
-                          depth=3,
-                          col_width=20,
-                          batch_size=1,
-                          device="cpu",
-                          verbose=True
-                          ) -> torchinfo.model_statistics.ModelStatistics:
-        """
+                    input_size,
+                    depth=3,
+                    col_width=20,
+                    batch_size=1,
+                    device="cpu",
+                    verbose=True
+                    ) -> torchinfo.model_statistics.ModelStatistics:
+        """`
         if batch_dim is used, you only need to specify only input shape of img
         """
         # Input shape must be [B, C, H, W]

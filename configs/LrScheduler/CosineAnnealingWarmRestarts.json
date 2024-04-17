@@ -82,7 +82,7 @@
         "BASE": "alexnet",
         "NAME": "alexnet",
         "GET_SUMMARY": false,
-        "COMPILE": true,
+        "COMPILE": false,
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
@@ -140,7 +140,7 @@
     "TENSORBOARD": {
         "APPLY": true,
         "INSPECT_MODEL": true,
-        "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score"]
+        "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"]
     },
 
     "SEED": 12345,

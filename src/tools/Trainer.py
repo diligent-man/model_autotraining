@@ -3,11 +3,11 @@ import os, shutil
 from tqdm import tqdm
 from time import sleep
 from typing import List, Dict, Tuple, Any
-from src.utils import Logger, LossManager, EarlyStopper, MetricManager, ConfigManager, LrSchedulerManager
+from src.utils import Logger, LossManager, EarlyStopper, MetricManager, ConfigManager, LrSchedulerManager, TensorboardManager
 
 import torch
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+
 
 __all__ = ["Trainer"]
 
@@ -25,7 +25,7 @@ class Trainer:
     __lr_scheduler: torch.optim.lr_scheduler.LRScheduler = None
     __early_stopper: EarlyStopper = None
     __best_val_loss: float = None
-    __tensorboard: SummaryWriter = None
+    __tensorboard: TensorboardManager = None
 
 
     def __init__(self,
@@ -52,20 +52,28 @@ class Trainer:
             self.__optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
             del checkpoint
 
+
         if self.__config.LR_SCHEDULER_APPLY:
             self.__lr_scheduler = LrSchedulerManager(self.__config.LR_SCHEDULER_NAME,
                                                      self.__config.LR_SCHEDULER_ARGS,
                                                      self.__optimizer
                                                      ).lr_scheduler
 
+
         if self.__config.EARLY_STOPPING_APPLY:
             self.__best_val_loss = self.__get_best_val_loss()
             self.__early_stopper = EarlyStopper(self.__best_val_loss, **self.__config.EARLY_STOPPING_ARGS)
 
-        if self.__config.TENSORBOARD_APPLY:
-            self.__tensorboard = SummaryWriter(log_dir=self.__config.TENSORBOARD_PATH)
-    ##############################3###################################################################################3
 
+        if self.__config.TENSORBOARD_APPLY:
+            self.__tensorboard = TensorboardManager(log_dir=self.__config.TENSORBOARD_PATH)
+
+            if self.__config.TENSORBOARD_INSPECT_MODEL and not self.__config.MODEL_COMPILE:
+                # Tensorboard not support compiled pytorch model
+                self.__tensorboard.add_graph(self.__model, self.__config.DATA_INPUT_SHAPE, self.__config.DEVICE)
+
+
+    ##############################3###################################################################################3
     # Class methods
     @classmethod
     def __init_subclass__(cls):
@@ -138,21 +146,12 @@ class Trainer:
 
         # Add to tensorboad writer
         if self.__tensorboard:
-            self.__tensorboard.add_scalar(tag="Learning rate",
-                                          scalar_value=run_epoch_result["Lr"],
-                                          global_step=epoch
-                                          )
-            self.__tensorboard.add_scalars(main_tag="Loss",
-                                           tag_scalar_dict={phase: run_epoch_result["loss"]},
-                                           global_step=epoch
-                                           )
+            self.__tensorboard.add_scalar("Learning rate", run_epoch_result["Lr"], epoch)
+            self.__tensorboard.add_scalars("Loss",{phase: run_epoch_result["loss"]}, epoch)
 
             if self.__config.METRIC_IN_TRAIN:
-                tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
-                self.__tensorboard.add_scalars(main_tag="Metric",
-                                               tag_scalar_dict=tag_scalar_dict,
-                                               global_step=epoch
-                                               )
+                tag_scalar_dict: Dict[str, Any] = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
+                self.__tensorboard.add_scalars("Metric", tag_scalar_dict, epoch)
         return run_epoch_result
 
 
@@ -161,17 +160,10 @@ class Trainer:
 
         # Add to tensorboad writer
         if self.__tensorboard:
-            self.__tensorboard.add_scalars(main_tag="Loss",
-                                           tag_scalar_dict={phase: run_epoch_result["loss"]},
-                                           global_step=epoch
-                                           )
+            self.__tensorboard.add_scalars("Loss", {phase: run_epoch_result["loss"]}, epoch)
 
-            if self.__config.METRIC_IN_TRAIN:
-                tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
-                self.__tensorboard.add_scalars(main_tag="Metric",
-                                               tag_scalar_dict=tag_scalar_dict,
-                                               global_step=epoch
-                                               )
+            tag_scalar_dict = {f"{phase.capitalize()}_{metric}": run_epoch_result[metric] for metric in self.__config.TENSORBOARD_TRACKING_METRIC}
+            self.__tensorboard.add_scalars("Metric", tag_scalar_dict, epoch)
 
         # Save checkpoint
         if self.__config.CHECKPOINT_SAVE:
@@ -193,9 +185,8 @@ class Trainer:
                                    )
 
         # Early stopping checking
-        if self.__config.EARLY_STOPPING_APPLY:
-            if self.__early_stopper.check(val_loss=run_epoch_result["loss"]):
-                exit()
+        if self.__config.EARLY_STOPPING_APPLY and self.__early_stopper.check(val_loss=run_epoch_result["loss"]):
+            exit()
         return run_epoch_result
 
 
@@ -222,10 +213,6 @@ class Trainer:
 
             labels = batch[1].type(torch.FloatTensor) if num_class == 1 else batch[1].type(torch.LongTensor)
             labels = labels.to(self.__config.DEVICE)
-
-            if self.__config.TENSORBOARD_INSPECT_MODEL and not self.__config.MODEL_COMPILE:
-                # Tensorboard not support compiled pytorch model
-                self.__tensorboard.add_graph(self.__model, imgs)
 
             # reset gradients prior to forward pass
             self.__optimizer.zero_grad()
