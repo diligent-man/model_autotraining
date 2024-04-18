@@ -1,0 +1,28 @@
+scenarios:
+    - name: test_init_with_only_model_name
+      argnames:
+        - model_name
+      argvals:
+        - [alexnet]
+        - [vgg16]
+        - [resnet18]
+
+
+#    - name: test_init_with_model_args
+#      argnames:
+#        - model_name
+#        - model_args
+#      argvals:
+#        - [alexnet, {"num_classes": 2}]
+#        - [vgg16, {"num_classes": 2}]
+#        - [resnet18, {"num_classes": 2}]
+#
+#
+#    - name: test_init_with_pretrained_weight
+#      argnames:
+#        - model_name
+#        - pretrained_weight
+#      argvals:
+#        - [alexnet, true]
+#        - [vgg16, true]
+#        - [resnet18, true]

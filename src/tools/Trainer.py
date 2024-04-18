@@ -1,3 +1,4 @@
+import gc
 import os
 import copy
 import shutil
@@ -120,9 +121,14 @@ class Trainer:
                 # Logging
                 self.__logger.write(f"{self.__config.LOG_PATH}/{phase}.json", {**{"epoch": epoch}, **run_epoch_result})
 
+            # Clear CUDA cache
+            torch.cuda.empty_cache()
+            gc.collect()
+
             # Stop program in the meantime
             print("Sleeping...")
             sleep(self.__sleep_time)
+
 
         # Remove pretrained weights in TORCH_HOME if exists
         if self.__config.MODEL_PRETRAINED_WEIGHT is not None and self.__config.MODEL_REMOVE_PRETRAINED_WEIGHT:

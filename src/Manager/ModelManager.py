@@ -15,14 +15,15 @@ class ModelManager:
 
     def __init__(self,
                  model_name: str,
-                 model_args: Dict[str, Dict],
-                 new_classifier_name: List[str] = None,
-                 new_classifier_args: List[Dict[str, Any]] = None,
+                 model_args: Dict[str, Dict] | None = None,
+                 new_classifier_name: List[str] | None = None,
+                 new_classifier_args: List[Dict[str, Any]] | None = None,
+                 pretrained_weight: bool = False,
                  device: str = "cpu",
-                 pretrained_weight: bool = False
+                 verbose: bool = True
                  ):
-        self.__num_classes = model_args.pop("num_classes", 1000)
-        self.__model = self.__init_model(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight).to(device)
+        self.__num_classes = 1000 if model_args is None else model_args.pop("num_classes", 1000)
+        self.__model = self.__init_model(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight, verbose).to(device)
     ##################################################################################################################
 
 
@@ -71,32 +72,42 @@ class ModelManager:
     # Private methods
     def __init_model(self,
                      model_name: str,
-                     model_args: Dict[str, Dict],
+                     model_args: Dict[str, Dict] | None = None,
                      new_classifier_name: List[str] = None,
                      new_classifier_args: Dict[str, Dict] = None,
-                     pretrained_weight: bool = False
+                     pretrained_weight: bool = False,
+                     verbose: bool = True
                      ):
         assert model_name in available_model.keys(), "Your selected model is unavailable"
 
         if pretrained_weight:
             """Use pretrained weight from ImageNet-1K from pytorch hub"""
             # TODO: New classifier for AUX_LOGITS is undone -> still not train googlelenet & inceptionv3
-            print("Loading pretrained weight")
+            if verbose:
+                print("Loading pretrained weight")
             model = available_model[model_name](weights=available_weight[model_name].DEFAULT, **model_args)
-            print("Adapting new classifier")
+
+            if verbose:
+                print("Adapting new classifier")
             model = self.__adapt_classifier(model, new_classifier_name, new_classifier_args)
         else:
-            model = available_model[model_name](**{"num_classes": self.__num_classes, **model_args})
+            if model_args:
+                model = available_model[model_name](**{"num_classes": self.__num_classes, **model_args})
+            else:
+                model = available_model[model_name](**{"num_classes": self.__num_classes})
             # if state_dict is not None:
             #     print("Loading pretrained model...")
             #     model.load_state_dict(state_dict)
             #     print("Finished.")
             # else:
-            print("Init model's parameters...")
+            if verbose:
+               print("Init model's parameters...")
+
             for para in model.parameters():
                 if para.dim() > 1:
                     torch.nn.init.xavier_uniform_(para)
-        print("Init finished.")
+        if verbose:
+            print("Init finished.")
         return model
 
 
