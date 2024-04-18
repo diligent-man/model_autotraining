@@ -1,3 +1,5 @@
+import gc
+import os
 import yaml
 import torch
 
@@ -6,7 +8,7 @@ from typing import List, Tuple, Dict, Any
 
 
 def preprocessing_testcase() -> List[Tuple[str, Dict[str, Any]]]:
-    file = "config.yaml"
+    file = os.path.join(os.getcwd(), "configs", "model_manager_config.yaml")
     with open(file=file, mode="r", encoding="UTF-8", errors="ignore") as f:
         testcase = yaml.safe_load(f.read())
     scenarios = {}
@@ -24,7 +26,10 @@ class TestModelManager:
         [3, 1024, 1024]
     ]
     __vebose: bool = False
+    __batch_size: int = 1
     __device: str = "cuda" if torch.cuda.is_available() else "cpu"
+
+
     @staticmethod
     def pytest_generate_tests(metafunc):
         fn_name = metafunc.function.__name__
@@ -32,15 +37,22 @@ class TestModelManager:
         if fn_name in scenarios:
             metafunc.parametrize(argnames=scenarios[fn_name][0], argvalues=scenarios[fn_name][1], scope="function")
 
+
     def test_init_with_only_model_name(self, model_name):
         model = ModelManager(model_name, device=self.__device, verbose=self.__vebose).model
         assert isinstance(model, torch.nn.Module)
 
         for shape in self.__shapes:
-            input = torch.randn(size=[1, *shape], device=self.__device, dtype=torch.float32)
+            input = torch.randn(size=[self.__batch_size, *shape], device=self.__device, dtype=torch.float32)
             output = model(input)
-            assert output.shape == (1, 1000)
-            assert output.dtype == torch.float
+
+            if self.__device == "cuda":
+                torch.cuda.empty_cache()
+                gc.collect()
+
+            assert output.shape == (self.__batch_size, 1000)
+            assert output.dtype == torch.float32
+
 
 
 
