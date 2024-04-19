@@ -15,7 +15,7 @@ class ModelManager:
 
     def __init__(self,
                  model_name: str,
-                 model_args: Dict[str, Dict] | None = None,
+                 model_args: Dict[str, Dict] = {},
                  new_classifier_name: List[str] | None = None,
                  new_classifier_args: List[Dict[str, Any]] | None = None,
                  pretrained_weight: bool = False,
@@ -72,11 +72,11 @@ class ModelManager:
     # Private methods
     def __init_model(self,
                      model_name: str,
-                     model_args: Dict[str, Dict] | None = None,
-                     new_classifier_name: List[str] = None,
-                     new_classifier_args: Dict[str, Dict] = None,
-                     pretrained_weight: bool = False,
-                     verbose: bool = True
+                     model_args: Dict[str, Dict],
+                     new_classifier_name: List[str],
+                     new_classifier_args: Dict[str, Dict],
+                     pretrained_weight: bool,
+                     verbose: bool
                      ):
         assert model_name in available_model.keys(), "Your selected model is unavailable"
 
@@ -117,16 +117,18 @@ class ModelManager:
                            new_classifier_args: List[Dict[str, Any]] = None
                            ) -> torch.nn.Module:
         out_features: int = self._get_out_features(model.modules())
+
         if self.__num_classes != out_features:
             # Case 1 (Default): Add activation, dropout, linear to the last model's layer
             if new_classifier_name is None:
-                default_classifier = torch.nn.Sequential(
+                model = torch.nn.Sequential(
+                    *list(model.children()),
                     torch.nn.ReLU(inplace=True),
                     torch.nn.Dropout(p=0.5),
-                    torch.nn.Linear(in_features=out_features, out_features=num_classes)
+                    torch.nn.Linear(in_features=out_features, out_features=self.__num_classes)
                     )
 
-                model = torch.nn.Sequential(model, default_classifier)
+                # model = torch.nn.Sequential(model, default_classifier)
             # Case 2: Supersede entire last module with specified configs
             else:
                 model = torch.nn.Sequential(
