@@ -8,11 +8,12 @@ def main(args: argparse.ArgumentParser) -> None:
     config = ConfigManager(path=args.config)
 
     model_manager = ModelManager(config.MODEL_NAME,
-                                 config.MODEL_ARGS,
+                                 config.__dict__.get("MODEL_ARGS", {}),
                                  config.__dict__.get("MODEL_NEW_CLASSIFIER_NAME", None),
                                  config.__dict__.get("MODEL_NEW_CLASSIFIER_ARGS", None),
-                                 config.DEVICE,
-                                 config.MODEL_PRETRAINED_WEIGHT
+                                 config.__dict__.get("MODEL_PRETRAINED_WEIGHT", False),
+                                 config.__dict__.get("DEVICE", "cpu"),
+                                 config.__dict__.get("VERBOSE", True),
                                  )
     if config.MODEL_GET_SUMMARY: model_manager.get_summary(input_size=config.DATA_INPUT_SHAPE, device=config.DEVICE)
 
@@ -28,13 +29,10 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/LrScheduler/CosineAnnealingWarmRestarts.json"
-    # path = "/home/trong/Downloads/Local/Source/python/semester_6/face_attribute/configs/LrScheduler/ConstantLR.json"
-
-    default_config_path = path
+    path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/alexnet.json"
 
     args = argparse.ArgumentParser()
-    args.add_argument("--config", default=default_config_path, type=str, help="Path to config file")
+    args.add_argument("--config", default=path, type=str, help="Path to config file")
 
     args = args.parse_args()
     main(args)
