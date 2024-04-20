@@ -28,11 +28,13 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 1800,
+            "batch_size": 160,
             "shuffle": true,
-            "num_workers": 4,
+            "num_workers": 6,
             "drop_last": false,
-            "pin_memory": true
+            "pin_memory": true,
+            "pin_memory_device": "cuda",
+            "multiprocessing_context": "fork"
         },
 
         "NUM_CLASSES": 1,
@@ -76,8 +78,8 @@
 
     "MODEL":
     {
-        "BASE": "alexnet",
-        "NAME": "alexnet",
+        "BASE": "vgg",
+        "NAME": "vgg11",
         "GET_SUMMARY": false,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": false,

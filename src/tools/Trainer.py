@@ -2,8 +2,8 @@ import gc
 import os
 import copy
 import shutil
-from tqdm import tqdm
 
+from tqdm import tqdm
 from time import sleep
 from typing import List, Dict, Tuple, Any
 from src.utils import Logger, EarlyStopper
@@ -14,7 +14,6 @@ from torch.utils.data import DataLoader
 
 
 __all__ = ["Trainer"]
-
 
 torch.set_float32_matmul_precision('high')
 

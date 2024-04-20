@@ -1,5 +1,9 @@
 # TODO: Model graph: https://stackoverflow.2com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
+import gc
+import torch
 import argparse
+
+
 from src.utils.utils import train
 from src.Manager import ModelManager, ConfigManager, OptimizerManager, DataManager
 
@@ -29,10 +33,16 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/alexnet.json"
+    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/googlenet.json",
+    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/resnet18.json",
+    path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/vgg11.json",
+    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/vgg13.json",
 
     args = argparse.ArgumentParser()
     args.add_argument("--config", default=path, type=str, help="Path to config file")
 
     args = args.parse_args()
     main(args)
+
+    torch.cuda.empty_cache()
+    gc.collect()

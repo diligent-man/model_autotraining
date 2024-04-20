@@ -23,7 +23,6 @@ class ModelManager:
                  verbose: bool = True
                  ):
         self.__num_classes = 1000 if model_args is None else model_args.pop("num_classes", 1000)
-        print(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight, verbose)
         self.__model = self.__init_model(model_name, model_args, new_classifier_name, new_classifier_args, pretrained_weight, verbose).to(device)
     ##################################################################################################################
 
