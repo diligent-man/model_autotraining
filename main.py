@@ -33,10 +33,7 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/googlenet.json",
-    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/resnet18.json",
-    path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/vgg11.json",
-    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/vgg13.json",
+    path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/vit_b_16.json"
 
     args = argparse.ArgumentParser()
     args.add_argument("--config", default=path, type=str, help="Path to config file")

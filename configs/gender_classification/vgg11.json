@@ -70,7 +70,7 @@
     {
         "SAVE": true,
         "LOAD": false,
-        "SAVE_ALL": true,
+        "SAVE_ALL": false,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": true,
         "RESUME_NAME": "epoch_1.pt"
@@ -95,7 +95,7 @@
         "NAME": "AdamW",
         "ARGS":
         {
-            "lr": 1e-6,
+            "lr": 1e-7,
             "amsgrad": true
         }
     },
@@ -104,12 +104,12 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 10, "T_mult": 1}]
+            "ARGS": [{"T_0": 10, "T_mult": 2}]
     },
 
     "METRIC":
     {
-        "IN_TRAIN": true,
+        "IN_TRAIN": false,
         "NAME": [
             "BinaryAccuracy",
             "BinaryF1Score",
@@ -146,7 +146,7 @@
 
     "TENSORBOARD": {
         "APPLY": true,
-        "INSPECT_MODEL": false,
+        "INSPECT_MODEL": true,
         "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"]
     },
 

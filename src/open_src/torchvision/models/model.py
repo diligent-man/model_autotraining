@@ -67,11 +67,6 @@ from torchvision.models import (
     vgg16_bn, VGG16_BN_Weights,
     vgg19, VGG19_Weights,
     vgg19_bn, VGG19_BN_Weights,
-    vit_b_16, ViT_B_16_Weights,
-    vit_b_32, ViT_B_32_Weights,
-    vit_l_16, ViT_L_16_Weights,
-    vit_l_32, ViT_L_32_Weights,
-    vit_h_14, ViT_H_14_Weights,
     swin_t, Swin_T_Weights,
     swin_s, Swin_S_Weights,
     swin_b, Swin_B_Weights,
@@ -80,6 +75,16 @@ from torchvision.models import (
     swin_v2_b, Swin_V2_B_Weights,
     maxvit_t, MaxVit_T_Weights
 )
+
+# Modified init func (vit_b_16, vit_b_32, ...)
+from .vision_transformer import (
+    custom_vit_b_16, ViT_B_16_Weights,
+    custom_vit_b_32, ViT_B_32_Weights,
+    custom_vit_l_16, ViT_L_16_Weights,
+    custom_vit_l_32, ViT_L_32_Weights,
+    custom_vit_h_14, ViT_H_14_Weights,
+)
+
 
 available_model = {
     "alexnet": alexnet,
@@ -150,18 +155,18 @@ available_model = {
     "vgg16_bn": vgg16_bn,
     "vgg19": vgg19,
     "vgg19_bn": vgg19_bn,
-    "vit_b_16": vit_b_16,
-    "vit_b_32": vit_b_32,
-    "vit_l_16": vit_l_16,
-    "vit_l_32": vit_l_32,
-    "vit_h_14": vit_h_14,
     "swin_t": swin_t,
     "swin_s": swin_s,
     "swin_b": swin_b,
     "swin_v2_t": swin_v2_t,
     "swin_v2_s": swin_v2_s,
     "swin_v2_b": swin_v2_b,
-    "maxvit_t": maxvit_t
+    "maxvit_t": maxvit_t,
+    "custom_vit_b_16": custom_vit_b_16,
+    "custom_vit_b_32": custom_vit_b_32,
+    "custom_vit_l_16": custom_vit_l_16,
+    "custom_vit_l_32": custom_vit_l_32,
+    "custom_vit_h_14": custom_vit_h_14,
 }
 
 available_weight = {
@@ -233,16 +238,16 @@ available_weight = {
     "vgg16_bn": VGG16_BN_Weights.DEFAULT,
     "vgg19": VGG19_Weights.DEFAULT,
     "vgg19_bn": VGG19_BN_Weights.DEFAULT,
-    "vit_b_16": ViT_B_16_Weights.DEFAULT,
-    "vit_b_32": ViT_B_32_Weights.DEFAULT,
-    "vit_l_16": ViT_L_16_Weights.DEFAULT,
-    "vit_l_32": ViT_L_32_Weights.DEFAULT,
-    "vit_h_14": ViT_H_14_Weights.DEFAULT,
     "swin_t": Swin_T_Weights.DEFAULT,
     "swin_s": Swin_S_Weights.DEFAULT,
     "swin_b": Swin_B_Weights.DEFAULT,
     "swin_v2_t": Swin_V2_T_Weights.DEFAULT,
     "swin_v2_s": Swin_V2_S_Weights.DEFAULT,
     "swin_v2_b": Swin_V2_B_Weights.DEFAULT,
-    "maxvit_t": MaxVit_T_Weights.DEFAULT
+    "maxvit_t": MaxVit_T_Weights.DEFAULT,
+    "custom_vit_b_16": ViT_B_16_Weights.DEFAULT,
+    "custom_vit_b_32": ViT_B_32_Weights.DEFAULT,
+    "custom_vit_l_16": ViT_L_16_Weights.DEFAULT,
+    "custom_vit_l_32": ViT_L_32_Weights.DEFAULT,
+    "custom_vit_h_14": ViT_H_14_Weights.DEFAULT,
 }

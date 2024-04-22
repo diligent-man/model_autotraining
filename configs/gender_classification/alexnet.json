@@ -28,9 +28,10 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 1800,
+            "batch_size": 2000,
             "shuffle": true,
-            "num_workers": 4,
+            "num_workers": 6,
+            "prefetch_factor": 4,
             "drop_last": false,
             "pin_memory": true
         },
@@ -68,7 +69,7 @@
     {
         "SAVE": true,
         "LOAD": false,
-        "SAVE_ALL": true,
+        "SAVE_ALL": false,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": true,
         "RESUME_NAME": "epoch_1.pt"
@@ -102,7 +103,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 10, "T_mult": 1}]
+        "ARGS": [{"T_0": 10, "T_mult": 2}]
     },
 
     "METRIC":

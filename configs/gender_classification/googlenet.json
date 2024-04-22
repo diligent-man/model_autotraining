@@ -28,7 +28,7 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 256,
+            "batch_size": 320,
             "shuffle": true,
             "num_workers": 6,
             "drop_last": false,
@@ -70,7 +70,7 @@
     {
         "SAVE": true,
         "LOAD": false,
-        "SAVE_ALL": true,
+        "SAVE_ALL": false,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": true,
         "RESUME_NAME": "epoch_1.pt"
@@ -106,12 +106,12 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 10, "T_mult": 1}]
+        "ARGS": [{"T_0": 10, "T_mult": 2}]
     },
 
     "METRIC":
     {
-        "IN_TRAIN": true,
+        "IN_TRAIN": false,
         "NAME": [
             "BinaryAccuracy",
             "BinaryF1Score",
@@ -148,7 +148,7 @@
 
     "TENSORBOARD": {
         "APPLY": true,
-        "INSPECT_MODEL": false,
+        "INSPECT_MODEL": true,
         "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"]
     },
 

@@ -28,7 +28,7 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 440,
+            "batch_size": 640,
             "shuffle": true,
             "num_workers": 6,
             "drop_last": false,

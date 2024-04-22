@@ -28,13 +28,12 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 120,
+            "batch_size": 590,
             "shuffle": true,
-            "num_workers": 6,
+            "num_workers": 2,
+            "prefetch_factor": 4,
             "drop_last": false,
-            "pin_memory": true,
-            "pin_memory_device": "cuda",
-            "multiprocessing_context": "fork"
+            "pin_memory": true
         },
 
         "NUM_CLASSES": 1,
@@ -70,7 +69,7 @@
     {
         "SAVE": true,
         "LOAD": false,
-        "SAVE_ALL": true,
+        "SAVE_ALL": false,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": true,
         "RESUME_NAME": "epoch_1.pt"
@@ -78,15 +77,21 @@
 
     "MODEL":
     {
-        "BASE": "vgg",
-        "NAME": "vgg13",
+        "BASE": "ViT",
+        "NAME": "custom_vit_b_16",
         "GET_SUMMARY": false,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "num_classes": 1
+            "num_classes": 1,
+            "attention_dropout": 0.5,
+            "dropout": 0.5,
+            "num_layers": 4,
+            "num_heads": 4,
+            "hidden_dim": 512,
+            "mlp_dim": 1024
         }
     },
 
@@ -95,7 +100,7 @@
         "NAME": "AdamW",
         "ARGS":
         {
-            "lr": 1e-6,
+            "lr": 1e-7,
             "amsgrad": true
         }
     },
@@ -104,12 +109,12 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 10, "T_mult": 1}]
+        "ARGS": [{"T_0": 10, "T_mult": 2}]
     },
 
     "METRIC":
     {
-        "IN_TRAIN": true,
+        "IN_TRAIN": false,
         "NAME": [
             "BinaryAccuracy",
             "BinaryF1Score",

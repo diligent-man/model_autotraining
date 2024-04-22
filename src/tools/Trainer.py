@@ -61,6 +61,7 @@ class Trainer:
         if self.__config.CHECKPOINT_LOAD:
             checkpoint = torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, self.__config.CHECKPOINT_RESUME_NAME), map_location=self.__config.DEVICE)
             self.__start_epoch = checkpoint["epoch"] + 1
+            print(checkpoint["model_state_dict"])
             self.__model.load_state_dict(checkpoint["model_state_dict"])
             self.__optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
             del checkpoint
@@ -140,7 +141,7 @@ class Trainer:
     def __train(self,
                 epoch: int,
                 data_loader: torch.utils.data.DataLoader,
-                metrics: MetricManager,
+                metrics: MetricManager = None,
                 phase="train"
                 ) -> Dict[str, Any]:
         run_epoch_result: Dict[str, Any] = {**{"Lr": self.__lr_scheduler.get_last_lr().pop()},
@@ -175,7 +176,7 @@ class Trainer:
 
         # Save checkpoint
         if self.__config.CHECKPOINT_SAVE:
-            model_state_dict = self.__model.state_dict() if self.__config.CHECKPOINT_SAVE_WEIGHT_ONLY else self.__model
+            model_state_dict = self.__model.state_dict()
 
             obj = {"epoch": epoch, "val_loss": run_epoch_result["loss"],
                    "model_state_dict": model_state_dict,
@@ -340,10 +341,10 @@ def _forward_pass(imgs: torch.Tensor, labels: torch.Tensor, num_classes: int,
             # Multiclass
             return torch.nn.functional.softmax(pred_labels, dim=1)
 
-    imgs = imgs.to(device)
+    imgs = imgs.to(device, non_blocking=True)
 
     labels = labels.type(torch.FloatTensor) if num_classes == 1 else labels.type(torch.LongTensor)
-    labels = labels.to(device)
+    labels = labels.to(device, non_blocking=True)
 
     # reset gradients prior to forward pass
     optimizer.zero_grad()
