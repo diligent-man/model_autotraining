@@ -85,11 +85,13 @@ class ModelManager:
             # TODO: New classifier for AUX_LOGITS is undone -> still not train googlelenet & inceptionv3
             if verbose:
                 print("Loading pretrained weight")
+
             model = available_model[model_name](weights=available_weight[model_name].DEFAULT, **model_args)
 
             if verbose:
                 print("Adapting new classifier")
             model = self.__adapt_classifier(model, new_classifier_name, new_classifier_args)
+
         else:
             model = available_model[model_name](**{"num_classes": self.__num_classes, **model_args})
             # if state_dict is not None:
@@ -124,7 +126,6 @@ class ModelManager:
                     torch.nn.Dropout(p=0.5),
                     torch.nn.Linear(in_features=out_features, out_features=self.__num_classes)
                     )
-
                 # model = torch.nn.Sequential(model, default_classifier)
             # Case 2: Supersede entire last module with specified configs
             else:
@@ -167,7 +168,7 @@ def main() -> None:
                                  new_classifier_args=config.MODEL_NEW_CLASSIFIER_ARGS,
                                  pretrained_weight=config.MODEL_PRETRAINED_WEIGHT
                                  )
-    print(type(model_manager.model.parameters()))
+    # print(type(model_manager.model.parameters()))
     # torchinfo.summary(model_manager.model, depth=2, input_size=(1, 3, 224, 224))
     return None
 

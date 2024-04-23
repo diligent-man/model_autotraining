@@ -61,7 +61,6 @@ class Trainer:
         if self.__config.CHECKPOINT_LOAD:
             checkpoint = torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, self.__config.CHECKPOINT_RESUME_NAME), map_location=self.__config.DEVICE)
             self.__start_epoch = checkpoint["epoch"] + 1
-            print(checkpoint["model_state_dict"])
             self.__model.load_state_dict(checkpoint["model_state_dict"])
             self.__optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
             del checkpoint

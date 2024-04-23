@@ -28,12 +28,13 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 500,
+            "batch_size": 104,
             "shuffle": true,
-            "num_workers": 4,
-            "prefetch_factor": 4,
+            "num_workers": 6,
             "drop_last": false,
-            "pin_memory": false
+            "pin_memory": true,
+            "pin_memory_device": "cuda",
+            "multiprocessing_context": "fork"
         },
 
         "NUM_CLASSES": 1,
@@ -77,15 +78,16 @@
 
     "MODEL":
     {
-        "BASE": "alexnet",
-        "NAME": "custom_alexnet",
-        "GET_SUMMARY": true,
+        "BASE": "densenet",
+        "NAME": "densenet121",
+        "GET_SUMMARY": false,
         "COMPILE": false,
-        "PRETRAINED_WEIGHT": true,
+        "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "num_classes": 1
+            "num_classes": 1,
+            "drop_rate": 0.5
         }
     },
 
@@ -103,7 +105,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 10, "T_mult": 2}]
+            "ARGS": [{"T_0": 10, "T_mult": 2}]
     },
 
     "METRIC":
@@ -145,12 +147,12 @@
 
     "TENSORBOARD": {
         "APPLY": true,
-        "INSPECT_MODEL": false,
+        "INSPECT_MODEL": true,
         "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"]
     },
 
     "SEED": 12345,
-    "DEVICE": "cpu",
-    "TRAINING_EPOCHS": 20
+    "DEVICE": "cuda",
+    "TRAINING_EPOCHS": 100
 //    "EVALUATION_STRATEGY": "no"
 }

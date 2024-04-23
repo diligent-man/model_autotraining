@@ -28,7 +28,7 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 590,
+            "batch_size": 288,
             "shuffle": true,
             "num_workers": 2,
             "prefetch_factor": 4,
@@ -68,11 +68,11 @@
     "CHECKPOINT":
     {
         "SAVE": true,
-        "LOAD": false,
+        "LOAD": true,
         "SAVE_ALL": false,
         "SAVE_WEIGHT_ONLY": false,
         "INCLUDE_CONFIG": true,
-        "RESUME_NAME": "epoch_1.pt"
+        "RESUME_NAME": "epoch_42.pt"
     },
 
     "MODEL":
@@ -88,9 +88,9 @@
             "num_classes": 1,
             "attention_dropout": 0.5,
             "dropout": 0.5,
-            "num_layers": 4,
-            "num_heads": 4,
-            "hidden_dim": 512,
+            "num_layers": 6,
+            "num_heads": 6,
+            "hidden_dim": 768,
             "mlp_dim": 1024
         }
     },
@@ -157,6 +157,6 @@
 
     "SEED": 12345,
     "DEVICE": "cuda",
-    "TRAINING_EPOCHS": 100
+    "TRAINING_EPOCHS": 8
 //    "EVALUATION_STRATEGY": "no"
 }

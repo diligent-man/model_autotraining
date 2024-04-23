@@ -1,5 +1,4 @@
 from torchvision.models import (
-    alexnet, AlexNet_Weights,
     googlenet, GoogLeNet_Weights,
     convnext_base, ConvNeXt_Base_Weights,
     convnext_tiny, ConvNeXt_Tiny_Weights,
@@ -85,9 +84,12 @@ from .vision_transformer import (
     custom_vit_h_14, ViT_H_14_Weights,
 )
 
+from .alexnet import (
+    custom_alexnet, AlexNet_Weights
+)
+
 
 available_model = {
-    "alexnet": alexnet,
     "googlenet": googlenet,
     "convnext_base": convnext_base,
     "convnext_tiny": convnext_tiny,
@@ -162,6 +164,8 @@ available_model = {
     "swin_v2_s": swin_v2_s,
     "swin_v2_b": swin_v2_b,
     "maxvit_t": maxvit_t,
+    # Customized models
+    "custom_alexnet": custom_alexnet,
     "custom_vit_b_16": custom_vit_b_16,
     "custom_vit_b_32": custom_vit_b_32,
     "custom_vit_l_16": custom_vit_l_16,
@@ -170,7 +174,6 @@ available_model = {
 }
 
 available_weight = {
-    "alexnet": AlexNet_Weights.DEFAULT,
     "googlenet": GoogLeNet_Weights.DEFAULT,
     "convnext_base": ConvNeXt_Base_Weights.DEFAULT,
     "convnext_tiny": ConvNeXt_Tiny_Weights.DEFAULT,
@@ -245,6 +248,8 @@ available_weight = {
     "swin_v2_s": Swin_V2_S_Weights.DEFAULT,
     "swin_v2_b": Swin_V2_B_Weights.DEFAULT,
     "maxvit_t": MaxVit_T_Weights.DEFAULT,
+    # Custom models
+    "custom_alexnet": AlexNet_Weights.DEFAULT,
     "custom_vit_b_16": ViT_B_16_Weights.DEFAULT,
     "custom_vit_b_32": ViT_B_32_Weights.DEFAULT,
     "custom_vit_l_16": ViT_L_16_Weights.DEFAULT,
