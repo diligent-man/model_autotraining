@@ -1,8 +1,13 @@
-from functools import partial
-from typing import Any, Optional
-
+"""
+This module from torchvision model with customization in
+    custom_alexnet(),
+    -> Modify the way paras is passed into _vision_transformer()
+"""
 import torch
 import torch.nn as nn
+
+from functools import partial
+from typing import Any, Optional
 
 from torchvision.transforms._presets import ImageClassification
 from torchvision.utils import _log_api_usage_once
@@ -45,7 +50,6 @@ class AlexNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(4096, num_classes),
         )
-
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.features(x)
@@ -118,5 +122,4 @@ def custom_alexnet(*, weights: Optional[AlexNet_Weights] = None, progress: bool 
 
     if weights is not None:
         model.load_state_dict(weights.get_state_dict(progress=progress, check_hash=True))
-
     return model

@@ -28,9 +28,9 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 104,
+            "batch_size": 188,
             "shuffle": true,
-            "num_workers": 4,
+            "num_workers": 6,
             "drop_last": false,
             "pin_memory": true,
             "pin_memory_device": "cuda",
@@ -78,16 +78,15 @@
 
     "MODEL":
     {
-        "BASE": "densenet",
-        "NAME": "densenet121",
-        "GET_SUMMARY": false,
+        "BASE": "mobilenet",
+        "NAME": "mobilenet_v2",
+        "GET_SUMMARY": true,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "num_classes": 1,
-            "drop_rate": 0.2
+            "num_classes": 1
         }
     },
 
@@ -96,7 +95,7 @@
         "NAME": "AdamW",
         "ARGS":
         {
-            "lr": 1e-7,
+            "lr": 1e-5,
             "amsgrad": true
         }
     },
@@ -105,7 +104,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-            "ARGS": [{"T_0": 10, "T_mult": 2}]
+            "ARGS": [{"T_0": 10, "T_mult": 2, "eta_min": 1e-11}]
     },
 
     "METRIC":
@@ -135,7 +134,7 @@
         "APPLY": true,
         "ARGS":
         {
-            "patience": 5,
+            "patience": 10,
             "min_delta": 0
         }
     },

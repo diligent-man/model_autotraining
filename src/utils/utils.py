@@ -21,8 +21,8 @@ def train(config: ConfigManager,
         config.DATA_DATALOADER,
         config.DATA_TRAIN_DATALOADER_ARGS
     )
-    print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 
+    print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
     trainer = Trainer(config, model, optimizer, train_loader, val_loader)
     trainer.train()
     return None

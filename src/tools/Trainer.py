@@ -312,7 +312,7 @@ class Trainer:
             # Update best accuracy
             self.__best_val_loss = val_loss
 
-        if not save_all and epoch - 1 > 0:
+        if not save_all and epoch - 1 > 0 and os.path.exists(os.path.join(self.__config.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt")):
             # Remove previous epoch
             os.remove(os.path.join(self.__config.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt"))
         return None

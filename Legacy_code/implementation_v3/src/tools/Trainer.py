@@ -145,7 +145,7 @@ class Trainer:
             for phase, data_loader in zip(("train", "eval"), (self.__train_loader, self.__validation_loader)):
                 # Preliminary setups
                 if phase == "train":
-                    self.__model.train()
+                    self.__model.train(,
                     metrics: MetricManager = MetricManager(self.__config.METRIC_NAME,
                                                            self.__config.METRIC_ARGS,
                                                            self.__config.DEVICE

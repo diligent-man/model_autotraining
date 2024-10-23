@@ -1,4 +1,5 @@
-# TODO: Model graph: https://stackoverflow.2com/questions/52468956/how-do-i-visualize-a-net-in-pytorch
+# TODO: Reimplement DataManager: not apply data augmentation on val set
+
 import gc
 import torch
 import argparse
@@ -19,10 +20,24 @@ def main(args: argparse.ArgumentParser) -> None:
                                  config.__dict__.get("DEVICE", "cpu"),
                                  config.__dict__.get("VERBOSE", True),
                                  )
-    if config.MODEL_GET_SUMMARY: model_manager.get_summary(input_size=config.DATA_INPUT_SHAPE, device=config.DEVICE)
+    if config.MODEL_GET_SUMMARY:
+        model_manager.get_summary(
+            config.DATA_INPUT_SHAPE,
+            device=config.DEVICE
+        )
 
-    optimizer_manager = OptimizerManager(config.OPTIMIZER_NAME, config.OPTIMIZER_ARGS, model_manager.model.parameters())
-    data_manager = DataManager(config.SEED, config.DEVICE, config.DATA_TRANSFORM, config.DATA_TARGET_TRANSFORM)
+    optimizer_manager: OptimizerManager = OptimizerManager(
+        config.OPTIMIZER_NAME,
+        config.OPTIMIZER_ARGS,
+        model_manager.model.parameters()
+    )
+
+    data_manager: DataManager = DataManager(
+        config.SEED,
+        config.DEVICE,
+        config.DATA_TRANSFORM,
+        config.DATA_TARGET_TRANSFORM
+    )
 
     train(config,
           model_manager.model,
@@ -33,8 +48,7 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    # path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/densenet121.json"
-    path = "/home/trong/Downloads/Local/Source/python/semester_6/model_autotraining/configs/gender_classification/alexnet.json"
+    path = "./configs/DSP391m/alexnet.json"
 
     args = argparse.ArgumentParser()
     args.add_argument("--config", default=path, type=str, help="Path to config file")

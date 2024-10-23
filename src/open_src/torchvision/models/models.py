@@ -164,6 +164,7 @@ available_model = {
     "swin_v2_s": swin_v2_s,
     "swin_v2_b": swin_v2_b,
     "maxvit_t": maxvit_t,
+
     # Customized models
     "custom_alexnet": custom_alexnet,
     "custom_vit_b_16": custom_vit_b_16,
@@ -248,6 +249,7 @@ available_weight = {
     "swin_v2_s": Swin_V2_S_Weights.DEFAULT,
     "swin_v2_b": Swin_V2_B_Weights.DEFAULT,
     "maxvit_t": MaxVit_T_Weights.DEFAULT,
+
     # Custom models
     "custom_alexnet": AlexNet_Weights.DEFAULT,
     "custom_vit_b_16": ViT_B_16_Weights.DEFAULT,

@@ -52,7 +52,7 @@ class Trainer:
         print("Training model")
 
         # Init
-        self.__model.train()
+        self.__model.train(,
         logger = Logger(log_path=self.__path_options["log_path"])
 
         epoch = self.__epoch_options["start_epoch"]

@@ -1,11 +1,12 @@
 from .DefaultDataset import DefaultDataset
-from .ImageFolderDataset import  ImageFolderDataset
-
+from torchvision.datasets import (
+    ImageFolder
+)
 
 __all__ = ["available_dataset"]
 
 
 available_dataset = {
     "DefaultDataset": DefaultDataset,
-    "ImageFolderDataset": ImageFolderDataset
+    "ImageFolder": ImageFolder
 }

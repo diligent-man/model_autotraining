@@ -1,54 +1,43 @@
 {
-    "PROJECT_NAME": "gender_classification",
+    "PROJECT_NAME": "DSP391m",
 
     "DATA":
     {
         "INPUT_SHAPE": [3, 224, 224],
-        "DATASET": "DefaultDataset",
+        "DATASET": "ImageFolder",
 
         "TRAIN_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/train.csv"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train",
         },
 
         "VAL_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/val.csv"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid",
         },
 
         "TEST_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/celeb_A/",
-            "annotation": "/home/trong/Downloads/Dataset/celeb_A/test.csv"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test",
         },
 
         "DATALOADER": "DefaultDataLoader",
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 104,
+            "batch_size": 1024,
             "shuffle": true,
             "num_workers": 4,
+            "prefetch_factor": 4,
             "drop_last": false,
-            "pin_memory": true,
-            "pin_memory_device": "cuda",
-            "multiprocessing_context": "fork"
+            "pin_memory": false
         },
 
-        "NUM_CLASSES": 1,
+        "NUM_CLASSES": 5,
 
         "TRANSFORM":
         {
-            "Resize":
-            {
-                "size": [224, 224],
-                "interpolation": "BICUBIC",
-                "antialias": true
-            },
-
-            "PILToTensor": {},
+            "ToImage": {},
 
             "ToDtype":
             {
@@ -56,10 +45,11 @@
                 "scale": true
             },
 
-            "RandomRotation":
+            "Resize":
             {
-                "degrees": [-10, 10],
-                "interpolation": "NEAREST"
+                "size": [224, 224],
+                "interpolation": "BICUBIC",
+                "antialias": true
             }
         },
 
@@ -78,25 +68,25 @@
 
     "MODEL":
     {
-        "BASE": "densenet",
-        "NAME": "densenet121",
+        "BASE": "alexnet",
+        "NAME": "custom_alexnet",
         "GET_SUMMARY": false,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
-            "num_classes": 1,
-            "drop_rate": 0.2
+            "num_classes": 5
         }
     },
 
     "OPTIMIZER":
     {
-        "NAME": "AdamW",
+        "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-7,
+            "lr": 1e-4,
+            "weight_decay": 1e-3,
             "amsgrad": true
         }
     },
@@ -105,25 +95,28 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-            "ARGS": [{"T_0": 10, "T_mult": 2}]
+        "ARGS": [{"T_0": 1, "T_mult": 2}]
     },
 
     "METRIC":
     {
         "IN_TRAIN": false,
         "NAME": [
-            "BinaryAccuracy",
-            "BinaryF1Score",
-            "BinaryPrecision",
-            "BinaryRecall"
+            "MulticlassAccuracy",
+            "MulticlassConfusionMatrix",
+            "MulticlassF1Score"
         ],
 
-        "ARGS": [{}, {}, {}, {}]
+        "ARGS": [
+            {"num_classes": 5},
+            {"num_classes": 5, "normalize": null},
+            {"num_classes": 5, "average": "weighted"}
+        ]
     },
 
     "LOSS":
     {
-        "NAME": "BCELoss",
+        "NAME": "CrossEntropyLoss",
         "ARGS":
         {
             "reduction": "mean"
@@ -135,8 +128,8 @@
         "APPLY": true,
         "ARGS":
         {
-            "patience": 5,
-            "min_delta": 0
+            "patience": 10,
+            "min_delta": 1e-4
         }
     },
 
@@ -147,10 +140,14 @@
 
     "TENSORBOARD": {
         "APPLY": true,
-        "INSPECT_MODEL": true,
-        "TRACKING_METRIC": ["BinaryAccuracy", "BinaryF1Score", "BinaryPrecision", "BinaryRecall"]
+        "INSPECT_MODEL": false,
+        "TRACKING_METRIC": [
+            "MulticlassAccuracy",
+            "MulticlassF1Score"
+        ]
     },
 
+    "SLEEP": 0,
     "SEED": 12345,
     "DEVICE": "cuda",
     "TRAINING_EPOCHS": 100

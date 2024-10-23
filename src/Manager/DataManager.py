@@ -25,8 +25,8 @@ class DataManager:
                  ):
         self.__seed = seed
         self.__device = device
-        self.__transform = self.__get_transformation(transform)
-        self.__target_transform = self.__get_transformation(target_transform)
+        self.__transform: Compose = self.__get_transformation(transform)
+        self.__target_transform: Compose = self.__get_transformation(target_transform)
 
     def get_dataloader(self,
                        dataset: str,
@@ -41,14 +41,12 @@ class DataManager:
         return dataloader
     ##########################################################################################################
 
-
     def __get_dataset(self, dataset: str, dataset_args: Dict[str, Any]) -> Dataset:
         # Default dataset
         # TODO: Extend to other kinds of datasets
         assert dataset in available_dataset.keys(), "Your selected dataset is unavailable"
         return available_dataset[dataset](transform=self.__transform, target_transform=self.__target_transform, **dataset_args)
     ##########################################################################################################
-
 
     @staticmethod
     def __get_transformation(transforms: Dict[str, Dict] = None) -> Compose:
