@@ -48,7 +48,7 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    path = f"./configs/DSP391m/resnet34.json"
+    path = f"./configs/DSP391m/vgg13.json"
 
     args = argparse.ArgumentParser()
     args.add_argument("--config", default=path, type=str, help="Path to config file")

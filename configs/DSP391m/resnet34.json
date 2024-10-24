@@ -8,17 +8,17 @@
 
         "TRAIN_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train",
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train"
         },
 
         "VAL_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid",
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid"
         },
 
         "TEST_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test",
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test"
         },
 
         "DATALOADER": "DefaultDataLoader",
@@ -108,7 +108,7 @@
         "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-4,
+            "lr": 1e-5,
             "weight_decay": 1e-5,
             "amsgrad": true
         }

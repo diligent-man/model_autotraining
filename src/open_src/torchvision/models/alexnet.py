@@ -1,19 +1,13 @@
 """
-This module from torchvision model with customization in
-    custom_alexnet(),
+This module from torchvision model with customization in custom_alexnet()
     -> Modify the flatten step (torch.flatten -> torch.nn.Flatten())
 """
 import torch
 import torch.nn as nn
 
-from functools import partial
 from typing import Any, Optional
-
-from torchvision.transforms._presets import ImageClassification
-from torchvision.utils import _log_api_usage_once
-from torchvision.models._api import register_model, Weights, WeightsEnum
-from torchvision.models._meta import _IMAGENET_CATEGORIES
-from torchvision.models._utils import _ovewrite_named_param, handle_legacy_interface
+from torchvision.models.alexnet import AlexNet_Weights
+from torchvision.models._utils import _ovewrite_named_param
 
 
 __all__ = ["AlexNet_Weights", "custom_alexnet"]
@@ -23,7 +17,6 @@ class AlexNet(nn.Module):
     def __init__(self, num_classes: int = 1000, dropout: float = 0.5) -> None:
         # Use Flatten() layer instead of torch.flatten()
         super().__init__()
-        _log_api_usage_once(self)
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
             nn.ReLU(inplace=True),
@@ -59,33 +52,6 @@ class AlexNet(nn.Module):
         return x
 
 
-class AlexNet_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/alexnet-owt-7be5be79.pth",
-        transforms=partial(ImageClassification, crop_size=224),
-        meta={
-            "num_params": 61100840,
-            "min_size": (63, 63),
-            "categories": _IMAGENET_CATEGORIES,
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#alexnet-and-vgg",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 56.522,
-                    "acc@5": 79.066,
-                }
-            },
-            "_ops": 0.714,
-            "_file_size": 233.087,
-            "_docs": """
-                These weights reproduce closely the results of the paper using a simplified training recipe.
-            """,
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-@register_model()
-@handle_legacy_interface(weights=("pretrained", AlexNet_Weights.IMAGENET1K_V1))
 def custom_alexnet(*, weights: Optional[AlexNet_Weights] = None, progress: bool = True, **kwargs: Any) -> AlexNet:
     """AlexNet model architecture from `One weird trick for parallelizing convolutional neural networks <https://arxiv.org/abs/1404.5997>`__.
 
@@ -112,7 +78,6 @@ def custom_alexnet(*, weights: Optional[AlexNet_Weights] = None, progress: bool 
     .. autoclass:: torchvision.models.AlexNet_Weights
         :members:
     """
-
     weights = AlexNet_Weights.verify(weights)
 
     if weights is not None:

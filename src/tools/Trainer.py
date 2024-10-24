@@ -156,7 +156,6 @@ class Trainer:
                 self.__tensorboard.add_scalars("Metric", tag_scalar_dict, epoch)
         return run_epoch_result
 
-
     def __eval(self,
                epoch: int,
                data_loader: torch.utils.data.DataLoader,
@@ -196,7 +195,6 @@ class Trainer:
             exit()
         return run_epoch_result
 
-
     def __run_epoch(self,
                     phase: str,
                     epoch: int,
@@ -221,10 +219,9 @@ class Trainer:
             run_epoch_result = {"loss": total_loss / len(data_loader)}
         return run_epoch_result
 
-
     def __run_epoch_dispatcher(self, phase, epoch, data_loader, metrics):
         # Ref: https://wandb.ai/wandb_fc/tips/reports/How-to-Properly-Use-PyTorch-s-CosineAnnealingWarmRestarts-Scheduler--VmlldzoyMTA3MjM2
-        if isinstance(self.__lr_scheduler, (torch.optim.lr_scheduler.CosineAnnealingWarmRestarts)):
+        if isinstance(self.__lr_scheduler, torch.optim.lr_scheduler.CosineAnnealingWarmRestarts):
             """
             Template: Update lr after each step, batch
             scheduler = ...
@@ -278,13 +275,11 @@ class Trainer:
                                                self.__config.DATA_NUM_CLASSES, data_loader)
         return total_loss
 
-
     def __get_best_val_loss(self) -> float:
         if "best_checkpoint.pt" in os.listdir(self.__config.CHECKPOINT_PATH):
             return torch.load(f=os.path.join(self.__config.CHECKPOINT_PATH, "best_checkpoint.pt"))["val_loss"]
         else:
             return float("inf")
-
 
     def __save_checkpoint(self, epoch: int, val_loss: float, obj: dict, save_all: bool = False) -> None:
         """
@@ -315,13 +310,14 @@ class Trainer:
             # Remove previous epoch
             os.remove(os.path.join(self.__config.CHECKPOINT_PATH, f"epoch_{epoch - 1}.pt"))
         return None
-    #################################################################################################################################
+########################################################################################################################
 
 
 def _forward_pass(imgs: torch.Tensor, labels: torch.Tensor, num_classes: int,
                   model: torch.nn.Module, optimizer: torch.optim.Optimizer,
                   metrics: MetricManager, loss: LossManager,
-                  phase: str, device: str) -> torch.FloatTensor:
+                  phase: str, device: str
+                  ) -> torch.FloatTensor:
     """
     Computation task in forward pass:
     1. Pass through model
@@ -331,7 +327,7 @@ def _forward_pass(imgs: torch.Tensor, labels: torch.Tensor, num_classes: int,
     Return:
         batch_loss
     """
-    def _activate(pred_labels: torch.Tensor) -> None:
+    def _activate(pred_labels: torch.Tensor) -> torch.Tensor:
         if pred_labels.shape[1] == 1:
             # Binary class
             return torch.nn.functional.sigmoid(pred_labels).squeeze(dim=1)

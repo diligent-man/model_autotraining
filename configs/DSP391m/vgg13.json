@@ -8,26 +8,26 @@
 
         "TRAIN_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train",
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train"
         },
 
         "VAL_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid",
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid"
         },
 
         "TEST_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test",
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test"
         },
 
         "DATALOADER": "DefaultDataLoader",
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 128,
+            "batch_size": 172,
             "shuffle": true,
-            "num_workers": 8,
+            "num_workers": 4,
             "prefetch_factor": 4,
             "drop_last": false,
             "pin_memory": false
@@ -92,10 +92,10 @@
     "MODEL":
     {
         "BASE": "vgg",
-        "NAME": "vgg13",
+        "NAME": "custom_vgg13",
         "GET_SUMMARY": false,
         "COMPILE": false,
-        "PRETRAINED_WEIGHT": false,
+        "PRETRAINED_WEIGHT": true,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
@@ -109,7 +109,7 @@
         "ARGS":
         {
             "lr": 1e-4,
-            "weight_decay": 1e-3,
+            "weight_decay": 1e-5,
             "amsgrad": true
         }
     },
@@ -118,7 +118,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 5, "T_mult": 2}]
+        "ARGS": [{"T_0": 4, "T_mult": 2}]
     },
 
     "METRIC":
@@ -151,8 +151,8 @@
         "APPLY": true,
         "ARGS":
         {
-            "patience": 10,
-            "min_delta": 1e-4
+            "patience": 30,
+            "min_delta": 0
         }
     },
 

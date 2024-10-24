@@ -25,7 +25,7 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 1024,
+            "batch_size": 120,
             "shuffle": true,
             "num_workers": 4,
             "prefetch_factor": 4,
@@ -92,7 +92,7 @@
     "MODEL":
     {
         "BASE": "resnet",
-        "NAME": "resnet18",
+        "NAME": "custom_resnet101",
         "GET_SUMMARY": false,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": true,
@@ -108,7 +108,7 @@
         "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-4,
+            "lr": 1e-5,
             "weight_decay": 1e-5,
             "amsgrad": true
         }
@@ -118,7 +118,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 1, "T_mult": 2}]
+        "ARGS": [{"T_0": 6, "T_mult": 2}]
     },
 
     "METRIC":
