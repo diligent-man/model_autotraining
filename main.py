@@ -1,5 +1,11 @@
 # TODO: Reimplement DataManager: not apply data augmentation on val set
-
+# TODO: Change config transform & target transform into List[] and List[Dict] format\
+#       instead of Dict[] as current cuz some operation can happene twice (e.g. resize)
+# TODO: Implement eval strategy
+# TODO: Implement inference process
+# TODO: Refactor import of src (use relative import)
+# TODO: Implement customized ImageFolder dataset that has capability of reading image as tensor not PIL as current
+# TODO: Use eval() to extract arg instead of dict access by key
 import gc
 import torch
 import argparse
@@ -48,13 +54,14 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    path = f"./configs/DSP391m/vgg13.json"
+    for name in ["swin_s.json", "swin_t.json", "swin_s_v2.json", "swin_t_v2.json"]:
+        path = f"./configs/DSP391m/{name}"
 
-    args = argparse.ArgumentParser()
-    args.add_argument("--config", default=path, type=str, help="Path to config file")
+        args = argparse.ArgumentParser()
+        args.add_argument("--config", default=path, type=str, help="Path to config file")
 
-    args = args.parse_args()
-    main(args)
+        args = args.parse_args()
+        main(args)
 
-    torch.cuda.empty_cache()
-    gc.collect()
+        torch.cuda.empty_cache()
+        gc.collect()

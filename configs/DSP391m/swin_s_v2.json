@@ -25,7 +25,7 @@
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 144,
+            "batch_size": 56,
             "shuffle": true,
             "num_workers": 4,
             "prefetch_factor": 4,
@@ -91,8 +91,8 @@
 
     "MODEL":
     {
-        "BASE": "vgg",
-        "NAME": "custom_vgg16",
+        "BASE": "swin",
+        "NAME": "swin_v2_s",
         "GET_SUMMARY": false,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": true,
@@ -108,7 +108,7 @@
         "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-5,
+            "lr": 1e-4,
             "weight_decay": 1e-5,
             "amsgrad": true
         }
@@ -118,7 +118,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 5, "T_mult": 2}]
+        "ARGS": [{"T_0": 12, "T_mult": 2}]
     },
 
     "METRIC":
