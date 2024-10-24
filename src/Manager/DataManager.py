@@ -1,4 +1,5 @@
 from typing import Dict, Any
+from src.utils import available_callable
 from src.Dataset import available_dataset
 from src.DataLoader import available_dataloader
 from src.open_src import available_transform, available_interpolation, available_dtype
@@ -66,6 +67,10 @@ class DataManager:
                 if transform in ("ToDtype"):
                     assert transforms[transform]["dtype"] in available_dtype.keys(), "Your selected dtype in unavailable"
                     transforms[transform]["dtype"] = available_dtype[transforms[transform]["dtype"]]
+
+                # if transform in ("Lambda"):
+                #     assert transforms[transform]["lambd"] in available_callable.keys(), "Your selected callable in unavailable"
+                #     transforms[transform]["lambd"] = available_callable[transforms[transform]["lambd"]]
 
             compose = Compose([available_transform[transform](**args) for transform, args in transforms.items()])
         return compose

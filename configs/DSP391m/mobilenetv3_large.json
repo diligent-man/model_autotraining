@@ -8,24 +8,24 @@
 
         "TRAIN_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train",
         },
 
         "VAL_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid",
         },
 
         "TEST_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test"
+            "root": "/home/trong/Downloads/faset/Tomato/Classification/test",
         },
 
         "DATALOADER": "DefaultDataLoader",
 
         "TRAIN_DATALOADER_ARGS":
         {
-            "batch_size": 1024,
+            "batch_size": 256,
             "shuffle": true,
             "num_workers": 4,
             "prefetch_factor": 4,
@@ -91,11 +91,11 @@
 
     "MODEL":
     {
-        "BASE": "alexnet",
-        "NAME": "custom_alexnet",
+        "BASE": "mobilenet",
+        "NAME": "mobilenet_v3_large",
         "GET_SUMMARY": false,
         "COMPILE": false,
-        "PRETRAINED_WEIGHT": true,
+        "PRETRAINED_WEIGHT": false,
         "REMOVE_PRETRAINED_WEIGHT": false,
         "ARGS":
         {
@@ -108,7 +108,7 @@
         "NAME": "Adam",
         "ARGS":
         {
-            "lr": 1e-4,
+            "lr": 1e-5,
             "weight_decay": 1e-5,
             "amsgrad": true
         }
@@ -118,7 +118,7 @@
     {
         "APPLY": true,
         "NAME": ["CosineAnnealingWarmRestarts"],
-        "ARGS": [{"T_0": 1, "T_mult": 2}]
+        "ARGS": [{"T_0": 3, "T_mult": 2}]
     },
 
     "METRIC":
@@ -151,8 +151,8 @@
         "APPLY": true,
         "ARGS":
         {
-            "patience": 30,
-            "min_delta": 0
+            "patience": 10,
+            "min_delta": 1e-4
         }
     },
 

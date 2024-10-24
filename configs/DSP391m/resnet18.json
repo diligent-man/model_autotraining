@@ -8,17 +8,17 @@
 
         "TRAIN_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/train",
         },
 
         "VAL_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/valid",
         },
 
         "TEST_DATASET_ARGS":
         {
-            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test"
+            "root": "/home/trong/Downloads/Dataset/Tomato/Classification/test",
         },
 
         "DATALOADER": "DefaultDataLoader",
@@ -27,7 +27,7 @@
         {
             "batch_size": 1024,
             "shuffle": true,
-            "num_workers": 4,
+            "num_workers": 8,
             "prefetch_factor": 4,
             "drop_last": false,
             "pin_memory": false
@@ -91,8 +91,8 @@
 
     "MODEL":
     {
-        "BASE": "alexnet",
-        "NAME": "custom_alexnet",
+        "BASE": "resnet",
+        "NAME": "resnet18",
         "GET_SUMMARY": false,
         "COMPILE": false,
         "PRETRAINED_WEIGHT": true,

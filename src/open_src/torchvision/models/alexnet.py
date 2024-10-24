@@ -1,7 +1,7 @@
 """
 This module from torchvision model with customization in
     custom_alexnet(),
-    -> Modify the way paras is passed into _vision_transformer()
+    -> Modify the flatten step (torch.flatten -> torch.nn.Flatten())
 """
 import torch
 import torch.nn as nn
@@ -16,7 +16,7 @@ from torchvision.models._meta import _IMAGENET_CATEGORIES
 from torchvision.models._utils import _ovewrite_named_param, handle_legacy_interface
 
 
-__all__ = ["AlexNet", "AlexNet_Weights", "custom_alexnet"]
+__all__ = ["AlexNet_Weights", "custom_alexnet"]
 
 
 class AlexNet(nn.Module):

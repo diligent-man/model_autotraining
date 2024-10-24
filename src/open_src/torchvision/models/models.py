@@ -42,16 +42,6 @@ from torchvision.models import (
     regnet_x_8gf, RegNet_X_8GF_Weights,
     regnet_x_16gf, RegNet_X_16GF_Weights,
     regnet_x_32gf, RegNet_X_32GF_Weights,
-    resnet18, ResNet18_Weights,
-    resnet34, ResNet34_Weights,
-    resnet50, ResNet50_Weights,
-    resnet101, ResNet101_Weights,
-    resnet152, ResNet152_Weights,
-    resnext50_32x4d, ResNeXt50_32X4D_Weights,
-    resnext101_32x8d, ResNeXt101_32X8D_Weights,
-    resnext101_64x4d, ResNeXt101_64X4D_Weights,
-    wide_resnet50_2, Wide_ResNet50_2_Weights,
-    wide_resnet101_2, Wide_ResNet101_2_Weights,
     shufflenet_v2_x0_5, ShuffleNet_V2_X0_5_Weights,
     shufflenet_v2_x1_0, ShuffleNet_V2_X1_0_Weights,
     shufflenet_v2_x1_5, ShuffleNet_V2_X1_5_Weights,
@@ -84,10 +74,23 @@ from .vision_transformer import (
     custom_vit_h_14, ViT_H_14_Weights,
 )
 
+# Use torch.nn.flatten() layer instead of torch.flatten()
 from .alexnet import (
     custom_alexnet, AlexNet_Weights
 )
 
+from .resnet import (
+    custom_resnet18, ResNet18_Weights,
+    custom_resnet34, ResNet34_Weights,
+    custom_resnet50, ResNet50_Weights,
+    custom_resnet101, ResNet101_Weights,
+    custom_resnet152, ResNet152_Weights,
+    custom_resnext50_32x4d, ResNeXt50_32X4D_Weights,
+    custom_resnext101_32x8d, ResNeXt101_32X8D_Weights,
+    custom_resnext101_64x4d, ResNeXt101_64X4D_Weights,
+    custom_wide_resnet50_2, Wide_ResNet50_2_Weights,
+    custom_wide_resnet101_2, Wide_ResNet101_2_Weights
+)
 
 available_model = {
     "googlenet": googlenet,
@@ -133,16 +136,6 @@ available_model = {
     "regnet_x_8gf": regnet_x_8gf,
     "regnet_x_16gf": regnet_x_16gf,
     "regnet_x_32gf": regnet_x_32gf,
-    "resnet18": resnet18,
-    "resnet34": resnet34,
-    "resnet50": resnet50,
-    "resnet101": resnet101,
-    "resnet152": resnet152,
-    "resnext50_32x4d": resnext50_32x4d,
-    "resnext101_32x8d": resnext101_32x8d,
-    "resnext101_64x4d": resnext101_64x4d,
-    "wide_resnet50_2": wide_resnet50_2,
-    "wide_resnet101_2": wide_resnet101_2,
     "shufflenet_v2_x0_5": shufflenet_v2_x0_5,
     "shufflenet_v2_x1_0": shufflenet_v2_x1_0,
     "shufflenet_v2_x1_5": shufflenet_v2_x1_5,
@@ -167,11 +160,23 @@ available_model = {
 
     # Customized models
     "custom_alexnet": custom_alexnet,
+
     "custom_vit_b_16": custom_vit_b_16,
     "custom_vit_b_32": custom_vit_b_32,
     "custom_vit_l_16": custom_vit_l_16,
     "custom_vit_l_32": custom_vit_l_32,
     "custom_vit_h_14": custom_vit_h_14,
+
+    "custom_resnet18": custom_resnet18,
+    "custom_resnet34": custom_resnet34,
+    "custom_resnet50": custom_resnet50,
+    "custom_resnet101": custom_resnet101,
+    "custom_resnet152": custom_resnet152,
+    "custom_resnext50_32x4d": custom_resnext50_32x4d,
+    "custom_resnext101_32x8d": custom_resnext101_32x8d,
+    "custom_resnext101_64x4d": custom_resnext101_64x4d,
+    "custom_wide_resnet50_2": custom_wide_resnet50_2,
+    "custom_wide_resnet101_2": custom_wide_resnet101_2
 }
 
 available_weight = {
@@ -218,16 +223,6 @@ available_weight = {
     "regnet_x_8gf": RegNet_X_8GF_Weights.DEFAULT,
     "regnet_x_16gf": RegNet_X_16GF_Weights.DEFAULT,
     "regnet_x_32gf": RegNet_X_32GF_Weights.DEFAULT,
-    "resnet18": ResNet18_Weights.DEFAULT,
-    "resnet34": ResNet34_Weights.DEFAULT,
-    "resnet50": ResNet50_Weights.DEFAULT,
-    "resnet101": ResNet101_Weights.DEFAULT,
-    "resnet152": ResNet152_Weights.DEFAULT,
-    "resnext50_32x4d": ResNeXt50_32X4D_Weights.DEFAULT,
-    "resnext101_32x8d": ResNeXt101_32X8D_Weights.DEFAULT,
-    "resnext101_64x4d": ResNeXt101_64X4D_Weights.DEFAULT,
-    "wide_resnet50_2": Wide_ResNet50_2_Weights.DEFAULT,
-    "wide_resnet101_2": Wide_ResNet101_2_Weights.DEFAULT,
     "shufflenet_v2_x0_5": ShuffleNet_V2_X0_5_Weights.DEFAULT,
     "shufflenet_v2_x1_0": ShuffleNet_V2_X1_0_Weights.DEFAULT,
     "shufflenet_v2_x1_5": ShuffleNet_V2_X1_5_Weights.DEFAULT,
@@ -252,9 +247,21 @@ available_weight = {
 
     # Custom models
     "custom_alexnet": AlexNet_Weights.DEFAULT,
+
     "custom_vit_b_16": ViT_B_16_Weights.DEFAULT,
     "custom_vit_b_32": ViT_B_32_Weights.DEFAULT,
     "custom_vit_l_16": ViT_L_16_Weights.DEFAULT,
     "custom_vit_l_32": ViT_L_32_Weights.DEFAULT,
     "custom_vit_h_14": ViT_H_14_Weights.DEFAULT,
+
+    "custom_resnet18": ResNet18_Weights.DEFAULT,
+    "custom_resnet34": ResNet34_Weights.DEFAULT,
+    "custom_resnet50": ResNet50_Weights.DEFAULT,
+    "custom_resnet101": ResNet101_Weights.DEFAULT,
+    "custom_resnet152": ResNet152_Weights.DEFAULT,
+    "custom_resnext50_32x4d": ResNeXt50_32X4D_Weights.DEFAULT,
+    "custom_resnext101_32x8d": ResNeXt101_32X8D_Weights.DEFAULT,
+    "custom_resnext101_64x4d": ResNeXt101_64X4D_Weights.DEFAULT,
+    "custom_wide_resnet50_2": Wide_ResNet50_2_Weights.DEFAULT,
+    "custom_wide_resnet101_2": Wide_ResNet101_2_Weights.DEFAULT,
 }

@@ -128,7 +128,6 @@ class Trainer:
             print("Sleeping...")
             sleep(self.__sleep_time)
 
-
         # Remove pretrained weights in TORCH_HOME if exists
         if self.__config.MODEL_PRETRAINED_WEIGHT is not None and self.__config.MODEL_REMOVE_PRETRAINED_WEIGHT:
             shutil.rmtree(os.path.join(torch.hub._get_torch_home(), "hub", "checkpoints"))

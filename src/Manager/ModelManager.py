@@ -109,7 +109,6 @@ class ModelManager:
             print("Init finished.")
         return model
 
-
     def __adapt_classifier(self,
                            model: torch.nn.Module,
                            new_classifier_name: List[str] = None,

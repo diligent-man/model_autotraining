@@ -4,7 +4,6 @@ import gc
 import torch
 import argparse
 
-
 from src.utils.utils import train
 from src.Manager import ModelManager, ConfigManager, OptimizerManager, DataManager
 
@@ -20,6 +19,7 @@ def main(args: argparse.ArgumentParser) -> None:
                                  config.__dict__.get("DEVICE", "cpu"),
                                  config.__dict__.get("VERBOSE", True),
                                  )
+
     if config.MODEL_GET_SUMMARY:
         model_manager.get_summary(
             config.DATA_INPUT_SHAPE,
@@ -48,7 +48,7 @@ def main(args: argparse.ArgumentParser) -> None:
 
 
 if __name__ == '__main__':
-    path = "./configs/DSP391m/alexnet.json"
+    path = f"./configs/DSP391m/resnet34.json"
 
     args = argparse.ArgumentParser()
     args.add_argument("--config", default=path, type=str, help="Path to config file")
